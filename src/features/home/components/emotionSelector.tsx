@@ -1,43 +1,19 @@
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-const EMOTIONS = [
-  { id: "feliz", label: "Feliz", emoji: "😊", color: "#FFD93D", bg: "#FFF8DC" },
-  {
-    id: "enojado",
-    label: "Enojado",
-    emoji: "😠",
-    color: "#FF6B6B",
-    bg: "#FFE8E8",
-  },
-  {
-    id: "triste",
-    label: "Triste",
-    emoji: "😢",
-    color: "#6B9FFF",
-    bg: "#E8F0FF",
-  },
-  {
-    id: "nervioso",
-    label: "Nervioso",
-    emoji: "😰",
-    color: "#98D897",
-    bg: "#E8F8E8",
-  },
-  {
-    id: "cansado",
-    label: "Cansado",
-    emoji: "😴",
-    color: "#C9C9C9",
-    bg: "#F0F0F0",
-  },
-  {
-    id: "asustado",
-    label: "Asustado",
-    emoji: "😨",
-    color: "#FFB347",
-    bg: "#FFF3E0",
-  },
+const emotions = [
+  { id: "feliz", emoji: "😊", label: "Feliz" },
+  { id: "enojado", emoji: "😠", label: "Enojado" },
+  { id: "triste", emoji: "😢", label: "Triste" },
+  { id: "emocionada", emoji: "🥰", label: "Emocionada" },
+  { id: "cansada", emoji: "😴", label: "Cansada" },
+  { id: "ansiosa", emoji: "😰", label: "Ansiosa" },
 ];
 
 export default function EmotionSelector({
@@ -45,52 +21,49 @@ export default function EmotionSelector({
 }: {
   onSelect: (id: string, emoji: string) => void;
 }) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState("");
 
   const handlePress = (id: string, emoji: string) => {
-    const next = selected === id ? null : id;
-    setSelected(next);
-    onSelect(next ?? "", next ? emoji : "🙂");
+    setSelectedId(id);
+    onSelect(id, emoji);
   };
 
   return (
-    <View style={styles.grid}>
-      {EMOTIONS.map((e) => (
-        <TouchableOpacity
-          key={e.id}
-          onPress={() => handlePress(e.id, e.emoji)}
-          style={[
-            styles.btn,
-            {
-              backgroundColor: selected === e.id ? e.bg : "#FAFAFA",
-              borderColor: selected === e.id ? e.color : "#EEE",
-              borderWidth: selected === e.id ? 2.5 : 2,
-            },
-          ]}
-        >
-          <Text style={styles.emojiSmall}>{e.emoji}</Text>
-          <Text style={styles.label}>{e.label}</Text>
-        </TouchableOpacity>
-      ))}
+    <View style={styles.container}>
+      <FlatList
+        data={emotions}
+        numColumns={2}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={[
+              styles.emotionBtn,
+              selectedId === item.id && styles.emotionBtnSelected,
+            ]}
+            onPress={() => handlePress(item.id, item.emoji)}
+          >
+            <Text style={styles.emoji}>{item.emoji}</Text>
+            <Text style={styles.label}>{item.label}</Text>
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    gap: 12,
-    paddingHorizontal: 16,
-  },
-  btn: {
-    width: "30%",
+  container: { alignItems: "center" },
+  emotionBtn: {
+    backgroundColor: "#F5F5F5",
     borderRadius: 16,
-    paddingVertical: 10,
+    padding: 12,
+    margin: 8,
     alignItems: "center",
-    gap: 4,
+    width: 100,
   },
-  emojiSmall: { fontSize: 28 },
-  label: { fontSize: 11, fontWeight: "700", color: "#666" },
+  emotionBtnSelected: {
+    backgroundColor: "#2DC5A2",
+  },
+  emoji: { fontSize: 32 },
+  label: { fontSize: 12, marginTop: 4, color: "#333" },
 });
