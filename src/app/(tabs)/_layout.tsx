@@ -1,78 +1,66 @@
 import { Tabs } from "expo-router";
-import { TabBarIcon } from "../../components/ui/TabBarIcon";
+import { Text } from "react-native";
+
+function TabIcon({ emoji, color }: { emoji: string; color: string }) {
+  return (
+    <Text style={{ fontSize: 20, opacity: color === "#2DC5A2" ? 1 : 0.4 }}>
+      {emoji}
+    </Text>
+  );
+}
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: "#FFFFFF",
-          height: 65,
-          paddingBottom: 10,
-          paddingTop: 10,
-        },
-        tabBarLabelStyle: {
-          fontFamily: "Chewy-Regular",
-          fontSize: 12,
-        },
-        tabBarActiveTintColor: "#0ea5e9",
-        tabBarInactiveTintColor: "#9CA3AF",
+        headerShown: true,
+        headerTitle: () => (
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "900",
+              letterSpacing: 2,
+              color: "#2DC5A2",
+            }}
+          >
+            ECCO
+          </Text>
+        ),
+        headerLeft: () => (
+          <Text style={{ fontSize: 20, marginLeft: 16 }}>☰</Text>
+        ),
+        tabBarActiveTintColor: "#2DC5A2",
+        tabBarInactiveTintColor: "#AAA",
+        tabBarStyle: { borderTopColor: "#F0F0F0" },
+        tabBarLabelStyle: { fontSize: 10, fontWeight: "700" },
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: "Inicio",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name={focused ? "home" : "home-outline"}
-              color={color}
-              size={size}
-            />
-          ),
+          title: "Home",
+          tabBarIcon: ({ color }) => <TabIcon emoji="🏠" color={color} />,
         }}
       />
-
       <Tabs.Screen
-        name="exchange"
+        name="intercambio"
         options={{
           title: "Intercambio",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name={focused ? "chatbubble" : "chatbubble-outline"}
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ color }) => <TabIcon emoji="🔄" color={color} />,
         }}
       />
-
       <Tabs.Screen
-        name="word"
+        name="mundo"
         options={{
           title: "Mundo",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name={focused ? "globe" : "globe-outline"}
-              color={color}
-              size={size}
-            />
-          ),
+          tabBarIcon: ({ color }) => <TabIcon emoji="🌍" color={color} />,
         }}
       />
-
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Ajustes",
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabBarIcon
-              name={focused ? "settings" : "settings-outline"}
-              color={color}
-              size={size}
-            />
-          ),
+          title: "Settings",
+          tabBarIcon: ({ color }) => <TabIcon emoji="⚙️" color={color} />,
         }}
       />
     </Tabs>
