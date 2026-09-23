@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import Svg, { Ellipse, Path } from "react-native-svg";
+import Button from "../../../components/ui/Button";
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -8,16 +9,14 @@ export default function WelcomeScreen() {
   return (
     <View className="flex-1 bg-primaryNormal items-center justify-between pb-[60px]">
       <View className="flex-1 items-center justify-center px-8">
-        <Text className="font-body-medium text-sm text-white/70 tracking-[3px] mb-4 uppercase">
+        <Text className="font-heading-bold text-h1 text-primaryLight uppercase">
           ECCO
         </Text>
-        <Text className="font-heading-semibold text-[32px] text-white leading-9">
-          Bienvenida
-        </Text>
-        <Text className="font-heading-semibold text-[28px] text-white mb-7">
-          Naty09
-        </Text>
-        <Text className="font-body-medium text-base text-white/90 leading-[26px] text-center max-w-[260px]">
+        <Text className="font-heading-bold text-h2 text-white">Bienvenida</Text>
+
+        <Text className="font-heading-bold text-h4 text-white">Naty09</Text>
+
+        <Text className="font-heading text-h5 text-white/90 text-center">
           No tienes que resolver todo ahora.
         </Text>
       </View>
@@ -71,14 +70,14 @@ export default function WelcomeScreen() {
         </Svg>
       </View>
 
-      <TouchableOpacity
-        className="bg-white rounded-full py-3.5 px-8 z-10"
+      <Button
+        variant="white"
+        icon="arrow-forward"
+        iconPosition="right"
         onPress={() => router.replace("/login")}
       >
-        <Text className="font-heading-semibold text-base text-primaryNormal">
-          Continuar →
-        </Text>
-      </TouchableOpacity>
+        Continuar
+      </Button>
     </View>
   );
 }

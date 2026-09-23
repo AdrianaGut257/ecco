@@ -29,10 +29,20 @@ module.exports = {
         destructive: "#C97B63",
       },
       fontFamily: {
-        heading: ["Poppins-Medium"],
+        heading: ["Poppins-Regular"],
+        "heading-medium": ["Poppins-Medium"],
         "heading-semibold": ["Poppins-SemiBold"],
-        body: ["Inter-Regular"],
-        "body-medium": ["Inter-Medium"],
+        "heading-bold": ["Poppins-Bold"],
+      },
+      fontSize: {
+        h1: ["36px", { lineHeight: "44px" }],
+        h2: ["32px", { lineHeight: "40px" }],
+        h3: ["24px", { lineHeight: "32px" }],
+        h4: ["20px", { lineHeight: "28px" }],
+        h5: ["16px", { lineHeight: "24px" }],
+        body: ["14px", { lineHeight: "22px" }],
+        caption: ["12px", { lineHeight: "20px" }],
+        button: ["15px", { lineHeight: "23px" }],
       },
       borderRadius: {
         chip: "999px",

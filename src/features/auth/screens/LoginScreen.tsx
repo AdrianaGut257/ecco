@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -7,18 +8,24 @@ import {
   ScrollView,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import Button from "../../../components/ui/Button";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  const isEmailValid = EMAIL_REGEX.test(email);
+  const showEmailError = emailTouched && email.length > 0 && !isEmailValid;
+  const canSubmit = isEmailValid && password.length > 0;
 
   const handleLogin = () => {
-    // TODO: conectar con el servicio de auth
     router.replace("/(tabs)/home");
   };
 
@@ -50,20 +57,30 @@ export default function LoginScreen() {
             <TextInput
               value={email}
               onChangeText={setEmail}
+              onBlur={() => setEmailTouched(true)}
               placeholder="tucorreo@ejemplo.com"
               placeholderTextColor="#A27556"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
-              className="font-body border border-primaryLightActive rounded-field px-4 py-3 text-primaryNormalActive bg-white"
+              className={`font-body border rounded-field px-4 py-3 text-primaryNormalActive bg-white ${
+                showEmailError
+                  ? "border-destructive"
+                  : "border-primaryLightActive"
+              }`}
             />
+            {showEmailError && (
+              <Text className="font-body text-xs text-destructive mt-1.5">
+                Ingresa un correo válido.
+              </Text>
+            )}
           </View>
 
           <View className="mb-2">
             <Text className="font-body-medium text-xs text-primaryNormalActive mb-1.5">
               Contraseña
             </Text>
-            <View className="flex-row items-center border border-primaryLightActive rounded-field bg-white pr-4">
+            <View className="relative justify-center">
               <TextInput
                 value={password}
                 onChangeText={setPassword}
@@ -72,12 +89,18 @@ export default function LoginScreen() {
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
                 autoCorrect={false}
-                className="font-body flex-1 px-4 py-3 text-primaryNormalActive"
+                className="font-body border border-primaryLightActive rounded-field pl-4 pr-12 py-3 text-primaryNormalActive bg-white"
               />
-              <Pressable onPress={() => setShowPassword((v) => !v)}>
-                <Text className="font-body-medium text-xs text-primaryNormalHover">
-                  {showPassword ? "Ocultar" : "Ver"}
-                </Text>
+              <Pressable
+                onPress={() => setShowPassword((v) => !v)}
+                hitSlop={8}
+                className="absolute right-4"
+              >
+                <Ionicons
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                  size={20}
+                  color="#A27556"
+                />
               </Pressable>
             </View>
           </View>
@@ -91,19 +114,15 @@ export default function LoginScreen() {
             </Text>
           </Pressable>
 
-          <TouchableOpacity
-            className="bg-primaryNormal rounded-chip py-3.5 items-center mb-4"
-            onPress={handleLogin}
-          >
-            <Text className="font-heading-semibold text-base text-white">
-              Iniciar sesión
-            </Text>
-          </TouchableOpacity>
+          <Button variant="primary" onPress={handleLogin} disabled={!canSubmit}>
+            Iniciar sesión
+          </Button>
 
-          <View className="flex-row justify-center items-center">
+          <View className="flex-row justify-center items-center mt-4">
             <Text className="font-body text-sm text-primaryNormalHover">
               ¿No tienes cuenta?{" "}
             </Text>
+
             <Pressable onPress={() => router.push("/register")}>
               <Text className="font-body-medium text-sm text-primaryNormal">
                 Regístrate

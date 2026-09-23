@@ -1,4 +1,3 @@
-import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -358,10 +357,6 @@ export default function HomeScreen() {
   const buttonsOpacity = useRef(new Animated.Value(0)).current;
   const buttonsTranslateY = useRef(new Animated.Value(20)).current;
 
-  const [fontsLoaded] = useFonts({
-    Chewy: require("../../../assets/fonts/Chewy-Regular.ttf"),
-  });
-
   const selectedEmotion = EMOTIONS.find((e) => e.id === selected);
   const currentEmoji = selectedEmotion?.emoji ?? "🙂";
   const gradientColors: [string, string] = selectedEmotion
@@ -440,7 +435,6 @@ export default function HomeScreen() {
     inputRange: [0, 1],
     outputRange: ["0deg", "16deg"],
   });
-  const chewyFont = fontsLoaded ? { fontFamily: "Chewy" } : {};
 
   const particleXPositions = useRef(
     Array.from({ length: PARTICLE_COUNT }).map(
@@ -476,12 +470,7 @@ export default function HomeScreen() {
             )}
 
             {/* Greeting */}
-            <View style={styles.userRow}>
-              <Text style={[styles.userLabel, chewyFont]}>Hola,</Text>
-              <Text style={[styles.username, chewyFont, { color: textColor }]}>
-                Naty09 👋
-              </Text>
-            </View>
+            <View style={styles.userRow}>Naty09 👋</View>
 
             {/* Big emoji */}
             <View style={styles.emojiContainer}>
@@ -515,19 +504,12 @@ export default function HomeScreen() {
                   backgroundColor: selected ? accentColor + "28" : "#00000010",
                 },
               ]}
-            >
-              <Text style={[styles.question, chewyFont, { color: textColor }]}>
-                {selected
-                  ? `Te sientes ${selectedEmotion?.label.toLowerCase()} ✨`
-                  : "¿Cómo te sientes hoy?"}
-              </Text>
-            </View>
+            ></View>
           </LinearGradient>
         </View>
 
         {/* Emotions grid — sits on page bg */}
         <View style={styles.sectionWrapper}>
-          <Text style={[styles.sectionLabel, chewyFont]}>¿Cómo estás?</Text>
           <View style={styles.emotionsGrid}>
             {EMOTIONS.map((e) => {
               const isSelected = selected === e.id;
@@ -552,15 +534,6 @@ export default function HomeScreen() {
                   ]}
                 >
                   <Text style={styles.emotionEmoji}>{e.emoji}</Text>
-                  <Text
-                    style={[
-                      styles.emotionLabel,
-                      chewyFont,
-                      { color: isSelected ? "#fff" : e.textColor },
-                    ]}
-                  >
-                    {e.label}
-                  </Text>
                 </TouchableOpacity>
               );
             })}
@@ -578,10 +551,6 @@ export default function HomeScreen() {
               },
             ]}
           >
-            <Text style={[styles.subheading, chewyFont, { color: textColor }]}>
-              ¿Qué necesitas ahora?
-            </Text>
-
             <TouchableOpacity
               activeOpacity={0.82}
               style={[
@@ -600,9 +569,7 @@ export default function HomeScreen() {
               <View style={styles.btnIconWrap}>
                 <Text style={styles.btnIcon}>👤</Text>
               </View>
-              <Text style={[styles.btnText, chewyFont]}>
-                Encontrar a mi persona
-              </Text>
+
               <Text style={styles.btnArrow}>›</Text>
             </TouchableOpacity>
 
@@ -629,9 +596,7 @@ export default function HomeScreen() {
               >
                 <Text style={styles.btnIcon}>😊</Text>
               </View>
-              <Text style={[styles.btnText, chewyFont, { color: textColor }]}>
-                Hoy solo quiero recibir
-              </Text>
+
               <Text style={[styles.btnArrow, { color: accentColor }]}>›</Text>
             </TouchableOpacity>
           </Animated.View>
