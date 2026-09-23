@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Button from "../../../components/ui/Button";
 
 const CATEGORIES: { title: string; items: string[] }[] = [
   {
@@ -55,7 +56,7 @@ export default function InterestsScreen({
         className="flex-1 px-6 pt-16"
         contentContainerStyle={{ paddingBottom: 24 }}
       >
-        <Text className="font-heading-semibold text-3xl text-primaryNormalActive mb-1">
+        <Text className="font-heading-bold text-h1 text-primaryNormalActive mb-1">
           ¿Qué te gusta?
         </Text>
         <Text className="font-body text-sm text-primaryNormalHover mb-6">
@@ -64,7 +65,7 @@ export default function InterestsScreen({
 
         {CATEGORIES.map((category) => (
           <View key={category.title} className="mb-6">
-            <Text className="font-heading-semibold text-base text-primaryNormalActive mb-3">
+            <Text className="font-heading-semibold text-h6 text-primaryNormalActive mb-3">
               {category.title}
             </Text>
             <View className="bg-white rounded-card border border-primaryLight p-4 flex-row flex-wrap gap-2.5">
@@ -102,17 +103,13 @@ export default function InterestsScreen({
             ? "Elige al menos un interés para continuar."
             : `${selected.length} interés${selected.length > 1 ? "es" : ""} seleccionado${selected.length > 1 ? "s" : ""}`}
         </Text>
-        <TouchableOpacity
-          className={`rounded-chip py-3.5 items-center ${
-            selected.length > 0 ? "bg-primaryNormal" : "bg-primaryLightActive"
-          }`}
+        <Button
+          variant="primary"
           onPress={onComplete}
           disabled={selected.length === 0}
         >
-          <Text className="font-heading-semibold text-base text-white">
-            Siguiente
-          </Text>
-        </TouchableOpacity>
+          Siguiente
+        </Button>
       </View>
     </View>
   );

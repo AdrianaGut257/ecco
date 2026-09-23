@@ -2,10 +2,13 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import AvatarScreen from "./AvatarScreen";
 import InterestsScreen from "./InterestsScreen";
+import OnboardingSlidesScreen from "./OnboardingSlidesScreen";
 import TermsScreen from "./TermsScreen";
 
 export default function OnboardingFlow() {
-  const [step, setStep] = useState<"terms" | "avatar" | "interests">("terms");
+  const [step, setStep] = useState<"terms" | "avatar" | "interests" | "slides">(
+    "terms",
+  );
   const router = useRouter();
 
   if (step === "terms") {
@@ -16,5 +19,11 @@ export default function OnboardingFlow() {
     return <AvatarScreen onComplete={() => setStep("interests")} />;
   }
 
-  return <InterestsScreen onComplete={() => router.replace("/(tabs)/home")} />;
+  if (step === "interests") {
+    return <InterestsScreen onComplete={() => setStep("slides")} />;
+  }
+
+  return (
+    <OnboardingSlidesScreen onComplete={() => router.replace("/(tabs)/home")} />
+  );
 }

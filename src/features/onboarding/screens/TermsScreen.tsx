@@ -1,11 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import Button from "../../../components/ui/Button";
 
 export default function TermsScreen({
   onComplete,
@@ -16,12 +12,17 @@ export default function TermsScreen({
 
   return (
     <View className="flex-1 bg-primaryClear px-8 pt-16 pb-8">
-      <Text className="font-heading-semibold text-2xl text-primaryNormalActive mb-2">
-        Antes de empezar
-      </Text>
-      <Text className="font-body text-sm text-primaryNormalHover mb-6">
-        Lee y acepta nuestros términos para continuar.
-      </Text>
+      <View className="items-center mb-4">
+        <View className="w-20 h-20 rounded-full bg-secondaryClear items-center justify-center mb-4">
+          <Ionicons name="shield-checkmark" size={44} color="#9CAF88" />
+        </View>
+        <Text className="font-heading-bold text-h2 text-primaryNormalActive text-center">
+          Antes de empezar
+        </Text>
+        <Text className="font-body text-sm text-primaryNormalHover text-center mt-1">
+          Lee y acepta nuestros términos para continuar.
+        </Text>
+      </View>
 
       <ScrollView className="flex-1 bg-white rounded-card border border-primaryLight p-5 mb-6">
         <Text className="font-body text-sm text-primaryNormalActive leading-6">
@@ -47,24 +48,16 @@ export default function TermsScreen({
               : "border-primaryLightActive bg-white"
           }`}
         >
-          {accepted && <Text className="text-white text-xs">✓</Text>}
+          {accepted && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
         </View>
         <Text className="font-body text-sm text-primaryNormalActive flex-1">
           Acepto los Términos y Condiciones y la Política de Privacidad.
         </Text>
       </Pressable>
 
-      <TouchableOpacity
-        className={`rounded-chip py-3.5 items-center ${
-          accepted ? "bg-primaryNormal" : "bg-primaryLightActive"
-        }`}
-        onPress={onComplete}
-        disabled={!accepted}
-      >
-        <Text className="font-heading-semibold text-base text-white">
-          Continuar
-        </Text>
-      </TouchableOpacity>
+      <Button variant="primary" onPress={onComplete} disabled={!accepted}>
+        Continuar
+      </Button>
     </View>
   );
 }

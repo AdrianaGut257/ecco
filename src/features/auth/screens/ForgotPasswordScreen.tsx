@@ -7,17 +7,22 @@ import {
   ScrollView,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+import Button from "../../../components/ui/Button";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
   const [sent, setSent] = useState(false);
 
+  const isEmailValid = EMAIL_REGEX.test(email);
+  const showEmailError = emailTouched && email.length > 0 && !isEmailValid;
+
   const handleSend = () => {
-    // TODO: conectar con el servicio de auth (enviar correo de recuperación)
     setSent(true);
   };
 
@@ -40,7 +45,7 @@ export default function ForgotPasswordScreen() {
 
           {!sent ? (
             <>
-              <Text className="font-heading-semibold text-[28px] text-primaryNormalActive mb-1">
+              <Text className="font-heading-bold text-h2 text-primaryNormalActive mb-1">
                 ¿Olvidaste tu contraseña?
               </Text>
               <Text className="font-body text-sm text-primaryNormalHover mb-8">
@@ -54,28 +59,37 @@ export default function ForgotPasswordScreen() {
                 <TextInput
                   value={email}
                   onChangeText={setEmail}
+                  onBlur={() => setEmailTouched(true)}
                   placeholder="tucorreo@ejemplo.com"
                   placeholderTextColor="#A27556"
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  className="font-body border border-primaryLightActive rounded-field px-4 py-3 text-primaryNormalActive bg-white"
+                  className={`font-body border rounded-field px-4 py-3 text-primaryNormalActive bg-white ${
+                    showEmailError
+                      ? "border-destructive"
+                      : "border-primaryLightActive"
+                  }`}
+                  style={{ outlineStyle: "none" } as any}
                 />
+                {showEmailError && (
+                  <Text className="font-body text-xs text-destructive mt-1.5">
+                    Ingresa un correo válido.
+                  </Text>
+                )}
               </View>
 
-              <TouchableOpacity
-                className="bg-primaryNormal rounded-chip py-3.5 items-center"
+              <Button
+                variant="primary"
                 onPress={handleSend}
-                disabled={!email}
+                disabled={!isEmailValid}
               >
-                <Text className="font-heading-semibold text-base text-white">
-                  Enviar enlace
-                </Text>
-              </TouchableOpacity>
+                Enviar enlace
+              </Button>
             </>
           ) : (
             <>
-              <Text className="font-heading-semibold text-[28px] text-primaryNormalActive mb-1">
+              <Text className="font-heading-bold text-h2 text-primaryNormalActive mb-1">
                 Revisa tu correo
               </Text>
               <Text className="font-body text-sm text-primaryNormalHover mb-8">
@@ -83,14 +97,13 @@ export default function ForgotPasswordScreen() {
                 revisa la carpeta de spam.
               </Text>
 
-              <TouchableOpacity
-                className="bg-primaryNormal rounded-chip py-3.5 items-center mb-4"
+              <Button
+                variant="primary"
                 onPress={() => router.replace("/login")}
+                className="mb-4"
               >
-                <Text className="font-heading-semibold text-base text-white">
-                  Volver a iniciar sesión
-                </Text>
-              </TouchableOpacity>
+                Volver a iniciar sesión
+              </Button>
 
               <Pressable onPress={handleSend} className="items-center">
                 <Text className="font-body-medium text-sm text-primaryNormal">
