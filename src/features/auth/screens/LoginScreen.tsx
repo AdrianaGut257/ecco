@@ -40,10 +40,10 @@ export default function LoginScreen() {
         className="px-8"
       >
         <View className="flex-1 justify-center">
-          <Text className="font-body-medium text-xs text-primaryNormalHover tracking-[3px] mb-2 uppercase">
+          <Text className="font-heading-medium text-xs text-primaryNormalHover tracking-[3px] mb-2 uppercase">
             ECCO
           </Text>
-          <Text className="font-heading-semibold text-[28px] text-primaryNormalActive mb-1">
+          <Text className="font-heading-bold text-h2 text-primaryNormalActive mb-1">
             Bienvenida de nuevo
           </Text>
           <Text className="font-body text-sm text-primaryNormalHover mb-8">
@@ -122,7 +122,6 @@ export default function LoginScreen() {
             <Text className="font-body text-sm text-primaryNormalHover">
               ¿No tienes cuenta?{" "}
             </Text>
-
             <Pressable onPress={() => router.push("/register")}>
               <Text className="font-body-medium text-sm text-primaryNormal">
                 Regístrate

@@ -33,6 +33,10 @@ module.exports = {
         "heading-medium": ["Poppins-Medium"],
         "heading-semibold": ["Poppins-SemiBold"],
         "heading-bold": ["Poppins-Bold"],
+        body: ["Inter-Regular"],
+        "body-medium": ["Inter-Medium"],
+        "body-semibold": ["Inter-SemiBold"],
+        "body-bold": ["Inter-Bold"],
       },
       fontSize: {
         h1: ["36px", { lineHeight: "44px" }],
