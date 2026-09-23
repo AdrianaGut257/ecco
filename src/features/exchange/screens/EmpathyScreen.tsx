@@ -1,135 +1,59 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Text, View } from "react-native";
+import Button from "../../../components/ui/Button";
+
+const TIPS = [
+  {
+    icon: "heart-outline" as const,
+    text: "Sé curiosa y haz preguntas abiertas.",
+  },
+  {
+    icon: "time-outline" as const,
+    text: "No hay prisa, tienen 7 días para conocerse.",
+  },
+  {
+    icon: "shield-checkmark-outline" as const,
+    text: "Evita compartir datos sensibles al inicio.",
+  },
+];
 
 export default function EmpathyScreen({
   onComplete,
 }: {
   onComplete: () => void;
 }) {
-  const [seconds, setSeconds] = useState(30);
-  const [running, setRunning] = useState(false);
-  const [done, setDone] = useState(false);
-  const progress = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (!running) return;
-    if (seconds === 0) {
-      setDone(true);
-      setRunning(false);
-      return;
-    }
-    const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [running, seconds]);
-
-  useEffect(() => {
-    if (running) {
-      Animated.timing(progress, {
-        toValue: 1,
-        duration: 30000,
-        useNativeDriver: false,
-      }).start();
-    }
-  }, [running]);
-
-  const fmt = (s: number) => `00:${s.toString().padStart(2, "0")}`;
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Empatia</Text>
-      <View style={styles.instrBox}>
-        <Text style={styles.instrText}>
-          Cierra los ojos si deseas{"\n"}Sostén a esta persona en tu{"\n"}mente
-          durante 30 segundos
+    <View className="flex-1 bg-primaryClear px-8 pt-16 justify-between pb-8">
+      <View>
+        <View className="w-16 h-16 rounded-full bg-secondaryClear items-center justify-center mb-6">
+          <Ionicons name="sparkles" size={30} color="#9CAF88" />
+        </View>
+
+        <Text className="font-heading-bold text-h2 text-primaryNormalActive mb-2">
+          Antes de empezar
         </Text>
+        <Text className="font-body text-sm text-primaryNormalHover mb-8">
+          Unos consejos para una buena primera conversación.
+        </Text>
+
+        <View className="gap-4">
+          {TIPS.map((tip) => (
+            <View
+              key={tip.text}
+              className="flex-row items-start gap-3 bg-white rounded-card border border-primaryLight p-4"
+            >
+              <Ionicons name={tip.icon} size={20} color="#E8A77B" />
+              <Text className="font-body text-sm text-primaryNormalActive flex-1">
+                {tip.text}
+              </Text>
+            </View>
+          ))}
+        </View>
       </View>
-      <View style={styles.timerCircle}>
-        <Text style={styles.timerText}>{fmt(seconds)}</Text>
-      </View>
-      <View style={styles.controls}>
-        <TouchableOpacity onPress={() => setRunning((r) => !r)}>
-          <Text style={styles.controlIcon}>{running ? "⏸" : "▶️"}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setSeconds(30);
-            setRunning(false);
-            progress.setValue(0);
-          }}
-        >
-          <Text style={styles.controlIcon}>🔄</Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity
-        style={[styles.btn, !running && !done && styles.btnDisabled]}
-        disabled={!done}
-        onPress={onComplete}
-      >
-        <Text style={styles.btnText}>Iniciar Empatía 🤍</Text>
-      </TouchableOpacity>
-      {done && (
-        <TouchableOpacity style={styles.continueBtn} onPress={onComplete}>
-          <Text style={styles.continueTxt}>Continuar →</Text>
-        </TouchableOpacity>
-      )}
+
+      <Button variant="primary" onPress={onComplete}>
+        Empezar a conversar
+      </Button>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#EEF3FF",
-    alignItems: "center",
-    paddingTop: 32,
-    gap: 20,
-  },
-  title: { fontSize: 28, fontWeight: "900", color: "#222" },
-  instrBox: {
-    backgroundColor: "#7B9FFF",
-    borderRadius: 16,
-    padding: 20,
-    marginHorizontal: 24,
-  },
-  instrText: {
-    color: "white",
-    fontWeight: "700",
-    fontSize: 16,
-    textAlign: "center",
-    lineHeight: 26,
-  },
-  timerCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 4,
-    borderColor: "#2DC5A2",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  timerText: { fontSize: 28, fontWeight: "900", color: "#222" },
-  controls: { flexDirection: "row", gap: 24 },
-  controlIcon: { fontSize: 28 },
-  btn: {
-    backgroundColor: "#2DC5A2",
-    borderRadius: 30,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-  },
-  btnDisabled: { backgroundColor: "#AAA" },
-  btnText: { color: "white", fontWeight: "800", fontSize: 16 },
-  continueBtn: {
-    borderWidth: 1.5,
-    borderColor: "#555",
-    borderRadius: 30,
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-  },
-  continueTxt: { fontWeight: "700", fontSize: 15, color: "#333" },
-});

@@ -1,63 +1,104 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
-  StyleSheet,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
+
+type Message = { id: string; text: string; fromMe: boolean };
+
+const MOCK_MESSAGES: Message[] = [
+  { id: "1", text: "¡Hola! Vi que te gusta la naturaleza.", fromMe: false },
+  {
+    id: "2",
+    text: "¡Sí! El fin de semana pasado hice una caminata.",
+    fromMe: true,
+  },
+];
 
 export default function ComposeScreen({
   onComplete,
 }: {
   onComplete: () => void;
 }) {
-  const [msg, setMsg] = useState("");
+  const [messages, setMessages] = useState<Message[]>(MOCK_MESSAGES);
+  const [text, setText] = useState("");
+
+  const send = () => {
+    if (!text.trim()) return;
+    setMessages((prev) => [
+      ...prev,
+      { id: Date.now().toString(), text: text.trim(), fromMe: true },
+    ]);
+    setText("");
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Escribe tu mensaje</Text>
-      <Text style={styles.sub}>Dani58 lo recibirá de forma anónima</Text>
-      <TextInput
-        style={styles.input}
-        multiline
-        placeholder="Escribe algo con empatía..."
-        value={msg}
-        onChangeText={setMsg}
-        maxLength={200}
+    <KeyboardAvoidingView
+      className="flex-1 bg-primaryClear"
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View className="items-center py-3 border-b border-primaryLight">
+        <View className="bg-lavender/30 px-3 py-1 rounded-chip">
+          <Text className="font-body-medium text-xs text-primaryNormalActive">
+            Semana 1 · Día 1
+          </Text>
+        </View>
+      </View>
+
+      <FlatList
+        data={messages}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ padding: 16, gap: 8 }}
+        renderItem={({ item }) => (
+          <View
+            className={`max-w-[80%] px-3 py-2 rounded-2xl ${
+              item.fromMe
+                ? "self-end bg-primaryNormal rounded-br-md"
+                : "self-start bg-white border border-primaryLight rounded-bl-md"
+            }`}
+          >
+            <Text
+              className={`font-body text-sm ${
+                item.fromMe ? "text-white" : "text-primaryNormalActive"
+              }`}
+            >
+              {item.text}
+            </Text>
+          </View>
+        )}
       />
-      <Text style={styles.count}>{msg.length}/200</Text>
-      <TouchableOpacity
-        style={[styles.btn, !msg.trim() && styles.btnDisabled]}
-        disabled={!msg.trim()}
-        onPress={onComplete}
-      >
-        <Text style={styles.btnText}>Enviar 💌</Text>
-      </TouchableOpacity>
-    </View>
+
+      <View className="flex-row items-center gap-2 px-4 py-3 border-t border-primaryLight bg-white">
+        <Pressable className="w-8 h-8 rounded-full bg-secondaryClear items-center justify-center">
+          <Ionicons name="add" size={20} color="#9CAF88" />
+        </Pressable>
+        <TextInput
+          value={text}
+          onChangeText={setText}
+          placeholder="Escribe algo…"
+          placeholderTextColor="#A27556"
+          className="flex-1 font-body text-sm text-primaryNormalActive border border-primaryLightActive rounded-chip px-4 py-2"
+          style={{ outlineStyle: "none" } as any}
+        />
+        <Pressable
+          onPress={send}
+          className="w-9 h-9 rounded-full bg-primaryNormal items-center justify-center"
+        >
+          <Ionicons name="send" size={16} color="#FFFFFF" />
+        </Pressable>
+      </View>
+
+      <Pressable onPress={onComplete} className="items-center py-3">
+        <Text className="font-body-medium text-xs text-primaryNormalHover">
+          Volver al inicio
+        </Text>
+      </Pressable>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "white", padding: 24, gap: 16 },
-  title: { fontSize: 26, fontWeight: "900", color: "#222" },
-  sub: { fontSize: 13, color: "#888" },
-  input: {
-    borderWidth: 1.5,
-    borderColor: "#DDD",
-    borderRadius: 16,
-    padding: 16,
-    fontSize: 15,
-    minHeight: 140,
-    textAlignVertical: "top",
-  },
-  count: { fontSize: 12, color: "#AAA", textAlign: "right" },
-  btn: {
-    backgroundColor: "#2DC5A2",
-    borderRadius: 30,
-    paddingVertical: 16,
-    alignItems: "center",
-  },
-  btnDisabled: { backgroundColor: "#CCC" },
-  btnText: { color: "white", fontWeight: "800", fontSize: 16 },
-});

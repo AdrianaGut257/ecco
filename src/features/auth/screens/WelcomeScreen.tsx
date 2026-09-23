@@ -74,7 +74,7 @@ export default function WelcomeScreen() {
         variant="white"
         icon="arrow-forward"
         iconPosition="right"
-        onPress={() => router.replace("/login")}
+        onPress={() => router.replace("/home")}
       >
         Continuar
       </Button>
