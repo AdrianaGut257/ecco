@@ -1,46 +1,156 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Button from "../../../components/ui/Button";
 
-const CATEGORIES: { title: string; items: string[] }[] = [
+export const CATEGORIES: {
+  title: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  items: string[];
+}[] = [
   {
-    title: "Cultura y entretenimiento",
+    title: "Entretenimiento",
+    icon: "film-outline",
     items: [
       "Películas",
-      "Videojuegos",
       "Series",
-      "Teatro",
-      "Lectura",
-      "Arte y pintura",
-      "Música",
+      "Cómics",
+      "Anime",
+      "Videojuegos",
+      "Podcasts",
+      "Streaming",
     ],
   },
   {
-    title: "Comida y bebida",
-    items: ["Cocina", "Vinos", "Repostería", "Café", "Té"],
+    title: "Música",
+    icon: "musical-notes-outline",
+    items: [
+      "Pop",
+      "Rock",
+      "Reguetón",
+      "Música clásica",
+      "Electrónica",
+      "K-pop",
+      "Hip hop",
+      "Jazz",
+      "Música latina",
+      "Otro",
+    ],
   },
   {
-    title: "Naturaleza y aire libre",
+    title: "Cultura",
+    icon: "book-outline",
     items: [
-      "Senderismo",
-      "Jardinería",
-      "Camping",
-      "Playa",
-      "Montañismo",
-      "Astronomía",
+      "Historia",
+      "Literatura",
+      "Idiomas",
+      "Tradiciones",
+      "Electrónica",
+      "Museos",
+      "Teatro",
+    ],
+  },
+  {
+    title: "Cocina y gastronomía",
+    icon: "restaurant-outline",
+    items: [
+      "Comida vegana",
+      "Gastronomía internacional",
+      "Comida tradicional",
+      "Comida rápida",
+      "Postres",
+      "Degustación de alimentos",
+    ],
+  },
+
+  {
+    title: "Bebidas",
+    icon: "cafe-outline",
+    items: ["Café", "Té", "Vinos", "Cócteles", "Bebidas naturales", "Batidos"],
+  },
+  {
+    title: "Deportes",
+    icon: "trophy-outline",
+    items: [
+      "Fútbol",
+      "Básquetbol",
+      "Voleibol",
+      "Natación",
+      "Tenis",
+      "Golf",
+      "Boxeo",
+      "Artes marciales",
+      "Atletismo",
       "Ciclismo",
     ],
   },
+
   {
-    title: "Bienestar y estilo de vida",
-    items: ["Yoga", "Gimnasio", "Meditación", "Viajes"],
+    title: "Actividades al aire libre",
+    icon: "walk-outline",
+    items: [
+      "Senderismo",
+      "Montañismo",
+      "Escalada",
+      "Camping",
+      "Trekking",
+      "Surf",
+      "Paseos en bicicleta",
+    ],
+  },
+
+  {
+    title: "Estilo de vida",
+    icon: "heart-outline",
+    items: [
+      "Moda",
+      "Belleza",
+      "Cocina",
+      "Repostería",
+      "Decoración",
+      "Jardinería",
+      "Viajes",
+    ],
+  },
+
+  {
+    title: "Bienestar",
+    icon: "leaf-outline",
+    items: [
+      "Ejercicio",
+      "Yoga",
+      "Salud",
+      "Meditación",
+      "Relajación",
+      "Desarrollo personal",
+      "Cuidado personal",
+    ],
+  },
+
+  {
+    title: "Creatividad",
+    icon: "bulb-outline",
+    items: ["Fotografía", "Escritura", "Dibujo", "Manualidades", "Diseño"],
+  },
+
+  {
+    title: "Social y comunidad",
+    icon: "people-outline",
+    items: [
+      "Familia",
+      "Amistad",
+      "Voluntariado",
+      "Eventos sociales",
+      "Emprendimiento",
+      "Mascotas",
+    ],
   },
 ];
 
 export default function InterestsScreen({
   onComplete,
 }: {
-  onComplete: () => void;
+  onComplete: (selected: string[]) => void;
 }) {
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -65,9 +175,12 @@ export default function InterestsScreen({
 
         {CATEGORIES.map((category) => (
           <View key={category.title} className="mb-6">
-            <Text className="font-heading-semibold text-h6 text-primaryNormalActive mb-3">
-              {category.title}
-            </Text>
+            <View className="flex-row items-center gap-2 mb-3">
+              <Ionicons name={category.icon} size={18} color="#E8A77B" />
+              <Text className="font-heading-semibold text-h6 text-primaryNormalActive">
+                {category.title}
+              </Text>
+            </View>
             <View className="bg-white rounded-card border border-primaryLight p-4 flex-row flex-wrap gap-2.5">
               {category.items.map((item) => {
                 const active = selected.includes(item);
@@ -99,14 +212,14 @@ export default function InterestsScreen({
 
       <View className="px-6 pb-8 pt-3 bg-primaryClear">
         <Text className="font-body text-xs text-primaryNormalHover text-center mb-3">
-          {selected.length === 0
-            ? "Elige al menos un interés para continuar."
+          {selected.length < 3
+            ? "Elige al menos tres intereses para continuar."
             : `${selected.length} interés${selected.length > 1 ? "es" : ""} seleccionado${selected.length > 1 ? "s" : ""}`}
         </Text>
         <Button
           variant="primary"
-          onPress={onComplete}
-          disabled={selected.length === 0}
+          onPress={() => onComplete(selected)}
+          disabled={selected.length < 3}
         >
           Siguiente
         </Button>

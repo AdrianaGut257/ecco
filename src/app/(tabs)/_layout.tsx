@@ -10,15 +10,11 @@ export default function TabsLayout() {
         headerStyle: { backgroundColor: "#FDF6F2" },
         headerShadowVisible: false,
         headerTitle: () => (
-          <Text className="font-heading-bold text-primaryNormalActive text-base tracking-[2px]">
+          <Text className="font-heading-bold text-primaryNormalActive text-h4 tracking-[2px]">
             ECCO
           </Text>
         ),
-        headerLeft: () => (
-          <Pressable hitSlop={8} className="ml-4">
-            <Ionicons name="menu-outline" size={24} color="#8E664B" />
-          </Pressable>
-        ),
+
         tabBarActiveTintColor: "#E8A77B",
         tabBarInactiveTintColor: "#ECB691",
         tabBarStyle: {
