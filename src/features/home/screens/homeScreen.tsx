@@ -5,7 +5,7 @@ import { Pressable, Text, View } from "react-native";
 import Button from "../../../components/ui/Button";
 
 const MOCK_HAS_CONNECTION = true;
-const MOCK_CONNECTION_NAME = "Naty09";
+const MOCK_CONNECTION_NAME = "Alguien";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -13,12 +13,6 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-primaryClear px-6 pt-6">
-      <View className="flex-row justify-end mb-6">
-        <Pressable onPress={() => router.push("/(tabs)/settings")} hitSlop={8}>
-          <Ionicons name="person-circle-outline" size={28} color="#A27556" />
-        </Pressable>
-      </View>
-
       <View className="flex-1 justify-center">
         {hasConnection ? (
           <View className="bg-white rounded-card border-2 border-primaryNormal p-7 items-center">

@@ -1,162 +1,95 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Button from "../../../components/ui/Button";
 
-export const CATEGORIES: {
+const CATEGORIES: {
   title: string;
   icon: keyof typeof Ionicons.glyphMap;
   items: string[];
 }[] = [
   {
-    title: "Entretenimiento",
+    title: "Cultura y entretenimiento",
     icon: "film-outline",
     items: [
       "Películas",
       "Series",
-      "Cómics",
-      "Anime",
-      "Videojuegos",
-      "Podcasts",
-      "Streaming",
-    ],
-  },
-  {
-    title: "Música",
-    icon: "musical-notes-outline",
-    items: [
-      "Pop",
-      "Rock",
-      "Reguetón",
-      "Música clásica",
-      "Electrónica",
-      "K-pop",
-      "Hip hop",
-      "Jazz",
-      "Música latina",
-      "Otro",
-    ],
-  },
-  {
-    title: "Cultura",
-    icon: "book-outline",
-    items: [
-      "Historia",
-      "Literatura",
-      "Idiomas",
-      "Tradiciones",
-      "Museos",
+      "Música",
+      "Lectura",
       "Teatro",
+      "Videojuegos",
+      "Arte y pintura",
     ],
   },
   {
-    title: "Cocina y gastronomía",
+    title: "Comida y bebida",
     icon: "restaurant-outline",
-    items: [
-      "Comida vegana",
-      "Gastronomía internacional",
-      "Comida tradicional",
-      "Comida rápida",
-      "Postres",
-      "Degustación de alimentos",
-    ],
-  },
-
-  {
-    title: "Bebidas",
-    icon: "cafe-outline",
-    items: ["Café", "Té", "Vinos", "Cócteles", "Bebidas naturales", "Batidos"],
+    items: ["Cocina", "Repostería", "Café", "Vinos", "Té"],
   },
   {
-    title: "Deportes",
-    icon: "trophy-outline",
+    title: "Naturaleza y aire libre",
+    icon: "leaf-outline",
     items: [
-      "Fútbol",
-      "Básquetbol",
-      "Voleibol",
-      "Natación",
-      "Tenis",
-      "Golf",
-      "Boxeo",
-      "Artes marciales",
-      "Atletismo",
+      "Senderismo",
+      "Camping",
+      "Jardinería",
+      "Playa",
+      "Montañismo",
       "Ciclismo",
     ],
   },
-
   {
-    title: "Actividades al aire libre",
-    icon: "walk-outline",
-    items: [
-      "Senderismo",
-      "Montañismo",
-      "Escalada",
-      "Camping",
-      "Trekking",
-      "Surf",
-      "Paseos en bicicleta",
-    ],
-  },
-
-  {
-    title: "Estilo de vida",
+    title: "Bienestar y estilo de vida",
     icon: "heart-outline",
-    items: [
-      "Moda",
-      "Belleza",
-      "Cocina",
-      "Repostería",
-      "Decoración",
-      "Jardinería",
-      "Viajes",
-    ],
+    items: ["Yoga", "Meditación", "Gimnasio", "Running", "Danza", "Viajes"],
   },
-
-  {
-    title: "Bienestar",
-    icon: "leaf-outline",
-    items: [
-      "Ejercicio",
-      "Yoga",
-      "Salud",
-      "Meditación",
-      "Relajación",
-      "Desarrollo personal",
-      "Cuidado personal",
-    ],
-  },
-
   {
     title: "Creatividad",
-    icon: "bulb-outline",
+    icon: "brush-outline",
     items: ["Fotografía", "Escritura", "Dibujo", "Manualidades", "Diseño"],
   },
-
   {
-    title: "Social y comunidad",
+    title: "Social y aprendizaje",
     icon: "people-outline",
     items: [
-      "Familia",
-      "Amistad",
       "Voluntariado",
-      "Eventos sociales",
+      "Idiomas",
+      "Historia",
+      "Ciencia",
       "Emprendimiento",
       "Mascotas",
     ],
   },
 ];
 
-export default function InterestsScreen({
-  onComplete,
-}: {
-  onComplete: (selected: string[]) => void;
-}) {
-  const [selected, setSelected] = useState<string[]>([]);
+// TODO: reemplazar con los intereses reales guardados del usuario
+const MOCK_SAVED_INTERESTS = [
+  "Senderismo",
+  "Cine de autor",
+  "Cocina",
+  "Fotografía",
+];
+
+export default function EditInterestsScreen() {
+  const router = useRouter();
+  const [selected, setSelected] = useState<string[]>(MOCK_SAVED_INTERESTS);
 
   const toggle = (item: string) => {
     setSelected((prev) =>
       prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item],
     );
+  };
+
+  const handleSave = () => {
+    // TODO: guardar `selected` en el backend/estado global
+    router.back();
   };
 
   return (
@@ -165,11 +98,21 @@ export default function InterestsScreen({
         className="flex-1 px-6 pt-16"
         contentContainerStyle={{ paddingBottom: 24 }}
       >
+        <Pressable
+          onPress={() => router.back()}
+          className="flex-row items-center gap-1.5 mb-6"
+        >
+          <Ionicons name="arrow-back" size={18} color="#8E664B" />
+          <Text className="font-body-medium text-sm text-primaryNormalHover">
+            Volver
+          </Text>
+        </Pressable>
+
         <Text className="font-heading-bold text-h1 text-primaryNormalActive mb-1">
-          ¿Qué te gusta?
+          Editar intereses
         </Text>
         <Text className="font-body text-sm text-primaryNormalHover mb-6">
-          Elige los temas que quieres compartir.
+          Actualiza los temas que quieres compartir.
         </Text>
 
         {CATEGORIES.map((category) => (
@@ -188,12 +131,15 @@ export default function InterestsScreen({
                     key={item}
                     onPress={() => toggle(item)}
                     activeOpacity={0.8}
-                    className={`px-4 py-2.5 rounded-chip border ${
+                    className={`flex-row items-center gap-1.5 px-4 py-2.5 rounded-chip border ${
                       active
                         ? "bg-primaryNormal border-primaryNormal"
                         : "bg-primaryClear border-primaryLightActive"
                     }`}
                   >
+                    {active && (
+                      <Ionicons name="checkmark" size={13} color="#FFFFFF" />
+                    )}
                     <Text
                       className={`font-body-medium text-sm ${
                         active ? "text-white" : "text-primaryNormalHover"
@@ -211,16 +157,16 @@ export default function InterestsScreen({
 
       <View className="px-6 pb-8 pt-3 bg-primaryClear">
         <Text className="font-body text-xs text-primaryNormalHover text-center mb-3">
-          {selected.length < 3
-            ? "Elige al menos tres intereses para continuar."
-            : `${selected.length} interés${selected.length > 1 ? "es" : ""} seleccionado${selected.length > 1 ? "s" : ""}`}
+          {selected.length} interés{selected.length !== 1 ? "es" : ""}{" "}
+          seleccionado
+          {selected.length !== 1 ? "s" : ""}
         </Text>
         <Button
           variant="primary"
-          onPress={() => onComplete(selected)}
-          disabled={selected.length < 3}
+          onPress={handleSave}
+          disabled={selected.length === 0}
         >
-          Siguiente
+          Guardar cambios
         </Button>
       </View>
     </View>
