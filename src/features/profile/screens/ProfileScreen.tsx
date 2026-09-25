@@ -10,7 +10,7 @@ const OPTIONS: {
   label: string;
   route: string;
 }[] = [
-  { icon: "eye-outline", label: "Mis intereses", route: "/onboarding" },
+  { icon: "eye-outline", label: "Mis intereses", route: "/editInterests" },
   { icon: "create-outline", label: "Editar avatar", route: "/avatarEditor" },
   {
     icon: "shield-checkmark-outline",
