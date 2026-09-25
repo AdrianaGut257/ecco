@@ -45,7 +45,6 @@ export const CATEGORIES: {
       "Literatura",
       "Idiomas",
       "Tradiciones",
-      "Electrónica",
       "Museos",
       "Teatro",
     ],

@@ -11,7 +11,7 @@ const OPTIONS: {
   route: string;
 }[] = [
   { icon: "eye-outline", label: "Mis intereses", route: "/onboarding" },
-  { icon: "create-outline", label: "Editar avatar", route: "/onboarding" },
+  { icon: "create-outline", label: "Editar avatar", route: "/avatarEditor" },
   {
     icon: "shield-checkmark-outline",
     label: "Privacidad y seguridad",
