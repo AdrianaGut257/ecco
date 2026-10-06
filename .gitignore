@@ -1,43 +1,139 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+.env
+.env.*
+!.env.example
 
-# dependencies
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+ENV/
+
+*.egg
+*.egg-info/
+dist/
+build/
+develop-eggs/
+.eggs/
+
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+.ruff_cache/
+
+.ipynb_checkpoints/
+
+*.log
+
 node_modules/
 
-# Expo
-.expo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.npm/
+.yarn/
+.pnpm-store/
+
 dist/
+build/
+.expo/
+.expo-shared/
 web-build/
-expo-env.d.ts
 
-# Native
-.kotlin/
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
 .metro-health-check*
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
+android/.gradle/
+android/.idea/
+android/local.properties
+android/**/build/
+android/captures/
+android/.cxx/
+android/.externalNativeBuild/
 
-# macOS
-.DS_Store
-*.pem
+ios/Pods/
+ios/build/
+ios/.xcode.env.local
+ios/DerivedData/
+ios/*.xcworkspace
+ios/xcuserdata/
 
-# local env files
-.env*.local
-
-# typescript
 *.tsbuildinfo
 
-app-example
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
 
-# generated native folders
-/ios
-/android
+.idea/
+*.iml
+*.iws
+*.ipr
+
+.claude/
+.claude.json
+CLAUDE.md
+claude.md
+
+.cursor/
+.cursorrules
+.windsurf/
+
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+*~
+
+*.sqlite
+*.sqlite3
+*.db
+
+*.dump
+*.sql.gz
+
+docker-compose.override.yml
+docker-compose.local.yml
+
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+firebase-service-account.json
+service-account.json
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.orig
+
+logs/
+*.log
+
+local/
+tmp/
+temp/
+
+*.vscode
