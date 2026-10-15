@@ -156,7 +156,7 @@ export default function InterestDetailsScreen({
                           placeholder={detail.placeholder}
                           placeholderTextColor={colors.primary["normal-hover"]}
                           maxLength={60}
-                          className="flex-1 rounded-field border border-primary-light-active bg-white px-3 py-2 font-ecco text-body3 text-primary-dark-active"
+                          className="flex-1 rounded-field border border-primary-light-active bg-white px-3 py-2 font-body text-body3 text-primary-dark-active"
                           style={{ outlineStyle: "none" } as object}
                         />
                         <IconButton
@@ -182,7 +182,7 @@ export default function InterestDetailsScreen({
                 placeholderTextColor={colors.primary["normal-hover"]}
                 multiline
                 maxLength={120}
-                className="min-h-[42px] rounded-field border border-primary-light-active bg-white px-3 py-2.5 font-ecco text-body3 text-primary-dark-active"
+                className="min-h-[42px] rounded-field border border-primary-light-active bg-white px-3 py-2.5 font-body text-body3 text-primary-dark-active"
                 style={{ outlineStyle: "none" } as object}
               />
             )}

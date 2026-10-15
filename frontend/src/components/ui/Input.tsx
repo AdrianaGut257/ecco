@@ -63,7 +63,7 @@ const Input = forwardRef<TextInput, Props>(function Input(
             setFocused(false);
             onBlur?.(e);
           }}
-          className="flex-1 py-3 font-ecco text-body2 text-primary-dark-active"
+          className="flex-1 py-3 font-body text-body2 text-primary-dark-active"
           style={{ outlineStyle: "none" } as object}
           {...rest}
         />

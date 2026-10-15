@@ -118,7 +118,7 @@ export default function ComposeScreen({ match, onBack, onFinished }: Props) {
               multiline
               onSubmitEditing={submit}
               accessibilityLabel="Escribe un mensaje"
-              className="max-h-24 flex-1 py-2.5 font-ecco text-body3 text-primary-dark-active"
+              className="max-h-24 flex-1 py-2.5 font-body text-body3 text-primary-dark-active"
               style={{ outlineStyle: "none" } as object}
             />
             <Pressable
