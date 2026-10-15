@@ -1,60 +1,141 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
-import Button from "../../../components/ui/Button";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Plant from "../../../components/garden/plant";
+import AppHeader from "../../../components/layout/appHeader";
+import Scenery from "../../../components/layout/scenery";
+import Banner from "../../../components/ui/banner";
+import Button from "../../../components/ui/button";
+import Card from "../../../components/ui/card";
+import Text from "../../../components/ui/text";
+import { colors } from "../../../constants/colors";
+import { MOOD_REPLIES, MoodId } from "../../../constants/emotions";
+import { stageForDay } from "../../../constants/plant";
+import { useTimeOfDay } from "../../../hooks/useTimeOfDay";
+import { friendlyError } from "../../../services/api";
+import { moodService } from "../../../services/moodService";
+import { useActiveMatch } from "../../exchange/hooks/useActiveMatch";
+import EmotionSelector from "../components/emotionSelector";
 
-const MOCK_HAS_CONNECTION = true;
-const MOCK_CONNECTION_NAME = "Alguien";
+interface ActionProps {
+  title: string;
+  caption: string;
+  action: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  onPress: () => void;
+}
+
+function ActionCard({ title, caption, action, icon, onPress }: ActionProps) {
+  return (
+    <Card tone="green" className="flex-row items-center justify-between">
+      <View className="flex-1 pr-3">
+        <Text variant="subtitle2" className="text-secondary-dark-active">
+          {title}
+        </Text>
+        <Text variant="caption1" className="mb-3 text-secondary-dark-hover">
+          {caption}
+        </Text>
+        <Button
+          color="secondary"
+          size="small"
+          fullWidth={false}
+          icon="arrow-forward"
+          onPress={onPress}
+        >
+          {action}
+        </Button>
+      </View>
+      <View className="h-14 w-14 items-center justify-center rounded-full bg-white/70">
+        <Ionicons name={icon} size={26} color={colors.secondary.dark} />
+      </View>
+    </Card>
+  );
+}
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [hasConnection] = useState(MOCK_HAS_CONNECTION);
+  const time = useTimeOfDay();
+  const { match } = useActiveMatch();
+  const [mood, setMood] = useState<MoodId | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const selectMood = async (id: MoodId) => {
+    setMood(id);
+    setSaving(true);
+    setError(null);
+    try {
+      await moodService.save(id);
+    } catch (e) {
+      setError(friendlyError(e));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
-    <View className="flex-1 bg-primaryClear px-6 pt-6">
-      <View className="flex-1 justify-center">
-        {hasConnection ? (
-          <View className="bg-white rounded-card border-2 border-primaryNormal p-7 items-center">
-            <View className="w-20 h-20 rounded-full bg-primaryLight items-center justify-center mb-4">
-              <Ionicons name="person" size={40} color="#E8A77B" />
+    <Scenery time={time}>
+      <SafeAreaView className="flex-1" edges={["top"]}>
+        <AppHeader showSettings={false} />
+        <View className="items-center pt-4">
+          <Plant stage={match ? stageForDay(match.day) : 1} size={150} />
+        </View>
+
+        <View className="flex-1 justify-end px-6 pb-4">
+          <View className="gap-3 rounded-card bg-white/80 p-4">
+            <View>
+              <Text
+                variant="subtitle2"
+                className="text-center text-primary-normal-active"
+              >
+                ¿Cómo te sientes?
+              </Text>
+              <Text
+                variant="caption1"
+                className="mb-3 text-center text-primary-dark-hover"
+              >
+                {mood ? MOOD_REPLIES[mood] : "Cuéntanos cómo estás hoy"}
+              </Text>
+              <EmotionSelector
+                value={mood}
+                onSelect={selectMood}
+                disabled={saving}
+              />
             </View>
-            <Text className="font-heading-semibold text-h4 text-primaryNormalActive mb-1">
-              Tu conexión activa
-            </Text>
-            <Text className="font-body text-sm text-primaryNormalHover text-center mb-6">
-              {MOCK_CONNECTION_NAME} está esperando tu mensaje.
-            </Text>
-            <Button
-              variant="primary"
-              icon="chatbubble-outline"
-              onPress={() => router.push("/(tabs)/exchange")}
-            >
-              Abrir chat
-            </Button>
+            {error && (
+              <Banner
+                tone="error"
+                message={error}
+                actionLabel="Reintentar"
+                onAction={() => mood && selectMood(mood)}
+              />
+            )}
           </View>
-        ) : (
-          <View className="items-center px-4">
-            <View className="w-20 h-20 rounded-full bg-secondaryClear items-center justify-center mb-5">
-              <Ionicons name="search-outline" size={36} color="#9CAF88" />
-            </View>
-            <Text className="font-heading-semibold text-h4 text-primaryNormalActive text-center mb-1">
-              Aún no tienes una conexión
-            </Text>
-            <Text className="font-body text-sm text-primaryNormalHover text-center mb-6 max-w-[260px]">
-              Cuando estés lista, busca a alguien con quien conversar esta
-              semana.
-            </Text>
-            <Button
-              variant="primary"
-              icon="search-outline"
+
+          <View className="mt-3 gap-3">
+            <ActionCard
+              title="Conversa"
+              caption={
+                match
+                  ? `${match.partner.username} te está esperando`
+                  : "Comienza una nueva conexión"
+              }
+              action={match ? "Continuar" : "Iniciar"}
+              icon="chatbubble-ellipses-outline"
               onPress={() => router.push("/(tabs)/exchange")}
-            >
-              Buscar mi conexión
-            </Button>
+            />
+            <ActionCard
+              title="Ver jardín"
+              caption="Cuida lo que has hecho crecer"
+              action="Regar"
+              icon="water-outline"
+              onPress={() => router.push("/(tabs)/garden")}
+            />
           </View>
-        )}
-      </View>
-    </View>
+        </View>
+      </SafeAreaView>
+    </Scenery>
   );
 }

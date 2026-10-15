@@ -1,2 +1,2 @@
-import OnboardingFlow from "../features/onboarding/screens/OnboardingFlow";
+import OnboardingFlow from "../features/onboarding/screens/onboardingFlow";
 export default OnboardingFlow;

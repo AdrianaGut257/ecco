@@ -1,49 +1,83 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import AvatarScreen from "./AvatarScreen";
-import InterestDetailsScreen from "./InterestDetailsScreen";
-import InterestsScreen from "./InterestsScreen";
-import OnboardingSlidesScreen from "./OnboardingSlidesScreen";
-import TermsScreen from "./TermsScreen";
+import { friendlyError } from "../../../services/api";
+import { authService } from "../../../services/authService";
+import { sessionStore } from "../../../store/session";
+import AvatarScreen from "./avatarScreen";
+import InterestDetailsScreen from "./interestDetailsScreen";
+import InterestsScreen from "./interestsScreen";
+import OnboardingSlidesScreen from "./onboardingSlidesScreen";
+import TermsScreen from "./termsScreen";
+
+type Step = "terms" | "avatar" | "interests" | "details" | "slides";
 
 export default function OnboardingFlow() {
-  const [step, setStep] = useState<
-    "terms" | "avatar" | "interests" | "details" | "slides"
-  >("terms");
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const router = useRouter();
+  const [step, setStep] = useState<Step>("terms");
+  const [avatarId, setAvatarId] = useState("a1");
+  const [username, setUsername] = useState("");
+  const [interests, setInterests] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (step === "terms") {
-    return <TermsScreen onComplete={() => setStep("avatar")} />;
+  const finish = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      await authService.saveProfile(avatarId, interests);
+      sessionStore.updateUser({
+        avatarId,
+        interests,
+        ...(username ? { username } : {}),
+      });
+      router.replace("/(tabs)/home");
+    } catch (e) {
+      setError(friendlyError(e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  switch (step) {
+    case "terms":
+      return <TermsScreen onComplete={() => setStep("avatar")} />;
+    case "avatar":
+      return (
+        <AvatarScreen
+          onBack={() => setStep("terms")}
+          onComplete={(id, name) => {
+            setAvatarId(id);
+            setUsername(name);
+            setStep("interests");
+          }}
+        />
+      );
+    case "interests":
+      return (
+        <InterestsScreen
+          initialSelected={interests}
+          onBack={() => setStep("avatar")}
+          onComplete={(selected) => {
+            setInterests(selected);
+            setStep("details");
+          }}
+        />
+      );
+    case "details":
+      return (
+        <InterestDetailsScreen
+          selectedInterests={interests}
+          onBack={() => setStep("interests")}
+          onComplete={() => setStep("slides")}
+        />
+      );
+    default:
+      return (
+        <OnboardingSlidesScreen
+          loading={saving}
+          error={error}
+          onComplete={finish}
+        />
+      );
   }
-
-  if (step === "avatar") {
-    return <AvatarScreen onComplete={() => setStep("interests")} />;
-  }
-
-  if (step === "interests") {
-    return (
-      <InterestsScreen
-        initialSelected={selectedInterests}
-        onComplete={(selected) => {
-          setSelectedInterests(selected);
-          setStep("details");
-        }}
-      />
-    );
-  }
-
-  if (step === "details") {
-    return (
-      <InterestDetailsScreen
-        selectedInterests={selectedInterests}
-        onBack={() => setStep("interests")}
-        onComplete={() => setStep("slides")}
-      />
-    );
-  }
-
-  return (
-    <OnboardingSlidesScreen onComplete={() => router.replace("/(tabs)/home")} />
-  );
 }

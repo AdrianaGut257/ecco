@@ -2,114 +2,174 @@ import { Ionicons } from "@expo/vector-icons";
 import { ComponentProps, ReactNode } from "react";
 import {
   ActivityIndicator,
-  Text,
-  TouchableOpacity,
-  TouchableOpacityProps,
+  Pressable,
+  PressableProps,
+  View,
 } from "react-native";
+import { colors } from "../../constants/colors";
+import Text from "./text";
 
-type Variant = "primary" | "secondary" | "outline" | "white";
-type Size = "sm" | "md" | "lg";
-type IconName = ComponentProps<typeof Ionicons>["name"];
+export type ButtonColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "error"
+  | "white";
+type Variant = "filled" | "outlined";
+type Size = "big" | "small";
+export type IconName = ComponentProps<typeof Ionicons>["name"];
 
-interface ButtonProps extends TouchableOpacityProps {
+interface ButtonProps extends Omit<PressableProps, "children"> {
   children: ReactNode;
+  color?: ButtonColor;
   variant?: Variant;
   size?: Size;
   loading?: boolean;
-  disabled?: boolean;
   icon?: IconName;
   iconPosition?: "left" | "right";
+  fullWidth?: boolean;
+  className?: string;
 }
 
-const containerStyles: Record<Variant, string> = {
-  primary: "bg-primaryNormal",
-  secondary: "bg-secondaryNormal",
-  outline: "bg-transparent border border-primaryNormal",
-  white: "bg-white",
+const FILLED: Record<ButtonColor, string> = {
+  primary:
+    "bg-primary-normal hover:bg-primary-normal-hover active:bg-primary-normal-active",
+  secondary:
+    "bg-secondary-normal hover:bg-secondary-normal-hover active:bg-secondary-normal-active",
+  tertiary:
+    "bg-tertiary-normal hover:bg-tertiary-normal-hover active:bg-tertiary-normal-active",
+  error:
+    "bg-error-normal hover:bg-error-normal-hover active:bg-error-normal-active",
+  white: "bg-white hover:bg-primary-light-hover active:bg-primary-light-active",
 };
 
-const textStyles: Record<Variant, string> = {
-  primary: "text-white",
-  secondary: "text-white",
-  outline: "text-primaryNormal",
-  white: "text-primaryNormal",
-};
-
-const disabledContainerStyles: Record<Variant, string> = {
-  primary: "bg-primaryLightActive",
-  secondary: "bg-secondaryLightActive",
-  outline: "bg-transparent border border-primaryLightActive",
+const FILLED_DISABLED: Record<ButtonColor, string> = {
+  primary: "bg-primary-light-active",
+  secondary: "bg-secondary-light-active",
+  tertiary: "bg-tertiary-light-active",
+  error: "bg-error-light-active",
   white: "bg-white/60",
 };
 
-const iconColors: Record<Variant, string> = {
-  primary: "#FFFFFF",
-  secondary: "#FFFFFF",
-  outline: "#E8A77B",
-  white: "#E8A77B",
+const OUTLINED: Record<ButtonColor, string> = {
+  primary:
+    "border border-primary-normal hover:bg-primary-light-hover active:bg-primary-light-active",
+  secondary:
+    "border border-secondary-normal hover:bg-secondary-light-hover active:bg-secondary-light-active",
+  tertiary:
+    "border border-tertiary-normal hover:bg-tertiary-light-hover active:bg-tertiary-light-active",
+  error:
+    "border border-error-normal hover:bg-error-light-hover active:bg-error-light-active",
+  white: "border border-white active:bg-white/20",
 };
 
-const sizeStyles: Record<Size, string> = {
-  sm: "py-2.5 px-4",
-  md: "py-3.5 px-6",
-  lg: "py-4 px-8",
+const OUTLINED_DISABLED: Record<ButtonColor, string> = {
+  primary: "border border-primary-light-active",
+  secondary: "border border-secondary-light-active",
+  tertiary: "border border-tertiary-light-active",
+  error: "border border-error-light-active",
+  white: "border border-white/50",
 };
 
-const textSizeStyles: Record<Size, string> = {
-  sm: "text-button text-sm",
-  md: "text-button",
-  lg: "text-button text-lg",
+const LABEL_FILLED: Record<ButtonColor, string> = {
+  primary: "text-white",
+  secondary: "text-white",
+  tertiary: "text-white",
+  error: "text-white",
+  white: "text-primary-normal-active",
 };
 
-const iconSizes: Record<Size, number> = {
-  sm: 16,
-  md: 20,
-  lg: 22,
+const LABEL_OUTLINED: Record<ButtonColor, string> = {
+  primary: "text-primary-normal-active",
+  secondary: "text-secondary-dark",
+  tertiary: "text-tertiary-dark",
+  error: "text-error-normal-active",
+  white: "text-white",
+};
+
+const LABEL_DISABLED: Record<ButtonColor, string> = {
+  primary: "text-primary-normal",
+  secondary: "text-secondary-normal",
+  tertiary: "text-tertiary-normal",
+  error: "text-error-light-active",
+  white: "text-primary-normal",
+};
+
+const iconColor = (color: ButtonColor, variant: Variant, disabled: boolean) => {
+  if (color === "white") {
+    return variant === "outlined" && !disabled
+      ? colors.white
+      : colors.primary["normal-active"];
+  }
+  if (disabled) return colors[color].normal;
+  return variant === "filled" ? colors.white : colors[color]["normal-active"];
 };
 
 export default function Button({
   children,
-  variant = "primary",
-  size = "md",
+  color = "primary",
+  variant = "filled",
+  size = "big",
   loading = false,
   disabled = false,
   icon,
-  iconPosition = "left",
+  iconPosition = "right",
+  fullWidth = true,
+  className = "",
   ...rest
 }: ButtonProps) {
-  const isDisabled = disabled || loading;
-  const iconColor = iconColors[variant];
+  const inactive = disabled || loading;
+  const filled = variant === "filled";
+
+  const surface = filled
+    ? inactive
+      ? FILLED_DISABLED[color]
+      : FILLED[color]
+    : inactive
+      ? OUTLINED_DISABLED[color]
+      : OUTLINED[color];
+
+  const label = inactive
+    ? LABEL_DISABLED[color]
+    : filled
+      ? LABEL_FILLED[color]
+      : LABEL_OUTLINED[color];
+
+  const padding = size === "big" ? "px-6 py-3.5" : "px-4 py-2";
+  const iconSize = size === "big" ? 20 : 16;
+  const glyph = icon ? (
+    <Ionicons
+      name={icon}
+      size={iconSize}
+      color={iconColor(color, variant, inactive)}
+    />
+  ) : null;
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      disabled={isDisabled}
-      className={`rounded-chip items-center justify-center flex-row gap-2 ${sizeStyles[size]} ${
-        isDisabled ? disabledContainerStyles[variant] : containerStyles[variant]
-      }`}
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled: inactive, busy: loading }}
+      disabled={inactive}
+      className={`flex-row items-center justify-center gap-2 rounded-chip ${padding} ${surface} ${fullWidth ? "w-full" : "self-start"} ${className}`}
       {...rest}
     >
       {loading ? (
         <ActivityIndicator
-          color={
-            variant === "outline" || variant === "white" ? "#E8A77B" : "#FFFFFF"
-          }
+          size="small"
+          color={iconColor(color, variant, false)}
         />
       ) : (
-        <>
-          {icon && iconPosition === "left" && (
-            <Ionicons name={icon} size={iconSizes[size]} color={iconColor} />
-          )}
+        <View className="flex-row items-center gap-2">
+          {iconPosition === "left" && glyph}
           <Text
-            className={`font-heading-semibold ${textSizeStyles[size]} ${textStyles[variant]}`}
+            variant={size === "big" ? "button1" : "button2"}
+            className={label}
           >
             {children}
           </Text>
-          {icon && iconPosition === "right" && (
-            <Ionicons name={icon} size={iconSizes[size]} color={iconColor} />
-          )}
-        </>
+          {iconPosition === "right" && glyph}
+        </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
