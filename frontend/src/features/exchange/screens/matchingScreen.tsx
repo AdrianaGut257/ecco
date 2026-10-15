@@ -1,84 +1,101 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useRef } from "react";
-import { Animated, Easing, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { View } from "react-native";
+import AppHeader from "../../../components/layout/appHeader";
+import Container from "../../../components/layout/container";
+import Banner from "../../../components/ui/banner";
+import Button from "../../../components/ui/button";
+import Text from "../../../components/ui/text";
+import { sessionStore } from "../../../store/session";
+import type { Match } from "../../../types";
+import SearchingAnimation from "../components/searchingAnimation";
+import { useMatching } from "../hooks/useMatching";
 
-export default function MatchingScreen({
-  onComplete,
-}: {
-  onComplete: () => void;
-}) {
-  const pulse = useRef(new Animated.Value(0.6)).current;
+const MESSAGES = [
+  "Mirando lo que tienen en común…",
+  "Preparando un lugar tranquilo…",
+  "Buscando a alguien con buena energía…",
+];
+
+const REVEAL_MS = 1600;
+
+interface Props {
+  hobbies: string[];
+  onCancel: () => void;
+  onFound: (match: Match) => void;
+}
+
+export default function MatchingScreen({ hobbies, onCancel, onFound }: Props) {
+  const { user } = sessionStore.use();
+  const { status, match, error, start } = useMatching();
+  const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, {
-          toValue: 1,
-          duration: 700,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulse, {
-          toValue: 0.6,
-          duration: 700,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ]),
+    start(hobbies);
+  }, [start, hobbies]);
+
+  useEffect(() => {
+    const id = setInterval(
+      () => setMessageIndex((i) => (i + 1) % MESSAGES.length),
+      2200,
     );
-    loop.start();
-
-    // Simula la búsqueda; reemplaza con tu llamada real al backend.
-    const timeout = setTimeout(onComplete, 2500);
-
-    return () => {
-      loop.stop();
-      clearTimeout(timeout);
-    };
+    return () => clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    if (status !== "found" || !match) return;
+    const id = setTimeout(() => onFound(match), REVEAL_MS);
+    return () => clearTimeout(id);
+  }, [status, match, onFound]);
+
+  const me = {
+    username: user?.username ?? "Tú",
+    avatarId: user?.avatarId ?? "a1",
+  };
+  const found = status === "found" && match ? match.partner : null;
+
   return (
-    <View
-      className="flex-1 items-center justify-center px-8"
-      style={{ backgroundColor: "#FDF6F2" }}
-    >
-      <View
-        className="absolute inset-0"
-        style={{
-          backgroundColor: "#E8C468",
-          opacity: 0.35,
-        }}
-      />
+    <Container flush padded={false}>
+      <AppHeader showBack onBack={onCancel} showSettings={false} />
+      <View className="flex-1 justify-center px-7">
+        <Text variant="h3" className="mb-8 text-center">
+          {found ? "¡Te encontramos a alguien!" : "Buscando a alguien"}
+        </Text>
 
-      <View
-        className="flex-row items-center justify-center mb-10"
-        style={{ width: 220, height: 110 }}
-      >
-        <View className="w-20 h-20 rounded-full items-center justify-center bg-primaryLightActive">
-          <Ionicons name="person" size={40} color="#FFFFFF" />
+        <View className="rounded-card bg-primary-light-active py-8">
+          <SearchingAnimation me={me} partner={found} />
         </View>
 
-        <Animated.View
-          style={{
-            opacity: pulse,
-            transform: [{ scale: pulse }],
-            marginHorizontal: -6,
-          }}
-        >
-          <Ionicons name="sparkles" size={30} color="#E8C468" />
-        </Animated.View>
-
-        <View className="w-20 h-20 rounded-full items-center justify-center bg-secondaryLightActive">
-          <Ionicons name="person" size={40} color="#FFFFFF" />
-        </View>
+        {status === "error" ? (
+          <View className="mt-8 gap-3">
+            <Banner
+              tone="error"
+              message={error ?? "No pudimos completar la búsqueda."}
+            />
+            <Button onPress={() => start(hobbies)}>Intentar de nuevo</Button>
+            <Button variant="outlined" onPress={onCancel}>
+              Volver
+            </Button>
+          </View>
+        ) : (
+          <>
+            <Text
+              variant="body3"
+              className="mt-8 text-center text-primary-dark-hover"
+            >
+              {found
+                ? "Preparando su primera conversación…"
+                : MESSAGES[messageIndex]}
+            </Text>
+            {!found && (
+              <View className="mt-6">
+                <Button variant="outlined" onPress={onCancel}>
+                  Cancelar búsqueda
+                </Button>
+              </View>
+            )}
+          </>
+        )}
       </View>
-
-      <Text className="font-heading-semibold text-h4 text-primaryNormalActive text-center mb-2">
-        Buscando tu conexión
-      </Text>
-      <Text className="font-body text-sm text-primaryNormalHover text-center">
-        Esto solo toma un momento…
-      </Text>
-    </View>
+    </Container>
   );
 }

@@ -1,12 +1,18 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import Container from "../../../components/layout/container";
+import Button from "../../../components/ui/button";
+import Dots from "../../../components/ui/dots";
+import Text from "../../../components/ui/text";
+import Wordmark from "../../../components/ui/wordmark";
+import { colors } from "../../../constants/colors";
 
 type Slide = {
   icon: keyof typeof Ionicons.glyphMap;
   title: string;
   message: string;
-  bg: string;
+  background: "primary" | "secondary" | "tertiary";
 };
 
 const SLIDES: Slide[] = [
@@ -14,90 +20,86 @@ const SLIDES: Slide[] = [
     icon: "person-outline",
     title: "Conoce a una persona",
     message: "Cada semana te presentamos a alguien con quien compartes algo.",
-    bg: "#E8A77B", // primaryNormal
+    background: "primary",
   },
   {
-    icon: "leaf-outline",
+    icon: "flower-outline",
     title: "Hagan crecer la conversación",
-    message:
-      "Siete días para conocerse. La conversación crece con cada intercambio.",
-    bg: "#9CAF88", // secondaryNormal
+    message: "Siete días para conocerse. Tu planta crece con cada intercambio.",
+    background: "secondary",
   },
   {
     icon: "sparkles-outline",
     title: "Al final, ambos deciden",
     message:
       "Si los dos quieren seguir, se abre la conexión. Si no, nadie se entera.",
-    bg: "#8E664B", // primaryNormalActive
+    background: "tertiary",
   },
 ];
 
-export default function OnboardingSlidesScreen({
-  onComplete,
-}: {
+interface Props {
+  loading?: boolean;
+  error?: string | null;
   onComplete: () => void;
-}) {
-  const [index, setIndex] = useState<number>(0);
+}
+
+export default function OnboardingSlidesScreen({
+  loading,
+  error,
+  onComplete,
+}: Props) {
+  const [index, setIndex] = useState(0);
   const slide = SLIDES[index];
   const isLast = index === SLIDES.length - 1;
 
-  const next = () => {
-    if (isLast) {
-      onComplete();
-    } else {
-      setIndex((i) => i + 1);
-    }
-  };
+  const next = () => (isLast ? onComplete() : setIndex((i) => i + 1));
 
   return (
-    <Pressable
-      onPress={next}
-      className="flex-1 items-center justify-between pb-12 pt-20 px-8"
-      style={{ backgroundColor: slide.bg }}
-    >
-      {!isLast && (
-        <Pressable onPress={onComplete} className="self-end">
-          <Text className="font-body-medium text-sm text-white/80">Saltar</Text>
-        </Pressable>
-      )}
-      {isLast && <View />}
-
-      <View className="items-center flex-1 justify-center">
-        <View className="w-24 h-24 rounded-full bg-white/20 items-center justify-center mb-8">
-          <Ionicons name={slide.icon} size={48} color="#FFFFFF" />
+    <Container
+      background={slide.background}
+      footer={
+        <View className="items-center">
+          <Dots total={SLIDES.length} index={index} />
+          {error && (
+            <Text variant="caption1" className="mt-3 text-center text-white">
+              {error}
+            </Text>
+          )}
+          <View className="mt-6 w-full">
+            <Button color="white" loading={loading} onPress={next}>
+              {isLast ? "Comenzar" : "Continuar"}
+            </Button>
+          </View>
         </View>
-        <Text className="font-heading-bold text-h2 text-white text-center mb-3">
+      }
+    >
+      <View className="items-end">
+        {!isLast && (
+          <Pressable
+            onPress={onComplete}
+            hitSlop={10}
+            accessibilityRole="button"
+          >
+            <Text variant="body3" className="text-white">
+              Saltar
+            </Text>
+          </Pressable>
+        )}
+      </View>
+      <View className="items-center pt-2">
+        <Wordmark className="text-white" size="sm" />
+      </View>
+      <View className="flex-1 items-center justify-center">
+        <View className="mb-8 h-28 w-28 items-center justify-center rounded-full bg-white/25">
+          <Ionicons name={slide.icon} size={52} color={colors.white} />
+        </View>
+        <Text variant="h3" className="mb-3 text-center text-white">
           {slide.title}
         </Text>
-        <Text className="font-body text-sm text-white/90 text-center leading-6 max-w-[280px]">
+        <Text variant="body3" className="max-w-[280px] text-center text-white">
           {slide.message}
         </Text>
       </View>
-
-      <View className="items-center w-full">
-        <View className="flex-row gap-2 mb-8">
-          {SLIDES.map((_, i) => (
-            <View
-              key={i}
-              className={`h-2 rounded-full ${
-                i === index ? "w-6 bg-white" : "w-2 bg-white/40"
-              }`}
-            />
-          ))}
-        </View>
-
-        <Pressable
-          onPress={next}
-          className="w-full bg-white rounded-chip py-3.5 items-center"
-        >
-          <Text
-            className="font-heading-semibold text-base"
-            style={{ color: slide.bg }}
-          >
-            {isLast ? "Comenzar" : "Siguiente"}
-          </Text>
-        </Pressable>
-      </View>
-    </Pressable>
+    </Container>
   );
 }

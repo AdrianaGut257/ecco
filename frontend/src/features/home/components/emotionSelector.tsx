@@ -1,69 +1,47 @@
-import { useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, View } from "react-native";
+import MoodFace from "../../../components/avatar/moodFace";
+import Text from "../../../components/ui/text";
+import { MOODS, MoodId } from "../../../constants/emotions";
 
-const emotions = [
-  { id: "feliz", emoji: "😊", label: "Feliz" },
-  { id: "enojado", emoji: "😠", label: "Enojado" },
-  { id: "triste", emoji: "😢", label: "Triste" },
-  { id: "emocionada", emoji: "🥰", label: "Emocionada" },
-  { id: "cansada", emoji: "😴", label: "Cansada" },
-  { id: "ansiosa", emoji: "😰", label: "Ansiosa" },
-];
+interface Props {
+  value: MoodId | null;
+  onSelect: (id: MoodId) => void;
+  disabled?: boolean;
+}
 
-export default function EmotionSelector({
-  onSelect,
-}: {
-  onSelect: (id: string, emoji: string) => void;
-}) {
-  const [selectedId, setSelectedId] = useState("");
-
-  const handlePress = (id: string, emoji: string) => {
-    setSelectedId(id);
-    onSelect(id, emoji);
-  };
-
+export default function EmotionSelector({ value, onSelect, disabled }: Props) {
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={emotions}
-        numColumns={2}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.emotionBtn,
-              selectedId === item.id && styles.emotionBtnSelected,
-            ]}
-            onPress={() => handlePress(item.id, item.emoji)}
+    <View className="flex-row justify-between">
+      {MOODS.map((mood) => {
+        const active = value === mood.id;
+        return (
+          <Pressable
+            key={mood.id}
+            disabled={disabled}
+            onPress={() => onSelect(mood.id)}
+            accessibilityRole="button"
+            accessibilityLabel={`Me siento ${mood.label.toLowerCase()}`}
+            accessibilityState={{ selected: active, disabled }}
+            className={`items-center ${disabled ? "opacity-60" : ""}`}
           >
-            <Text style={styles.emoji}>{item.emoji}</Text>
-            <Text style={styles.label}>{item.label}</Text>
-          </TouchableOpacity>
-        )}
-      />
+            <View
+              className={`rounded-full p-0.5 ${
+                active
+                  ? "border-2 border-primary-normal-active"
+                  : "border-2 border-transparent"
+              }`}
+            >
+              <MoodFace mood={mood.id} size={46} />
+            </View>
+            <Text
+              variant="caption2"
+              className={`mt-1 ${active ? "text-primary-normal-active" : "text-primary-dark-hover"}`}
+            >
+              {mood.label}
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { alignItems: "center" },
-  emotionBtn: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: 16,
-    padding: 12,
-    margin: 8,
-    alignItems: "center",
-    width: 100,
-  },
-  emotionBtnSelected: {
-    backgroundColor: "#2DC5A2",
-  },
-  emoji: { fontSize: 32 },
-  label: { fontSize: 12, marginTop: 4, color: "#333" },
-});

@@ -1,0 +1,62 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { Pressable, View } from "react-native";
+import { colors } from "../../constants/colors";
+import Wordmark from "../ui/wordmark";
+
+interface Props {
+  onBack?: () => void;
+  showBack?: boolean;
+  showSettings?: boolean;
+}
+
+export default function AppHeader({
+  onBack,
+  showBack = false,
+  showSettings = true,
+}: Props) {
+  const router = useRouter();
+
+  const goBack = () => {
+    if (onBack) return onBack();
+    if (router.canGoBack()) router.back();
+  };
+
+  return (
+    <View className="h-12 flex-row items-center justify-between px-6">
+      <View className="flex-row items-center gap-2">
+        {showBack && (
+          <Pressable
+            onPress={goBack}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="Volver"
+          >
+            <Ionicons
+              name="arrow-back"
+              size={20}
+              color={colors.primary["normal-active"]}
+            />
+          </Pressable>
+        )}
+        <Wordmark />
+      </View>
+      {showSettings ? (
+        <Pressable
+          onPress={() => router.push("/(tabs)/settings")}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel="Ajustes"
+        >
+          <Ionicons
+            name="settings-outline"
+            size={20}
+            color={colors.primary["normal-active"]}
+          />
+        </Pressable>
+      ) : (
+        <View />
+      )}
+    </View>
+  );
+}
