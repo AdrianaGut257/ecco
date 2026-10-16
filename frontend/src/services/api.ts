@@ -24,7 +24,8 @@ export class ApiError extends Error {
 
 const FRIENDLY: Record<ApiErrorKind, string> = {
   network: "No pudimos conectarnos. Revisa tu internet e inténtalo de nuevo.",
-  timeout: "Esto está tardando más de lo normal. Prueba de nuevo en un momento.",
+  timeout:
+    "Esto está tardando más de lo normal. Prueba de nuevo en un momento.",
   unauthorized: "Tu sesión terminó. Vuelve a entrar cuando quieras.",
   validation: "Hay algo que revisar en lo que enviaste.",
   notFound: "No encontramos lo que buscabas.",
@@ -87,6 +88,7 @@ export const api = {
   get: <T>(path: string) => request<T>("GET", path),
   post: <T>(path: string, body?: unknown) => request<T>("POST", path, body),
   put: <T>(path: string, body?: unknown) => request<T>("PUT", path, body),
+  delete: <T>(path: string) => request<T>("DELETE", path),
 };
 
 export const friendlyError = (error: unknown) =>

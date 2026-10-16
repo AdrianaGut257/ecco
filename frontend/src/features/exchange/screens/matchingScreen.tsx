@@ -9,6 +9,7 @@ import { sessionStore } from "../../../store/session";
 import type { Match } from "../../../types";
 import SearchingAnimation from "../components/searchingAnimation";
 import { useMatching } from "../hooks/useMatching";
+import { matchService } from "../../../services/matchService";
 
 const MESSAGES = [
   "Mirando lo que tienen en común…",
@@ -52,10 +53,13 @@ export default function MatchingScreen({ hobbies, onCancel, onFound }: Props) {
     avatarId: user?.avatarId ?? "a1",
   };
   const found = status === "found" && match ? match.partner : null;
-
+  const handleCancel = async () => {
+    await matchService.cancel().catch(() => undefined);
+    onCancel();
+  };
   return (
     <Container flush padded={false}>
-      <AppHeader showBack onBack={onCancel} showSettings={false} />
+      <AppHeader showBack onBack={handleCancel} showSettings={false} />
       <View className="flex-1 justify-center px-7">
         <Text variant="h3" className="mb-8 text-center">
           {found ? "¡Te encontramos a alguien!" : "Buscando a alguien"}
@@ -72,7 +76,7 @@ export default function MatchingScreen({ hobbies, onCancel, onFound }: Props) {
               message={error ?? "No pudimos completar la búsqueda."}
             />
             <Button onPress={() => start(hobbies)}>Intentar de nuevo</Button>
-            <Button variant="outlined" onPress={onCancel}>
+            <Button variant="outlined" onPress={handleCancel}>
               Volver
             </Button>
           </View>
@@ -88,7 +92,7 @@ export default function MatchingScreen({ hobbies, onCancel, onFound }: Props) {
             </Text>
             {!found && (
               <View className="mt-6">
-                <Button variant="outlined" onPress={onCancel}>
+                <Button variant="outlined" onPress={handleCancel}>
                   Cancelar búsqueda
                 </Button>
               </View>

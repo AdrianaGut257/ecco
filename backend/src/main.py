@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config.config import settings
+from src.core.errors import register_error_handlers
+from src.database.postgres import models  # noqa: F401
 from src.modules.router import router
 
 
@@ -26,5 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+register_error_handlers(app)
 
 app.include_router(router, prefix="/api")
