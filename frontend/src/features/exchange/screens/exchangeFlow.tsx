@@ -49,6 +49,8 @@ export default function ExchangeFlow() {
     goHome();
   }, [setCurrent, goHome]);
 
+  const cancelSearch = useCallback(() => setStep("theme"), []);
+
   if (error) {
     return (
       <Container flush padded={false}>
@@ -73,7 +75,7 @@ export default function ExchangeFlow() {
     return (
       <MatchingScreen
         hobbies={hobbies}
-        onCancel={() => setStep("theme")}
+        onCancel={cancelSearch}
         onFound={handleFound}
       />
     );

@@ -14,10 +14,14 @@ module.exports = {
     extend: {
       colors: palette,
       fontFamily: {
-        ecco: ["Fredoka_400Regular"],
-        "ecco-medium": ["Fredoka_500Medium"],
-        "ecco-semibold": ["Fredoka_600SemiBold"],
-        "ecco-bold": ["Fredoka_700Bold"],
+        heading: ["Poppins_400Regular"],
+        "heading-medium": ["Poppins_500Medium"],
+        "heading-semibold": ["Poppins_600SemiBold"],
+        "heading-bold": ["Poppins_700Bold"],
+        body: ["Quicksand_400Regular"],
+        "body-medium": ["Quicksand_500Medium"],
+        "body-semibold": ["Quicksand_600SemiBold"],
+        "body-bold": ["Quicksand_700Bold"],
       },
       fontSize: {
         h1: ["36px", { lineHeight: "43px", letterSpacing: "0px" }],
@@ -30,7 +34,8 @@ module.exports = {
         body2: ["16px", { lineHeight: "19px", letterSpacing: "0.25px" }],
         body3: ["14px", { lineHeight: "17px", letterSpacing: "0.4px" }],
         caption1: ["11px", { lineHeight: "15px", letterSpacing: "0.5px" }],
-        caption2: ["10px", { lineHeight: "13px", letterSpacing: "0.5px" }],
+        caption2: ["11px", { lineHeight: "15px", letterSpacing: "0.5px" }],
+        caption3: ["10px", { lineHeight: "13px", letterSpacing: "0.5px" }],
         button1: ["16px", { lineHeight: "19px", letterSpacing: "0.1px" }],
         button2: ["14px", { lineHeight: "17px", letterSpacing: "0.1px" }],
       },

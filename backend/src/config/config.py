@@ -1,3 +1,4 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -30,21 +31,30 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: str
 
+    # App links
+    frontend_url: str = "http://localhost:8081"
+    password_reset_expire_minutes: int = 30
+
+    # Optional full database URL (overrides the POSTGRES_* values)
+    database_url_env: str | None = Field(default=None, alias="DATABASE_URL")
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
+        populate_by_name=True,
     )
 
     @property
     def database_url(self) -> str:
+        if self.database_url_env:
+            return self.database_url_env
         return (
             f"postgresql+psycopg://"
             f"{self.postgres_user}:{self.postgres_password}"
             f"@{self.postgres_host}:{self.postgres_port}"
             f"/{self.postgres_db}"
         )
-
 
 settings = Settings()
