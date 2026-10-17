@@ -16,6 +16,19 @@ CACHE_TTL_SECONDS = 60 * 60 * 24
 CACHE_MAX = 2000
 
 _cache: dict[tuple[str, str], tuple[float, list[SuggestionOut]]] = {}
+_client: httpx.AsyncClient | None = None
+
+
+def _http() -> httpx.AsyncClient:
+    global _client
+    if _client is None or _client.is_closed:
+        _client = httpx.AsyncClient(timeout=4)
+    return _client
+
+
+async def close_client() -> None:
+    if _client is not None:
+        await _client.aclose()
 
 
 async def fetch_entities(query: str, types: list[str]) -> list[dict]:
@@ -24,13 +37,12 @@ async def fetch_entities(query: str, types: list[str]) -> list[dict]:
         ("key", settings.google_kg_api_key or ""),
         ("languages", "es"),
         ("prefix", "true"),
-        ("limit", str(LIMIT * 2)),
+        ("limit", str(LIMIT + 4)),
         *[("types", t) for t in types],
     ]
-    async with httpx.AsyncClient(timeout=4) as client:
-        response = await client.get(KG_URL, params=params)
-        response.raise_for_status()
-        return response.json().get("itemListElement", [])
+    response = await _http().get(KG_URL, params=params)
+    response.raise_for_status()
+    return response.json().get("itemListElement", [])
 
 
 def _to_suggestions(elements: list[dict]) -> list[SuggestionOut]:

@@ -7,7 +7,7 @@ import { colors } from "../../../constants/colors";
 import { suggestionService } from "../../../services/suggestionService";
 import type { Suggestion } from "../../../types";
 
-const DEBOUNCE_MS = 350;
+const DEBOUNCE_MS = 250;
 const MIN_CHARS = 2;
 const MAX_LENGTH = 80;
 
@@ -22,6 +22,22 @@ interface Props {
 const same = (a: string, b: string) =>
   a.localeCompare(b, "es", { sensitivity: "base" }) === 0;
 
+const normalize = (text: string) =>
+  text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+
+const cache = new Map<string, Suggestion[]>();
+const cacheKey = (interest: string, query: string) =>
+  `${interest}|${normalize(query)}`;
+
+const fromCachedPrefix = (interest: string, query: string) => {
+  const q = normalize(query);
+  for (let length = q.length - 1; length >= MIN_CHARS; length--) {
+    const hit = cache.get(`${interest}|${q.slice(0, length)}`);
+    if (hit) return hit.filter((s) => normalize(s.name).includes(q));
+  }
+  return null;
+};
+
 export default function ItemInput({
   interest,
   placeholder,
@@ -33,6 +49,7 @@ export default function ItemInput({
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [searched, setSearched] = useState("");
   const request = useRef(0);
 
   useEffect(() => {
@@ -43,15 +60,28 @@ export default function ItemInput({
       setLoading(false);
       return;
     }
+    const cached = cache.get(cacheKey(interest, query));
+    if (cached) {
+      setSuggestions(cached);
+      setLoading(false);
+      setSearched(query);
+      return;
+    }
+    const instant = fromCachedPrefix(interest, query);
+    if (instant) setSuggestions(instant);
     setLoading(true);
     const timer = setTimeout(async () => {
       try {
         const found = await suggestionService.search(query, interest);
+        cache.set(cacheKey(interest, query), found);
         if (id === request.current) setSuggestions(found);
       } catch {
         if (id === request.current) setSuggestions([]);
       } finally {
-        if (id === request.current) setLoading(false);
+        if (id === request.current) {
+          setLoading(false);
+          setSearched(query);
+        }
       }
     }, DEBOUNCE_MS);
     return () => clearTimeout(timer);
@@ -67,6 +97,8 @@ export default function ItemInput({
 
   const visible = suggestions.filter((s) => !existing.some((e) => same(e, s.name)));
   const showList = focused && text.trim().length >= MIN_CHARS && (loading || visible.length > 0);
+  const nothingFound =
+    focused && !loading && visible.length === 0 && searched === text.trim() && searched.length >= MIN_CHARS;
 
   return (
     <View>
@@ -103,6 +135,16 @@ export default function ItemInput({
           onPress={() => add(text)}
         />
       </View>
+
+      {nothingFound && (
+        <Text
+          variant="caption1"
+          className="ml-1 mt-1.5 text-primary-dark-hover"
+          accessibilityLiveRegion="polite"
+        >
+          Sin sugerencias. Toca + para agregarlo tal como lo escribiste.
+        </Text>
+      )}
 
       {showList && (
         <View
