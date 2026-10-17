@@ -29,6 +29,16 @@ const IDLE_LABEL: Record<Tone, string> = {
   secondary: "text-secondary-dark-hover",
 };
 
+const ACTIVE_LABEL: Record<Tone, string> = {
+  primary: "text-primary-darker",
+  secondary: "text-secondary-darker",
+};
+
+const ACTIVE_ICON: Record<Tone, string> = {
+  primary: colors.primary.darker,
+  secondary: colors.secondary.darker,
+};
+
 export default function Chip({
   label,
   selected = false,
@@ -43,24 +53,27 @@ export default function Chip({
       accessibilityState={{ selected, disabled }}
       disabled={disabled || !onPress}
       onPress={onPress}
-      className={`flex-row items-center gap-1.5 rounded-chip border px-3 py-1.5 ${
+      className={`min-h-[36px] flex-row items-center gap-1.5 rounded-chip border px-3.5 py-2 ${
         selected ? ACTIVE[tone] : IDLE[tone]
       } ${disabled ? "opacity-50" : ""}`}
     >
+      {selected && onPress && (
+        <Ionicons name="checkmark" size={13} color={ACTIVE_ICON[tone]} />
+      )}
       <Text
         variant="caption1"
-        className={selected ? "text-white" : IDLE_LABEL[tone]}
+        className={selected ? ACTIVE_LABEL[tone] : IDLE_LABEL[tone]}
       >
         {label}
       </Text>
       {onRemove && (
         <Pressable
           onPress={onRemove}
-          hitSlop={8}
+          hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel={`Quitar ${label}`}
         >
-          <Ionicons name="close" size={12} color={colors.white} />
+          <Ionicons name="close" size={14} color={ACTIVE_ICON[tone]} />
         </Pressable>
       )}
     </Pressable>

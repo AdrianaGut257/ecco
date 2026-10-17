@@ -29,7 +29,7 @@ export function useLogin() {
         password,
       });
       sessionStore.setSession(session.accessToken, session.user);
-      router.replace("/welcome");
+      router.replace(session.user.onboarded ? "/welcome" : "/onboarding");
     } catch (e) {
       setError(friendlyError(e));
     } finally {

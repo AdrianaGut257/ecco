@@ -1,0 +1,448 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  ScrollView,
+  TextInput,
+  View,
+} from "react-native";
+import Animated, { FadeIn, FadeInDown, FadeOut } from "react-native-reanimated";
+import Avatar from "../../../components/avatar/avatar";
+import GrowthPlant from "../../../components/garden/growthPlant";
+import Container from "../../../components/layout/container";
+import Banner from "../../../components/ui/banner";
+import Button from "../../../components/ui/button";
+import Text from "../../../components/ui/text";
+import { colors } from "../../../constants/colors";
+import { MOODS } from "../../../constants/emotions";
+import {
+  CHAT_DAYS,
+  MESSAGES_PER_DAY,
+  STAGE_NAMES,
+} from "../../../constants/plant";
+import type { ChatMessage, Match } from "../../../types";
+import DecisionCard from "../components/decisionCard";
+import SafetySheet from "../components/safetySheet";
+import { MAX_MESSAGE_LENGTH, useConversation } from "../hooks/useConversation";
+import { sparksFor } from "../sparks";
+import OutcomeScreen from "./outcomeScreen";
+
+interface Props {
+  matchId: string;
+  initial?: Match | null;
+  onBack: () => void;
+  onNewConnection: () => void;
+  onGarden: () => void;
+}
+
+function Bubble({
+  message,
+  onRetry,
+}: {
+  message: ChatMessage;
+  onRetry: (id: string) => void;
+}) {
+  const mine = message.fromMe;
+  return (
+    <Animated.View
+      entering={FadeInDown.duration(250)}
+      className={`mb-2.5 max-w-[82%] ${mine ? "self-end" : "self-start"}`}
+    >
+      <View
+        className={`px-4 py-3 ${
+          mine
+            ? "rounded-[20px] rounded-br-md bg-secondary-light-active"
+            : "rounded-[20px] rounded-bl-md bg-white"
+        } ${message.status === "sending" ? "opacity-60" : ""}`}
+      >
+        <Text
+          variant="body2"
+          className={mine ? "text-secondary-darker" : "text-primary-dark-active"}
+        >
+          {message.text}
+        </Text>
+      </View>
+      {message.status === "failed" && (
+        <Pressable
+          onPress={() => onRetry(message.id)}
+          hitSlop={8}
+          accessibilityRole="button"
+          className="mt-1 self-end"
+        >
+          <Text variant="caption2" className="text-error-normal-active">
+            No se envió. Toca para reintentar
+          </Text>
+        </Pressable>
+      )}
+    </Animated.View>
+  );
+}
+
+function subtitleFor(match: Match) {
+  if (match.status === "bloomed") return "Conexión florecida";
+  if (match.status === "closed") return "Conversación cerrada";
+  const mood = MOODS.find((m) => m.id === match.partner.mood);
+  const day = `Día ${Math.min(match.day, CHAT_DAYS)} de ${CHAT_DAYS}`;
+  return mood ? `${day} · hoy se siente ${mood.label.toLowerCase()}` : day;
+}
+
+export default function ConversationScreen({
+  matchId,
+  initial,
+  onBack,
+  onNewConnection,
+  onGarden,
+}: Props) {
+  const {
+    match,
+    setMatch,
+    messages,
+    loading,
+    error,
+    sendError,
+    reload,
+    send,
+    retry,
+  } = useConversation(matchId, initial);
+  const [text, setText] = useState("");
+  const [round, setRound] = useState(0);
+  const [safety, setSafety] = useState(false);
+  const [grew, setGrew] = useState(false);
+  const [outcome, setOutcome] = useState<Match | null>(null);
+  const listRef = useRef<FlatList<ChatMessage>>(null);
+
+  const onGrow = useCallback(() => {
+    setGrew(true);
+    setTimeout(() => setGrew(false), 2600);
+  }, []);
+
+  const sparks = useMemo(
+    () => (match ? sparksFor(match, messages.length > 0, round) : []),
+    [match, messages.length, round],
+  );
+
+  if (outcome) {
+    return (
+      <OutcomeScreen
+        match={outcome}
+        onKeepTalking={() => {
+          setMatch(outcome);
+          setOutcome(null);
+        }}
+        onNewConnection={onNewConnection}
+        onGarden={onGarden}
+      />
+    );
+  }
+
+  if (!match) {
+    return (
+      <Container center>
+        {error ? (
+          <View className="gap-4">
+            <Banner tone="error" message={error} />
+            <Button onPress={reload}>Intentar de nuevo</Button>
+            <Button variant="outlined" onPress={onBack}>
+              Volver
+            </Button>
+          </View>
+        ) : (
+          <ActivityIndicator color={colors.primary["dark-hover"]} />
+        )}
+      </Container>
+    );
+  }
+
+  const ended = ["closed", "rested", "waiting"].includes(match.status);
+  const deciding = match.status === "deciding";
+  const writableToday =
+    match.status === "bloomed" ||
+    ((match.status === "active" || deciding) && match.day <= CHAT_DAYS);
+  const canSend = match.canWrite && text.trim().length > 0;
+
+  const submit = () => {
+    if (!canSend) return;
+    send(text);
+    setText("");
+    setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 60);
+  };
+
+  return (
+    <Container
+      flush
+      padded={false}
+      footer={
+        <View className="gap-3 px-5">
+          {sendError && <Banner tone="info" message={sendError} />}
+
+          {deciding && (
+            <DecisionCard
+              match={match}
+              onDecided={(updated) => {
+                setMatch(updated);
+                setOutcome(updated);
+              }}
+            />
+          )}
+
+          {ended && (
+            <View className="gap-3">
+              <Banner
+                tone="info"
+                message={
+                  match.status === "closed"
+                    ? "Esta conversación se cerró. Gracias por el tiempo que compartiste."
+                    : "Esta conversación ya terminó. Su planta queda en tu jardín."
+                }
+              />
+              <Button variant="outlined" onPress={onBack}>
+                Volver
+              </Button>
+            </View>
+          )}
+
+          {writableToday && (
+            <>
+              {match.canWrite && text.length === 0 && sparks.length > 0 && (
+                <View>
+                  <View className="mb-1.5 flex-row items-center justify-between">
+                    <Text variant="caption1" className="text-primary-dark-hover">
+                      {messages.length === 0
+                        ? "Ideas para romper el hielo"
+                        : "¿No sabes qué decir?"}
+                    </Text>
+                    <Pressable
+                      onPress={() => setRound((r) => r + 1)}
+                      hitSlop={10}
+                      accessibilityRole="button"
+                      accessibilityLabel="Ver otras ideas"
+                      className="flex-row items-center gap-1"
+                    >
+                      <Ionicons
+                        name="refresh"
+                        size={14}
+                        color={colors.primary["dark-hover"]}
+                      />
+                      <Text variant="caption1" className="text-primary-dark-hover">
+                        Otras
+                      </Text>
+                    </Pressable>
+                  </View>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerClassName="gap-2"
+                  >
+                    {sparks.map((idea) => (
+                      <Pressable
+                        key={idea}
+                        onPress={() => setText(idea)}
+                        accessibilityRole="button"
+                        accessibilityHint="Pone esta idea en tu mensaje para que la edites"
+                        className="max-w-[240px] min-h-[40px] justify-center rounded-chip border border-tertiary-normal bg-tertiary-light px-3.5 py-2"
+                      >
+                        <Text
+                          variant="caption1"
+                          numberOfLines={2}
+                          className="text-tertiary-darker"
+                        >
+                          {idea}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
+                </View>
+              )}
+
+              {match.canWrite ? (
+                <View className="flex-row items-end rounded-[24px] border border-primary-light-active bg-white pl-4 pr-1.5">
+                  <TextInput
+                    value={text}
+                    onChangeText={setText}
+                    placeholder="Escribe algo que cuente…"
+                    placeholderTextColor={colors.primary["dark-hover"]}
+                    maxLength={MAX_MESSAGE_LENGTH}
+                    multiline
+                    accessibilityLabel="Escribe un mensaje"
+                    className="max-h-28 min-h-[48px] flex-1 py-3 font-body text-body2 text-primary-dark-active"
+                    style={{ outlineStyle: "none" } as object}
+                  />
+                  <Pressable
+                    onPress={submit}
+                    disabled={!canSend}
+                    accessibilityRole="button"
+                    accessibilityLabel="Enviar mensaje"
+                    accessibilityState={{ disabled: !canSend }}
+                    className={`my-1.5 h-10 w-10 items-center justify-center rounded-full ${
+                      canSend
+                        ? "bg-primary-normal active:bg-primary-normal-hover"
+                        : "bg-primary-light-active"
+                    }`}
+                  >
+                    <Ionicons
+                      name="send"
+                      size={17}
+                      color={canSend ? colors.primary.darker : colors.primary.normal}
+                    />
+                  </Pressable>
+                </View>
+              ) : (
+                <View className="flex-row items-center gap-2 rounded-field bg-secondary-light-active px-4 py-3">
+                  <Ionicons
+                    name="moon-outline"
+                    size={18}
+                    color={colors.secondary["dark-active"]}
+                  />
+                  <Text variant="caption1" className="flex-1 text-secondary-dark-active">
+                    Ya compartiste tus mensajes de hoy. Mañana podrás escribir
+                    de nuevo.
+                  </Text>
+                </View>
+              )}
+
+              {match.canWrite && (
+                <Text
+                  variant="caption2"
+                  className="text-center text-primary-dark-hover"
+                  accessibilityLiveRegion="polite"
+                >
+                  {`Te quedan ${match.messagesLeft} de ${MESSAGES_PER_DAY} mensajes hoy${
+                    text.length > MAX_MESSAGE_LENGTH - 80
+                      ? ` · ${MAX_MESSAGE_LENGTH - text.length} caracteres`
+                      : ""
+                  }`}
+                </Text>
+              )}
+            </>
+          )}
+        </View>
+      }
+    >
+      <View className="flex-row items-center gap-3 px-5 py-2">
+        <Pressable
+          onPress={onBack}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel="Volver"
+          className="h-10 w-10 items-center justify-center"
+        >
+          <Ionicons name="arrow-back" size={22} color={colors.primary["dark-hover"]} />
+        </Pressable>
+        <Avatar
+          config={match.partner.avatar}
+          mood={match.partner.mood}
+          size={44}
+          label={`Avatar de ${match.partner.username}`}
+        />
+        <View className="flex-1">
+          <Text variant="body2" className="font-heading-semibold text-primary-dark-active">
+            {match.partner.username}
+          </Text>
+          <Text variant="caption1" className="text-primary-dark-hover">
+            {subtitleFor(match)}
+          </Text>
+        </View>
+        {!ended && (
+          <Pressable
+            onPress={() => setSafety(true)}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel="Opciones de seguridad"
+            className="h-10 w-10 items-center justify-center"
+          >
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={22}
+              color={colors.primary["dark-hover"]}
+            />
+          </Pressable>
+        )}
+      </View>
+
+      <View className="flex-row items-center gap-4 border-b border-primary-light-active px-6 pb-3">
+        <GrowthPlant stage={match.stage} size={72} onGrow={onGrow} />
+        <View className="flex-1">
+          {grew ? (
+            <Animated.View entering={FadeIn} exiting={FadeOut}>
+              <Text variant="body3" className="text-secondary-dark-active">
+                ¡Su planta creció!
+              </Text>
+              <Text variant="caption1" className="text-secondary-dark-active">
+                Hoy ambos se escribieron.
+              </Text>
+            </Animated.View>
+          ) : (
+            <>
+              <Text variant="body3" className="text-primary-dark-active">
+                {STAGE_NAMES[match.stage]}
+              </Text>
+              <Text variant="caption1" className="text-primary-dark-hover">
+                {match.status === "bloomed"
+                  ? "Su flor sigue viva mientras conversen."
+                  : "Crece cada día en que ambos se escriben."}
+              </Text>
+            </>
+          )}
+        </View>
+      </View>
+
+      {error && (
+        <View className="px-5 pt-2">
+          <Banner tone="error" message={error} actionLabel="Reintentar" onAction={reload} />
+        </View>
+      )}
+
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={colors.primary["dark-hover"]} />
+        </View>
+      ) : (
+        <FlatList
+          ref={listRef}
+          data={messages}
+          keyExtractor={(m) => m.id}
+          className="flex-1"
+          contentContainerClassName="grow px-5 pt-3"
+          showsVerticalScrollIndicator={false}
+          onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
+          ListEmptyComponent={
+            <View className="flex-1 items-center justify-center px-6 py-6">
+              <Text variant="body3" className="text-center text-primary-dark-hover">
+                {`Saluda a ${match.partner.username}. Una pregunta abierta sobre algo que compartan es un buen comienzo.`}
+              </Text>
+            </View>
+          }
+          renderItem={({ item, index }) => {
+            const prev = messages[index - 1];
+            const newDay = !prev || prev.day !== item.day;
+            return (
+              <>
+                {newDay && (
+                  <Text
+                    variant="caption2"
+                    className="my-2 self-center rounded-chip bg-primary-light-active px-3 py-1 text-primary-dark-hover"
+                  >
+                    {item.day > CHAT_DAYS ? "Seguimos conversando" : `Día ${item.day}`}
+                  </Text>
+                )}
+                <Bubble message={item} onRetry={retry} />
+              </>
+            );
+          }}
+        />
+      )}
+
+      <SafetySheet
+        visible={safety}
+        matchId={match.id}
+        partnerName={match.partner.username}
+        onClose={() => setSafety(false)}
+        onEnded={() =>
+          setOutcome({ ...match, status: "closed", canWrite: false })
+        }
+      />
+    </Container>
+  );
+}

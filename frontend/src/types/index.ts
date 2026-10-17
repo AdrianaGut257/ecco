@@ -1,11 +1,27 @@
 import type { MoodId } from "../constants/emotions";
 
+export type Swatch = "1" | "2" | "3" | "4" | "5" | "6";
+
+export interface AvatarConfig {
+  skin: Swatch;
+  hair: "short" | "long" | "curly" | "bun" | "buzz";
+  hairColor: Swatch;
+  glasses: "none" | "round" | "square";
+  freckles: boolean;
+  mole: boolean;
+  earring: boolean;
+  top: Swatch;
+  background: Swatch;
+}
+
 export interface User {
   id: string;
   username: string;
   email: string;
-  avatarId: string;
+  avatar: AvatarConfig;
   interests: string[];
+  shareMood: boolean;
+  onboarded: boolean;
 }
 
 export interface AuthSession {
@@ -22,12 +38,46 @@ export interface RegisterPayload extends LoginPayload {
   name: string;
 }
 
+export interface ProfilePatch {
+  username?: string;
+  avatar?: AvatarConfig;
+  interests?: string[];
+  interestDetails?: Record<string, Record<string, string[]>>;
+  termsAccepted?: boolean;
+  shareMood?: boolean;
+}
+
+export type MatchStatus =
+  | "active"
+  | "deciding"
+  | "waiting"
+  | "bloomed"
+  | "rested"
+  | "closed";
+
+export interface Partner {
+  username: string;
+  avatar: AvatarConfig;
+  mood: MoodId | null;
+}
+
 export interface Match {
   id: string;
-  partner: { username: string; avatarId: string };
+  partner: Partner;
   commonInterests: { category: string; items: string[] }[];
+  hobbies: string[];
   startedAt: string;
   day: number;
+  stage: number;
+  status: MatchStatus;
+  canWrite: boolean;
+  messagesLeft: number;
+}
+
+export interface SearchState {
+  status: "idle" | "searching" | "matched";
+  match: Match | null;
+  hobbies: string[];
 }
 
 export interface ChatMessage {
@@ -47,9 +97,13 @@ export interface MoodEntry {
 
 export type MatchDecision = "continue" | "leave";
 
+export type ReportReason = "ofensivo" | "acoso" | "spam" | "incomodo" | "otro";
+
 export interface GardenEntry {
   id: string;
   partnerName: string;
+  partnerAvatar: AvatarConfig;
   stage: number;
+  status: MatchStatus;
   startedAt: string;
 }

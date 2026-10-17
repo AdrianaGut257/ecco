@@ -28,8 +28,7 @@ export default function EditInterestsScreen() {
     setSaving(true);
     setError(null);
     try {
-      await authService.saveProfile(user.avatarId, selected);
-      sessionStore.updateUser({ interests: selected });
+      await authService.updateProfile({ interests: selected });
       router.back();
     } catch (e) {
       setError(friendlyError(e));

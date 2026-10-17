@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, {
@@ -12,15 +13,12 @@ import Animated, {
 } from "react-native-reanimated";
 import Avatar from "../../../components/avatar/avatar";
 import Text from "../../../components/ui/text";
-
-interface Person {
-  username: string;
-  avatarId: string;
-}
+import { colors } from "../../../constants/colors";
+import type { AvatarConfig, Partner } from "../../../types";
 
 interface Props {
-  me: Person;
-  partner: Person | null;
+  me: { username: string; avatar?: AvatarConfig };
+  partner: Partner | null;
 }
 
 const SIZE = 104;
@@ -47,7 +45,7 @@ function TravelingDot({ delay }: { delay: number }) {
   return (
     <Animated.View
       style={style}
-      className="h-2.5 w-2.5 rounded-full bg-primary-normal"
+      className="h-2.5 w-2.5 rounded-full bg-primary-dark-hover"
     />
   );
 }
@@ -99,18 +97,16 @@ export default function SearchingAnimation({ me, partner }: Props) {
       <View className="flex-row items-center justify-center gap-3">
         <View className="items-center">
           <Animated.View style={meStyle}>
-            <Avatar id={me.avatarId} size={SIZE} />
+            <Avatar config={me.avatar} size={SIZE} />
           </Animated.View>
-          <Text variant="subtitle2" className="mt-2 text-primary-normal-active">
+          <Text variant="body3" className="mt-2 text-primary-dark-active">
             {me.username}
           </Text>
         </View>
 
         <View className="w-12 flex-row items-center justify-center gap-1">
           {partner ? (
-            <Text variant="h4" className="text-primary-normal">
-              ♥
-            </Text>
+            <Ionicons name="heart" size={26} color={colors.error.normal} />
           ) : (
             [0, 250, 500].map((delay) => (
               <TravelingDot key={delay} delay={delay} />
@@ -127,17 +123,17 @@ export default function SearchingAnimation({ me, partner }: Props) {
               style={[blobStyle, { width: SIZE * 0.9, height: SIZE * 0.9 }]}
               className="absolute items-center justify-center rounded-full bg-primary-normal"
             >
-              <Text variant="h2" className="text-white">
+              <Text variant="h2" className="text-primary-darker">
                 ?
               </Text>
             </Animated.View>
             {partner && (
               <Animated.View style={partnerStyle} className="absolute">
-                <Avatar id={partner.avatarId} size={SIZE} />
+                <Avatar config={partner.avatar} mood={partner.mood} size={SIZE} />
               </Animated.View>
             )}
           </View>
-          <Text variant="subtitle2" className="mt-2 text-primary-normal-active">
+          <Text variant="body3" className="mt-2 text-primary-dark-active">
             {partner ? partner.username : "Alguien"}
           </Text>
         </View>

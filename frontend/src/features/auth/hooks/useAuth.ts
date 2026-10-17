@@ -8,8 +8,8 @@ export function useAuth() {
 
   const signOut = useCallback(() => {
     sessionStore.clear();
-    router.replace("/");
+    router.replace("/login");
   }, [router]);
 
-  return { user, isAuthenticated: !!accessToken, signOut };
+  return { user, isAuthenticated: !!accessToken && !!user, signOut };
 }

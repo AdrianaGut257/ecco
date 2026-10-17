@@ -50,23 +50,26 @@ export default function ThemeSelectionScreen({ onBack, onSelect }: Props) {
             disabled={selected.length === 0}
             onPress={() => onSelect(selected)}
           >
-            Continuar
+            Buscar a alguien
           </Button>
         </View>
       }
     >
       <AppHeader showBack onBack={onBack} />
       <View className="flex-1 px-7 pt-6">
-        <Text variant="h3" className="mb-6">
-          ¿De qué quieres hablar?
+        <Text variant="h3" className="mb-1">
+          ¿De qué te gustaría hablar?
+        </Text>
+        <Text variant="body3" className="mb-6 text-primary-dark-hover">
+          Buscaremos a alguien que también quiera hablar de esto.
         </Text>
 
         <Card className="p-5">
-          <Text variant="subtitle2" className="text-primary-normal-active">
-            Aficiones
+          <Text variant="body2" className="font-heading-semibold text-primary-dark-active">
+            Temas de esta semana
           </Text>
           <Text variant="caption1" className="mb-4 text-primary-dark-hover">
-            {`Elige hasta ${MAX_HOBBIES} para esta semana (${selected.length}/${MAX_HOBBIES})`}
+            {`Elige hasta ${MAX_HOBBIES} (${selected.length}/${MAX_HOBBIES})`}
           </Text>
           <View className="flex-row flex-wrap justify-between gap-y-3">
             {HOBBIES.map((hobby) => {
@@ -87,9 +90,9 @@ export default function ThemeSelectionScreen({ onBack, onSelect }: Props) {
                 >
                   <View className="h-9 w-9 items-center justify-center rounded-full bg-white/70">
                     <Ionicons
-                      name={hobby.icon}
+                      name={active ? "checkmark" : hobby.icon}
                       size={18}
-                      color={colors.secondary.dark}
+                      color={colors.secondary["dark-active"]}
                     />
                   </View>
                   <Text variant="body3" className="text-secondary-dark-active">

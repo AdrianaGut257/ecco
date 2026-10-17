@@ -1,10 +1,12 @@
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Avatar from "../../../components/avatar/avatar";
+import Plant from "../../../components/garden/plant";
 import AppHeader from "../../../components/layout/appHeader";
 import Scenery from "../../../components/layout/scenery";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
+import { CHAT_DAYS } from "../../../constants/plant";
 import { useTimeOfDay } from "../../../hooks/useTimeOfDay";
 import type { Match } from "../../../types";
 
@@ -15,28 +17,42 @@ interface Props {
 
 export default function ConnectionActiveScreen({ match, onContinue }: Props) {
   const time = useTimeOfDay();
+  const deciding = match.status === "deciding";
+
+  const caption = deciding
+    ? `Terminaron sus ${CHAT_DAYS} días. Es momento de decidir si quieren seguir.`
+    : match.canWrite
+      ? `Día ${match.day} de ${CHAT_DAYS}. Te quedan ${match.messagesLeft} mensajes hoy.`
+      : `Día ${match.day} de ${CHAT_DAYS}. Ya compartiste tus mensajes de hoy.`;
 
   return (
     <Scenery time={time}>
       <SafeAreaView className="flex-1" edges={["top"]}>
         <AppHeader showSettings={false} />
         <View className="flex-1 justify-center px-7">
-          <View className="items-center rounded-card bg-white/85 p-6">
-            <Avatar id={match.partner.avatarId} size={110} />
-            <Text
-              variant="subtitle1"
-              className="mt-3 text-primary-normal-active"
-            >
-              Tu conexión activa
+          <View className="items-center rounded-card bg-white/90 p-6">
+            <View className="flex-row items-end">
+              <Avatar
+                config={match.partner.avatar}
+                mood={match.partner.mood}
+                size={104}
+                label={`Avatar de ${match.partner.username}`}
+              />
+              <View className="-ml-4">
+                <Plant stage={match.stage} size={64} />
+              </View>
+            </View>
+            <Text variant="subtitle2" className="mt-3 text-primary-dark-active">
+              {`Tu conversación con ${match.partner.username}`}
             </Text>
             <Text
-              variant="caption1"
+              variant="body3"
               className="mb-5 mt-1 text-center text-primary-dark-hover"
             >
-              {`${match.partner.username} te está esperando. Día ${match.day} de 7.`}
+              {caption}
             </Text>
             <Button color="secondary" onPress={onContinue}>
-              Continuar
+              {deciding ? "Decidir" : "Abrir conversación"}
             </Button>
           </View>
         </View>

@@ -122,7 +122,7 @@ async def test_chat_closes_after_day_seven(client, make_user, db):
         f"/matches/{match['id']}/messages", json={"text": "hola"}, headers=ana["headers"]
     )
     assert res.status_code == 409
-    assert "terminó" in res.json()["detail"]
+    assert "terminaron" in res.json()["detail"]
 
 
 async def test_decision_only_from_day_seven(client, make_user, db):
@@ -134,24 +134,120 @@ async def test_decision_only_from_day_seven(client, make_user, db):
 
     await travel(db, match["id"], 6)
     ok = await client.post(url, json={"decision": "continue"}, headers=ana["headers"])
-    assert ok.status_code == 204
+    assert ok.status_code == 200
+    assert ok.json()["status"] == "waiting"
     twice = await client.post(url, json={"decision": "leave"}, headers=ana["headers"])
     assert twice.status_code == 409
 
     assert (await client.get("/matches/current", headers=ana["headers"])).json() is None
     still = await client.get("/matches/current", headers=luis["headers"])
     assert still.json()["id"] == match["id"]
+    assert still.json()["status"] == "deciding"
 
 
-async def test_garden_lists_conversations_with_plant_stage(client, make_user, db):
+async def say(client, user, match_id, text="hola"):
+    return await client.post(f"/matches/{match_id}/messages", json={"text": text}, headers=user["headers"])
+
+
+async def test_plant_grows_only_on_days_both_people_write(client, make_user, db):
+    ana, luis, match = await paired(client, make_user)
+    mid = match["id"]
+    await say(client, ana, mid)
+    garden = await client.get("/garden", headers=ana["headers"])
+    assert garden.json()[0]["stage"] == 0
+
+    await say(client, luis, mid)
+    garden = await client.get("/garden", headers=ana["headers"])
+    entry = garden.json()[0]
+    assert entry["stage"] == 1
+    assert entry["status"] == "active"
+    assert entry["partnerAvatar"]["hair"] == "long"
+
+
+async def test_daily_message_limit(client, make_user):
     ana, _, match = await paired(client, make_user)
-    await travel(db, match["id"], 3)
-    res = await client.get("/garden", headers=ana["headers"])
-    assert res.status_code == 200
-    entries = res.json()
-    assert len(entries) == 1
-    assert entries[0]["stage"] == 3
-    assert entries[0]["partnerName"]
+    for i in range(5):
+        assert (await say(client, ana, match["id"], f"mensaje {i}")).status_code == 201
+    current = await client.get(f"/matches/{match['id']}", headers=ana["headers"])
+    assert current.json()["messagesLeft"] == 0
+    assert current.json()["canWrite"] is False
+    extra = await say(client, ana, match["id"])
+    assert extra.status_code == 409
+    assert "Mañana" in extra.json()["detail"]
+
+
+async def test_both_continue_blooms_and_keeps_chat_open(client, make_user, db):
+    ana, luis, match = await paired(client, make_user)
+    mid = match["id"]
+    await travel(db, mid, 6)
+    await client.post(f"/matches/{mid}/decision", json={"decision": "continue"}, headers=ana["headers"])
+    res = await client.post(f"/matches/{mid}/decision", json={"decision": "continue"}, headers=luis["headers"])
+    assert res.json()["status"] == "bloomed"
+    assert res.json()["stage"] == 5
+
+    await travel(db, mid, 12)
+    assert (await say(client, ana, mid, "¡Seguimos!")).status_code == 201
+    garden = await client.get("/garden", headers=luis["headers"])
+    assert garden.json()[0]["status"] == "bloomed"
+
+
+async def test_a_leave_is_not_revealed_while_the_other_waits(client, make_user, db):
+    ana, luis, match = await paired(client, make_user)
+    mid = match["id"]
+    await travel(db, mid, 6)
+    await client.post(f"/matches/{mid}/decision", json={"decision": "leave"}, headers=luis["headers"])
+    mine = await client.post(f"/matches/{mid}/decision", json={"decision": "continue"}, headers=ana["headers"])
+    assert mine.json()["status"] == "waiting"
+
+    await travel(db, mid, 11)
+    garden = await client.get("/garden", headers=ana["headers"])
+    assert garden.json()[0]["status"] == "rested"
+
+
+async def test_ending_a_conversation_closes_it_for_both(client, make_user, db):
+    from sqlalchemy import select
+
+    from src.modules.matches.models import Report
+
+    ana, luis, match = await paired(client, make_user)
+    mid = match["id"]
+    bad = await client.post(f"/matches/{mid}/end", json={"reason": "furia"}, headers=ana["headers"])
+    assert bad.status_code == 422
+
+    res = await client.post(
+        f"/matches/{mid}/end", json={"reason": "acoso", "note": "me incomodó"}, headers=ana["headers"]
+    )
+    assert res.status_code == 204
+    report = (await db.execute(select(Report))).scalar_one()
+    assert str(report.reported_id) == luis["user"]["id"]
+
+    assert (await client.get("/matches/current", headers=luis["headers"])).json() is None
+    blocked = await say(client, luis, mid)
+    assert blocked.status_code == 409
+    assert (await client.get("/garden", headers=ana["headers"])).json() == []
+    assert (await client.get("/garden", headers=luis["headers"])).json()[0]["status"] == "closed"
+
+    await search(client, ana, ["Música"])
+    again = await search(client, luis, ["Música"])
+    assert again.json()["status"] == "searching"
+
+
+async def test_partner_sees_mood_only_when_shared(client, make_user):
+    ana, luis, match = await paired(client, make_user)
+    await client.post("/moods", json={"mood": "bien"}, headers=ana["headers"])
+    seen = await client.get("/matches/current", headers=luis["headers"])
+    assert seen.json()["partner"]["mood"] == "bien"
+
+    await client.put("/users/me", json={"shareMood": False}, headers=ana["headers"])
+    hidden = await client.get("/matches/current", headers=luis["headers"])
+    assert hidden.json()["partner"]["mood"] is None
+
+
+async def test_search_state_returns_hobbies_while_waiting(client, make_user):
+    ana = await make_user("Ana")
+    await search(client, ana, ["Viajes", "Comida"])
+    state = await client.get("/matches/search", headers=ana["headers"])
+    assert state.json() == {"status": "searching", "match": None, "hobbies": ["Viajes", "Comida"]}
 
 
 async def test_simultaneous_searches_end_up_paired(client, make_user, db):

@@ -54,13 +54,13 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
           name={focused ? item.active : item.icon}
           size={22}
           color={
-            focused ? colors.primary["normal-active"] : colors.primary.normal
+            focused ? colors.primary["dark-active"] : colors.primary["dark-hover"]
           }
         />
         <Text
           variant="caption2"
           className={
-            focused ? "text-primary-normal-active" : "text-primary-normal"
+            focused ? "text-primary-dark-active" : "text-primary-dark-hover"
           }
         >
           {item.label}
@@ -87,7 +87,11 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
               : "bg-secondary-normal active:bg-secondary-normal-active"
           }`}
         >
-          <Ionicons name="chatbubble-ellipses" size={28} color={colors.white} />
+          <Ionicons
+            name="chatbubble-ellipses"
+            size={28}
+            color={colors.secondary.darker}
+          />
         </Pressable>
       </View>
       {RIGHT.map(renderItem)}

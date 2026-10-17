@@ -50,8 +50,10 @@ async def update_profile(db: AsyncSession, user: User, data: ProfileUpdate) -> U
             raise Conflict(USERNAME_TAKEN)
     if data.username is not None:
         user.username = data.username
-    if data.avatar_id is not None:
-        user.avatar_id = data.avatar_id
+    if data.avatar is not None:
+        user.avatar = data.avatar.model_dump()
+    if data.share_mood is not None:
+        user.share_mood = data.share_mood
     if data.interests is not None:
         _replace_interests(user, data.interests, data.interest_details)
     if data.terms_accepted and user.terms_accepted_at is None:

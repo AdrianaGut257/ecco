@@ -17,7 +17,7 @@ export default function Wordmark({ className = "", size = "md" }: Props) {
     <Text
       accessibilityRole="header"
       variant={VARIANTS[size]}
-      className={`tracking-[3px] ${className || "text-primary-normal-active"}`}
+      className={`tracking-[3px] ${className || "text-primary-dark-hover"}`}
     >
       ECCO
     </Text>

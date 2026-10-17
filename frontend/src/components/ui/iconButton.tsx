@@ -54,7 +54,7 @@ export default function IconButton({
       <Ionicons
         name={icon}
         size={size * 0.5}
-        color={filled ? colors.white : colors[tone]["normal-active"]}
+        color={filled ? colors[tone].darker : colors[tone]["dark-hover"]}
       />
     </Pressable>
   );

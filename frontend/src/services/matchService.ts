@@ -1,50 +1,29 @@
-import type { Match, MatchDecision } from "../types";
-import { ApiError, api } from "./api";
-import { MOCK_MATCH, USE_MOCKS, wait } from "./mocks";
-
-interface SearchState {
-  status: "idle" | "searching" | "matched";
-  match: Match | null;
-}
-
-let mockCurrent: Match | null = null;
+import type {
+  Match,
+  MatchDecision,
+  ReportReason,
+  SearchState,
+} from "../types";
+import { api } from "./api";
 
 export const matchService = {
-  async getCurrent(): Promise<Match | null> {
-    if (!USE_MOCKS) return api.get<Match | null>("/matches/current");
-    await wait(400);
-    return mockCurrent;
-  },
+  current: () => api.get<Match | null>("/matches/current"),
 
-  async find(hobbies: string[]): Promise<Match> {
-    if (USE_MOCKS) {
-      await wait(4200);
-      mockCurrent = MOCK_MATCH;
-      return MOCK_MATCH;
-    }
+  get: (matchId: string) => api.get<Match>(`/matches/${matchId}`),
 
-    let state = await api.post<SearchState>("/matches", { hobbies });
-    while (state.status !== "matched") {
-      if (state.status === "idle") {
-        throw new ApiError(
-          "notFound",
-          "La búsqueda terminó. Intenta de nuevo.",
-        );
-      }
-      await wait(2500);
-      state = await api.get<SearchState>("/matches/search");
-    }
-    return state.match as Match;
-  },
+  startSearch: (hobbies: string[]) =>
+    api.post<SearchState>("/matches", { hobbies }),
 
-  async cancel(): Promise<void> {
-    if (!USE_MOCKS) await api.delete("/matches/search");
-  },
+  searchState: () => api.get<SearchState>("/matches/search"),
 
-  async decide(matchId: string, decision: MatchDecision): Promise<void> {
-    if (!USE_MOCKS)
-      return api.post(`/matches/${matchId}/decision`, { decision });
-    await wait(500);
-    mockCurrent = null;
-  },
+  cancelSearch: () => api.delete<void>("/matches/search"),
+
+  decide: (matchId: string, decision: MatchDecision) =>
+    api.post<Match>(`/matches/${matchId}/decision`, { decision }),
+
+  end: (matchId: string, reason?: ReportReason, note?: string) =>
+    api.post<void>(`/matches/${matchId}/end`, {
+      reason: reason ?? null,
+      note: note ?? null,
+    }),
 };

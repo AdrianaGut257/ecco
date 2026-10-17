@@ -4,7 +4,7 @@ async def test_profile_update_sets_avatar_username_and_interests(client, make_us
         "/users/me",
         json={
             "username": "Ana09",
-            "avatarId": "a3",
+            "avatar": {"skin": "4", "hair": "curly", "hairColor": "5", "freckles": True},
             "interests": ["Películas", "Series", "Pop", "Series"],
             "interestDetails": {"Películas": {"Género": ["Drama"]}},
             "termsAccepted": True,
@@ -14,8 +14,21 @@ async def test_profile_update_sets_avatar_username_and_interests(client, make_us
     assert res.status_code == 200
     body = res.json()
     assert body["username"] == "Ana09"
-    assert body["avatarId"] == "a3"
+    assert body["avatar"]["hair"] == "curly"
+    assert body["avatar"]["hairColor"] == "5"
+    assert body["avatar"]["freckles"] is True
+    assert body["avatar"]["glasses"] == "none"
     assert body["interests"] == ["Películas", "Pop", "Series"]
+    assert body["onboarded"] is True
+
+
+async def test_new_account_is_not_onboarded_until_profile_is_complete(client):
+    res = await client.post(
+        "/auth/register",
+        json={"name": "Nina", "email": "nina@ejemplo.com", "password": "Clave#2026"},
+    )
+    assert res.json()["user"]["onboarded"] is False
+    assert res.json()["user"]["shareMood"] is True
 
 
 async def test_username_must_be_unique_ignoring_case(client, make_user):
@@ -35,9 +48,9 @@ async def test_username_with_spaces_is_rejected(client, make_user):
     assert res.status_code == 422
 
 
-async def test_unknown_avatar_rejected(client, make_user):
+async def test_unknown_avatar_option_rejected(client, make_user):
     ana = await make_user("Ana")
-    res = await client.put("/users/me", json={"avatarId": "zzz"}, headers=ana["headers"])
+    res = await client.put("/users/me", json={"avatar": {"hair": "mohawk"}}, headers=ana["headers"])
     assert res.status_code == 422
 
 
@@ -48,9 +61,17 @@ async def test_needs_at_least_three_interests(client, make_user):
     assert "al menos 3" in res.json()["detail"]
 
 
-async def test_mood_is_saved_and_validated(client, make_user):
+async def test_mood_is_saved_validated_and_listed(client, make_user):
     ana = await make_user("Ana")
     ok = await client.post("/moods", json={"mood": "feliz"}, headers=ana["headers"])
     assert ok.status_code == 201
     bad = await client.post("/moods", json={"mood": "furioso"}, headers=ana["headers"])
     assert bad.status_code == 422
+    history = await client.get("/moods/me", headers=ana["headers"])
+    assert [m["mood"] for m in history.json()] == ["feliz"]
+
+
+async def test_share_mood_can_be_turned_off(client, make_user):
+    ana = await make_user("Ana")
+    res = await client.put("/users/me", json={"shareMood": False}, headers=ana["headers"])
+    assert res.json()["shareMood"] is False

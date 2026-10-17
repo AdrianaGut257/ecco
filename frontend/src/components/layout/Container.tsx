@@ -17,9 +17,9 @@ interface Props {
 
 const BACKGROUNDS: Record<Background, string> = {
   light: "bg-primary-light",
-  primary: "bg-primary-normal",
-  secondary: "bg-secondary-dark",
-  tertiary: "bg-tertiary-dark-hover",
+  primary: "bg-primary-dark-hover",
+  secondary: "bg-secondary-dark-hover",
+  tertiary: "bg-tertiary-dark-active",
 };
 
 export default function Container({

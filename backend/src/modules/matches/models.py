@@ -32,10 +32,15 @@ class Match(Base):
     user_b_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("users.id", ondelete="CASCADE"))
     hobbies: Mapped[list] = mapped_column(JSON, default=list)
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    ended_by_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid, ForeignKey("users.id", ondelete="SET NULL")
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user_a: Mapped[User] = relationship(foreign_keys=[user_a_id], lazy="selectin")
     user_b: Mapped[User] = relationship(foreign_keys=[user_b_id], lazy="selectin")
+    decisions: Mapped[list["MatchDecision"]] = relationship(lazy="selectin")
 
 
 class MatchRequest(Base):
@@ -74,4 +79,16 @@ class MatchDecision(Base):
     match_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("matches.id", ondelete="CASCADE"))
     user_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("users.id", ondelete="CASCADE"))
     decision: Mapped[str] = mapped_column(String(10))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Report(Base):
+    __tablename__ = "reports"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    match_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("matches.id", ondelete="CASCADE"))
+    reporter_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("users.id", ondelete="CASCADE"))
+    reported_id: Mapped[uuid.UUID] = mapped_column(Uuid, ForeignKey("users.id", ondelete="CASCADE"))
+    reason: Mapped[str] = mapped_column(String(20))
+    note: Mapped[str | None] = mapped_column(String(500))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -65,12 +65,22 @@ export default function InterestDetailsScreen({
       },
     }));
 
+  const complete = () => {
+    const merged: InterestItems = { ...items };
+    for (const interest of selectedInterests) {
+      if (INTEREST_DETAILS[interest]) continue;
+      const text = (drafts[draftKey(interest, "general")] ?? "").trim();
+      if (text) merged[interest] = { general: [text] };
+    }
+    onComplete(merged);
+  };
+
   return (
     <Container
       scroll
       footer={
         <>
-          <Button onPress={() => onComplete(items)}>Continuar</Button>
+          <Button onPress={complete}>Continuar</Button>
           <Pressable
             onPress={() => onComplete({})}
             className="items-center py-3"
@@ -101,7 +111,7 @@ export default function InterestDetailsScreen({
               <Ionicons
                 name="sparkles-outline"
                 size={16}
-                color={colors.primary.normal}
+                color={colors.primary["dark-hover"]}
               />
               <Text variant="caption1" className="text-primary-dark-hover">
                 {interest}

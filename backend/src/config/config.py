@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     # JWT
     jwt_secret_key: str
     jwt_algorithm: str
-    access_token_expire_minutes: int
+    access_token_expire_minutes: int = 60 * 24 * 7
 
     # SMTP
     smtp_host: str

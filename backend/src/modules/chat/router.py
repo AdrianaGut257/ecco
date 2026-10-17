@@ -10,12 +10,17 @@ from src.core.time import utcnow
 from src.modules.chat.models import Message
 from src.modules.chat.schemas import MessageIn, MessageOut
 from src.modules.matches import service
-from src.modules.matches.constants import MATCH_DAYS
-from src.modules.matches.models import MatchDecision
+from src.modules.matches.constants import MATCH_DAYS, MESSAGES_PER_DAY
 
 router = APIRouter(prefix="/matches", tags=["Chat"])
 
 PAGE_SIZE = 200
+
+CLOSED_REASONS = {
+    "closed": "Esta conversación se cerró. Gracias por el tiempo que compartiste.",
+    "waiting": "Ya enviaste tu respuesta final, así que esta conversación se cerró.",
+    "rested": "Esta conversación ya terminó. ¡Gracias por compartir!",
+}
 
 
 def _out(message: Message, user_id: UUID) -> MessageOut:
@@ -48,18 +53,16 @@ async def list_messages(
 @router.post("/{match_id}/messages", response_model=MessageOut, status_code=201)
 async def send_message(match_id: UUID, data: MessageIn, user: CurrentUser, db: DbSession):
     match = await service.get_participant_match(db, user.id, match_id)
-    day = service.current_day(match, utcnow())
+    now = utcnow()
+    day = service.current_day(match, now)
+    status = service.status_for(match, user.id, now)
 
-    if day > MATCH_DAYS:
-        raise Conflict("Esta conversación ya terminó. ¡Gracias por compartir!")
-
-    decided = await db.execute(
-        select(MatchDecision.id).where(
-            MatchDecision.match_id == match_id, MatchDecision.user_id == user.id
-        )
-    )
-    if decided.first() is not None:
-        raise Conflict("Ya enviaste tu respuesta final, así que esta conversación se cerró.")
+    if status in CLOSED_REASONS:
+        raise Conflict(CLOSED_REASONS[status])
+    if status != "bloomed" and day > MATCH_DAYS:
+        raise Conflict("Los 7 días de conversación terminaron. Es momento de decidir.")
+    if await service.sent_on_day(db, match.id, user.id, day) >= MESSAGES_PER_DAY:
+        raise Conflict("Ya compartiste tus mensajes de hoy. Mañana podrás escribir de nuevo.")
 
     message = Message(match_id=match_id, sender_id=user.id, text=data.text, day=day)
     db.add(message)

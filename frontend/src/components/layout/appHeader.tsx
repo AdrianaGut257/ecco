@@ -34,8 +34,8 @@ export default function AppHeader({
           >
             <Ionicons
               name="arrow-back"
-              size={20}
-              color={colors.primary["normal-active"]}
+              size={22}
+              color={colors.primary["dark-hover"]}
             />
           </Pressable>
         )}
@@ -50,8 +50,8 @@ export default function AppHeader({
         >
           <Ionicons
             name="settings-outline"
-            size={20}
-            color={colors.primary["normal-active"]}
+            size={22}
+            color={colors.primary["dark-hover"]}
           />
         </Pressable>
       ) : (

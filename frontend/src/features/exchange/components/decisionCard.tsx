@@ -4,32 +4,26 @@ import Banner from "../../../components/ui/banner";
 import Button from "../../../components/ui/button";
 import Card from "../../../components/ui/card";
 import Text from "../../../components/ui/text";
+import { DECISION_GRACE_DAYS, CHAT_DAYS } from "../../../constants/plant";
 import { friendlyError } from "../../../services/api";
 import { matchService } from "../../../services/matchService";
-import type { MatchDecision } from "../../../types";
+import type { Match, MatchDecision } from "../../../types";
 
 interface Props {
-  matchId: string;
-  partnerName: string;
-  onDecided: () => void;
+  match: Match;
+  onDecided: (updated: Match, decision: MatchDecision) => void;
 }
 
-export default function DecisionCard({
-  matchId,
-  partnerName,
-  onDecided,
-}: Props) {
+export default function DecisionCard({ match, onDecided }: Props) {
   const [loading, setLoading] = useState<MatchDecision | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
+  const daysLeft = CHAT_DAYS + DECISION_GRACE_DAYS - match.day;
 
   const decide = async (decision: MatchDecision) => {
     setLoading(decision);
     setError(null);
     try {
-      await matchService.decide(matchId, decision);
-      setDone(true);
-      onDecided();
+      onDecided(await matchService.decide(match.id, decision), decision);
     } catch (e) {
       setError(friendlyError(e));
     } finally {
@@ -37,22 +31,17 @@ export default function DecisionCard({
     }
   };
 
-  if (done) {
-    return (
-      <Banner
-        tone="success"
-        message="Gracias. Tu respuesta es privada y solo se abre la conexión si ambos quieren."
-      />
-    );
-  }
-
   return (
     <Card tone="green" className="gap-3">
-      <Text variant="body3" className="text-secondary-dark-active">
-        {`Llegó el día 7. ¿Te gustaría seguir en contacto con ${partnerName}?`}
+      <Text variant="body2" className="font-heading-semibold text-secondary-darker">
+        {`¿Te gustaría seguir en contacto con ${match.partner.username}?`}
       </Text>
-      <Text variant="caption1" className="text-secondary-dark-hover">
-        Nadie verá tu respuesta a menos que ambos digan que sí.
+      <Text variant="caption1" className="text-secondary-dark-active">
+        {`Tu respuesta es privada: solo se abre la conexión si ambos dicen que sí. ${
+          daysLeft > 0
+            ? `Tienes ${daysLeft === 1 ? "1 día más" : `${daysLeft} días más`} para pensarlo.`
+            : "Hoy es el último día para responder."
+        }`}
       </Text>
       {error && <Banner tone="error" message={error} />}
       <View className="flex-row gap-3">
@@ -76,7 +65,7 @@ export default function DecisionCard({
             disabled={loading !== null}
             onPress={() => decide("leave")}
           >
-            Mejor no
+            Cerrar aquí
           </Button>
         </View>
       </View>

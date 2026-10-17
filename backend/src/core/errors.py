@@ -4,6 +4,9 @@ from fastapi.responses import JSONResponse
 
 GENERIC_VALIDATION = "Hay algo que revisar en lo que enviaste."
 VALUE_ERROR_PREFIX = "Value error, "
+FIELD_MESSAGES = {
+    "email": "Ese correo no parece válido. Revísalo con calma.",
+}
 
 
 class AppError(Exception):
@@ -47,7 +50,8 @@ def _message(error: dict) -> str:
     msg = str(error.get("msg", ""))
     if msg.startswith(VALUE_ERROR_PREFIX):
         return msg[len(VALUE_ERROR_PREFIX):]
-    return GENERIC_VALIDATION
+    field = str(error.get("loc", ("",))[-1])
+    return FIELD_MESSAGES.get(field, GENERIC_VALIDATION)
 
 
 def register_error_handlers(app: FastAPI) -> None:

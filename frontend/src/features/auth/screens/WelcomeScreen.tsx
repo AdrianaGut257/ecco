@@ -27,10 +27,10 @@ export default function WelcomeScreen() {
         <View className="my-6">
           <Plant stage={1} size={200} />
         </View>
-        <Text variant="h3" className="text-primary-normal">
+        <Text variant="h3" className="text-primary-dark-hover">
           Te damos la bienvenida
         </Text>
-        <Text variant="h3" className="text-primary-normal">
+        <Text variant="h3" className="text-primary-dark-hover">
           {user.username}
         </Text>
         <Text variant="body3" className="mt-2 text-primary-dark-hover">
