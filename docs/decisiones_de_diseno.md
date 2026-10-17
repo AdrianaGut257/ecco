@@ -14,7 +14,7 @@ Siguiendo a Vargas Márquez et al. (2021), en la etapa de idear se generan mucha
 
 | Pregunta "¿Cómo podríamos...?" | Idea implementada | Sustento | Dónde está en la app |
 |---|---|---|---|
-| ...identificar los intereses antes de emparejar? | Selección de intereses en el onboarding (mínimo 3) y de temas de la semana (máximo 3) antes de buscar. | Mapa de Motivaciones (13/15); Liu et al. (2026); deseo explícito de los Usuarios 1 y 5. | Onboarding → "¿Qué te gusta?"; Conversar → "Temas de esta semana". |
+| ...identificar los intereses antes de emparejar? | Selección de intereses en el onboarding (mínimo 3). Antes de buscar, se eligen hasta 3 temas de la semana **solo entre los propios intereses**; el backend rechaza temas ajenos. | Mapa de Motivaciones (13/15); Liu et al. (2026); deseo explícito de los Usuarios 1 y 5. Mostrar solo lo que la persona eligió mantiene la coherencia entre pantallas y reduce opciones (Shneiderman; Ley de Hick). | Onboarding → "¿Qué te gusta?"; Conversar → "Temas de esta semana". |
 | ...mostrar qué tienen en común antes de chatear? | La pantalla "Esta semana conversarás con" muestra los temas e intereses compartidos. | Causa raíz de los 5 ¿Por qué?: "no sé de qué hablar" (Usuario 1). | `matchFoundScreen` |
 | ...sugerir temas basados en gustos compartidos? | "Ideas para romper el hielo": 3 sugerencias generadas a partir de los temas e intereses en común. Al tocarlas se llenan en el campo de texto para editarlas, no se envían solas. | Usuario 1: "si no hay algo en común, no sabría de qué hablar". Personalización como el factor más importante del engagement, 27 % (Vakili, 2024). Se limitan a 3 por la Ley de Hick. | Conversación, encima del campo de texto. |
 | ...sugerir mensajes positivos cuando no se sabe qué decir? | En las mismas sugerencias se mezclan frases de validación ("Gracias por quedarte en la conversación", "Qué bueno leerte"). | Frases pedidas por el Usuario 1 ("gracias por quedarte"); reconocimiento social positivo (Clark, Algoe y Green, 2018). | `sparks.ts` |
@@ -40,6 +40,8 @@ Siguiendo a Vargas Márquez et al. (2021), en la etapa de idear se generan mucha
 | Mensajes largos tipo "story time" (Usuario 4) | Atendida parcialmente. | Se permiten 500 caracteres por mensaje. No se agregó un formato especial para no romper el principio de micro-interacción. |
 | Debates de opinión (Usuario 4) | Descartada. | Fuera del alcance: la app es de conversación uno a uno, no grupal (límites 1.5). |
 | Avatar 3D (Unity/Blender) | Reemplazado por un avatar 2D en SVG. | El prototipo se implementó en Expo/React Native. El SVG es liviano, se personaliza en tiempo real y funciona en Android sin motor 3D. |
+
+| Lista fija de 6 temas (Viajes, Música, Juegos, Comida, Naturaleza, Películas) al buscar pareja | **Reemplazada** por los intereses de cada persona. | Mostraba temas que la persona no había elegido, lo que rompía la coherencia con su perfil (detectado en pruebas con la usuaria). |
 
 ## 3. Decisiones de diseño visual con sustento
 

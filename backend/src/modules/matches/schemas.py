@@ -4,7 +4,7 @@ from typing import Literal
 from pydantic import field_validator
 
 from src.core.schemas import CamelModel
-from src.modules.matches.constants import HOBBIES, MAX_HOBBIES, REPORT_REASONS
+from src.modules.matches.constants import MAX_HOBBIES, REPORT_REASONS
 from src.modules.moods.schemas import MoodValue
 from src.modules.users.avatar import AvatarConfig
 
@@ -41,13 +41,11 @@ class SearchIn(CamelModel):
     @field_validator("hobbies")
     @classmethod
     def valid_hobbies(cls, value: list[str]) -> list[str]:
-        cleaned = list(dict.fromkeys(h.strip() for h in value))
+        cleaned = list(dict.fromkeys(h.strip() for h in value if h.strip()))
         if not cleaned:
-            raise ValueError("Elige al menos una afición para esta semana.")
+            raise ValueError("Elige al menos un tema para esta semana.")
         if len(cleaned) > MAX_HOBBIES:
-            raise ValueError(f"Puedes elegir hasta {MAX_HOBBIES} aficiones.")
-        if any(h not in HOBBIES for h in cleaned):
-            raise ValueError("Una de las aficiones no está disponible.")
+            raise ValueError(f"Puedes elegir hasta {MAX_HOBBIES} temas.")
         return cleaned
 
 

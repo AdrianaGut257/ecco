@@ -21,9 +21,9 @@ async def travel(db, match_id, days):
 async def paired(client, make_user):
     ana = await make_user("Ana", "ana@ejemplo.com", ["Películas", "Series", "Pop"])
     luis = await make_user("Luis", "luis@ejemplo.com", ["Películas", "Rock", "Jazz"])
-    first = await search(client, ana, ["Música", "Viajes"])
+    first = await search(client, ana, ["Pop", "Series"])
     assert first.json()["status"] == "searching"
-    second = await search(client, luis, ["Música"])
+    second = await search(client, luis, ["Películas"])
     assert second.json()["status"] == "matched"
     return ana, luis, second.json()["match"]
 
@@ -42,14 +42,16 @@ async def test_first_user_waits_second_user_gets_matched(client, make_user):
 async def test_search_validates_hobbies(client, make_user):
     ana = await make_user("Ana")
     assert (await search(client, ana, [])).status_code == 422
-    assert (await search(client, ana, ["Viajes", "Música", "Juegos", "Comida"])).status_code == 422
-    assert (await search(client, ana, ["Surf"])).status_code == 422
+    assert (await search(client, ana, ["Películas", "Series", "Pop", "Rock"])).status_code == 422
+    outside = await search(client, ana, ["Surf"])
+    assert outside.status_code == 400
+    assert "tus intereses" in outside.json()["detail"]
 
 
 async def test_search_can_be_cancelled_and_repeated_safely(client, make_user):
     ana = await make_user("Ana")
-    await search(client, ana, ["Viajes"])
-    again = await search(client, ana, ["Viajes"])
+    await search(client, ana, ["Películas"])
+    again = await search(client, ana, ["Películas"])
     assert again.json()["status"] == "searching"
     cancel = await client.delete("/matches/search", headers=ana["headers"])
     assert cancel.status_code == 204
@@ -61,25 +63,25 @@ async def test_prefers_the_candidate_with_more_in_common(client, make_user, db):
     ana = await make_user("Ana", "ana@ejemplo.com", ["Películas", "Series", "Pop"])
     luis = await make_user("Luis", "luis@ejemplo.com", ["Rock", "Jazz", "Café"])
     eva = await make_user("Eva", "eva@ejemplo.com", ["Películas", "Series", "Pop"])
-    for person, hobbies in ((luis, ["Juegos"]), (eva, ["Música"])):
+    for person, hobbies in ((luis, ["Rock"]), (eva, ["Películas"])):
         db.add(MatchRequest(user_id=uuid.UUID(person["user"]["id"]), hobbies=hobbies))
     await db.commit()
 
-    res = await search(client, ana, ["Música"])
+    res = await search(client, ana, ["Películas"])
     assert res.json()["match"]["partner"]["username"] == eva["user"]["username"]
 
 
 async def test_cannot_search_while_in_a_conversation(client, make_user):
     ana, _, _ = await paired(client, make_user)
-    res = await search(client, ana, ["Viajes"])
+    res = await search(client, ana, ["Pop"])
     assert res.status_code == 409
 
 
 async def test_users_who_already_met_are_not_paired_again(client, make_user, db):
     ana, luis, match = await paired(client, make_user)
     await travel(db, match["id"], 20)
-    await search(client, ana, ["Música"])
-    res = await search(client, luis, ["Música"])
+    await search(client, ana, ["Películas"])
+    res = await search(client, luis, ["Películas"])
     assert res.json()["status"] == "searching"
 
 
@@ -227,8 +229,8 @@ async def test_ending_a_conversation_closes_it_for_both(client, make_user, db):
     assert (await client.get("/garden", headers=ana["headers"])).json() == []
     assert (await client.get("/garden", headers=luis["headers"])).json()[0]["status"] == "closed"
 
-    await search(client, ana, ["Música"])
-    again = await search(client, luis, ["Música"])
+    await search(client, ana, ["Películas"])
+    again = await search(client, luis, ["Películas"])
     assert again.json()["status"] == "searching"
 
 
@@ -245,9 +247,9 @@ async def test_partner_sees_mood_only_when_shared(client, make_user):
 
 async def test_search_state_returns_hobbies_while_waiting(client, make_user):
     ana = await make_user("Ana")
-    await search(client, ana, ["Viajes", "Comida"])
+    await search(client, ana, ["Series", "Pop"])
     state = await client.get("/matches/search", headers=ana["headers"])
-    assert state.json() == {"status": "searching", "match": None, "hobbies": ["Viajes", "Comida"]}
+    assert state.json() == {"status": "searching", "match": None, "hobbies": ["Series", "Pop"]}
 
 
 async def test_simultaneous_searches_end_up_paired(client, make_user, db):
@@ -257,7 +259,7 @@ async def test_simultaneous_searches_end_up_paired(client, make_user, db):
 
     ana = await make_user("Ana", "ana@ejemplo.com")
     luis = await make_user("Luis", "luis@ejemplo.com")
-    await asyncio.gather(search(client, ana, ["Música"]), search(client, luis, ["Música"]))
+    await asyncio.gather(search(client, ana, ["Pop"]), search(client, luis, ["Pop"]))
 
     states = [
         (await client.get("/matches/search", headers=u["headers"])).json() for u in (ana, luis)

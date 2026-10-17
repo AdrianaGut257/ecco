@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -66,6 +67,8 @@ const greeting = () => {
   return "Buenas noches";
 };
 
+const SEARCH_POLL_MS = 5000;
+
 const isToday = (iso: string) =>
   new Date(iso).toDateString() === new Date().toDateString();
 
@@ -75,6 +78,8 @@ export default function HomeScreen() {
   const { user } = sessionStore.use();
   const [match, setMatch] = useState<Match | null>(null);
   const [searching, setSearching] = useState(false);
+  const [justFound, setJustFound] = useState(false);
+  const focused = useIsFocused();
   const [mood, setMood] = useState<MoodId | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +111,23 @@ export default function HomeScreen() {
     }, []),
   );
 
+  useEffect(() => {
+    if (!focused || !searching) return;
+    const id = setInterval(async () => {
+      try {
+        const state = await matchService.searchState();
+        if (state.status === "matched" && state.match) {
+          setMatch(state.match);
+          setSearching(false);
+          setJustFound(true);
+        } else if (state.status === "idle") {
+          setSearching(false);
+        }
+      } catch {}
+    }, SEARCH_POLL_MS);
+    return () => clearInterval(id);
+  }, [focused, searching]);
+
   const selectMood = async (id: MoodId) => {
     setMood(id);
     setSaving(true);
@@ -122,16 +144,22 @@ export default function HomeScreen() {
   const low = mood === "fatal" || mood === "mal";
 
   const conversation = match
-    ? {
-        title: `Tu conversación con ${match.partner.username}`,
-        caption:
-          match.status === "deciding"
-            ? "Llegó el momento de decidir si quieren seguir."
-            : match.canWrite
-              ? `Día ${match.day} · te quedan ${match.messagesLeft} mensajes hoy`
-              : "Ya compartiste tus mensajes de hoy. Mañana sigue.",
-        action: match.status === "deciding" ? "Decidir" : "Abrir",
-      }
+    ? justFound
+      ? {
+          title: "¡Encontramos a alguien!",
+          caption: `${match.partner.username} comparte tus gustos. Salúdale cuando quieras.`,
+          action: "Conocer",
+        }
+      : {
+          title: `Tu conversación con ${match.partner.username}`,
+          caption:
+            match.status === "deciding"
+              ? "Llegó el momento de decidir si quieren seguir."
+              : match.canWrite
+                ? `Día ${match.day} · te quedan ${match.messagesLeft} mensajes hoy`
+                : "Ya compartiste tus mensajes de hoy. Mañana sigue.",
+          action: match.status === "deciding" ? "Decidir" : "Abrir",
+        }
     : searching
       ? {
           title: "Estamos buscando",

@@ -33,7 +33,8 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 ### Reglas (`modules/matches/constants.py` y `service.py`)
 
 - El avatar es un `AvatarConfig` validado (`users/avatar.py`): skin, hair, hairColor, glasses, freckles, mole, earring, top y background.
-- Emparejamiento: puntaje = hobbies en común × 3 + intereses en común. Nunca se repite una pareja. `pg_advisory_xact_lock` evita emparejamientos dobles. La búsqueda dura 24 h.
+- Los temas de la búsqueda (`hobbies`, máximo 3) deben estar entre los intereses del usuario; si no, `start_search` responde 400. Ya no existe la lista fija de 6 temas.
+- Emparejamiento: puntaje = temas en común × 3 + intereses en común. Nunca se repite una pareja. `pg_advisory_xact_lock` evita emparejamientos dobles. La búsqueda dura 24 h.
 - `status_for` (desde la perspectiva de cada usuario): `active` → `deciding` (desde el día 7 hasta el 10) → `waiting` / `bloomed` (ambos siguen) / `rested`. `closed` significa que alguien salió o reportó. Un "no" de la otra persona no se revela mientras tú esperas.
 - La planta (`stage`, de 0 a 5) = días en que ambos escribieron. Con `bloomed` queda en 5.
 - Se puede escribir en `active` y `deciding` hasta el día 7; en `bloomed`, siempre. Tope de `MESSAGES_PER_DAY = 5` por persona y día.
@@ -48,9 +49,10 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
   - `onboarding`: acuerdos → avatar → intereses → detalles → diapositivas, y al final guarda todo en un solo `PUT /users/me`.
   - `exchange`:
     - `exchangeFlow` retoma una búsqueda en curso.
+    - `themeSelectionScreen` muestra solo los intereses del usuario, agrupados por categoría.
     - `useMatching` consulta el estado de la búsqueda cada 3 s.
     - `conversationScreen` + `useConversation` consultan el match y los mensajes cada 4 s, solo con la pantalla enfocada.
-    - `sparks.ts` genera las ideas para conversar.
+    - `sparks.ts` genera las ideas para conversar a partir de los temas y de la categoría de cada uno.
     - `safetySheet` maneja salir y reportar.
     - `decisionCard` y `outcomeScreen` cubren el cierre de la semana.
   - `garden`: grupos "Siguen floreciendo", "Creciendo ahora" y "Recuerdos".

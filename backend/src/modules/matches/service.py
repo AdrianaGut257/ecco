@@ -6,7 +6,7 @@ from sqlalchemy import case, func, or_, select, text, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.errors import Conflict, NotFound
+from src.core.errors import BadRequest, Conflict, NotFound
 from src.core.time import utcnow
 from src.modules.chat.models import Message
 from src.modules.matches.constants import (
@@ -279,6 +279,9 @@ async def _try_pair(
 async def start_search(
     db: AsyncSession, user: User, hobbies: list[str]
 ) -> SearchOut:
+    if not set(hobbies) <= {i.name for i in user.interests}:
+        raise BadRequest("Elige temas que estén entre tus intereses.")
+
     await _lock_matchmaking(db)
     now = utcnow()
     if await get_current_match(db, user.id, now):
