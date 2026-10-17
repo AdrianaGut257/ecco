@@ -22,10 +22,17 @@ class CommonInterestOut(CamelModel):
     items: list[str]
 
 
+class SharedFavoriteOut(CamelModel):
+    interest: str
+    kind: Literal["subtopic", "item"]
+    label: str
+
+
 class MatchOut(CamelModel):
     id: str
     partner: PartnerOut
     common_interests: list[CommonInterestOut]
+    shared_favorites: list[SharedFavoriteOut]
     hobbies: list[str]
     started_at: datetime
     day: int

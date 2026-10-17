@@ -20,9 +20,12 @@ export interface User {
   email: string;
   avatar: AvatarConfig;
   interests: string[];
+  interestDetails: InterestDetails;
   shareMood: boolean;
   onboarded: boolean;
 }
+
+export type InterestDetails = Record<string, Record<string, string[]>>;
 
 export interface AuthSession {
   accessToken: string;
@@ -42,7 +45,7 @@ export interface ProfilePatch {
   username?: string;
   avatar?: AvatarConfig;
   interests?: string[];
-  interestDetails?: Record<string, Record<string, string[]>>;
+  interestDetails?: InterestDetails;
   termsAccepted?: boolean;
   shareMood?: boolean;
 }
@@ -61,10 +64,17 @@ export interface Partner {
   mood: MoodId | null;
 }
 
+export interface SharedFavorite {
+  interest: string;
+  kind: "subtopic" | "item";
+  label: string;
+}
+
 export interface Match {
   id: string;
   partner: Partner;
   commonInterests: { category: string; items: string[] }[];
+  sharedFavorites: SharedFavorite[];
   hobbies: string[];
   startedAt: string;
   day: number;
@@ -106,4 +116,9 @@ export interface GardenEntry {
   stage: number;
   status: MatchStatus;
   startedAt: string;
+}
+
+export interface Suggestion {
+  name: string;
+  description: string | null;
 }

@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:8081"
     password_reset_expire_minutes: int = 30
 
+    # Google Knowledge Graph Search (autocompletado de intereses)
+    google_kg_api_key: str | None = None
+
     # Optional full database URL (overrides the POSTGRES_* values)
     database_url_env: str | None = Field(default=None, alias="DATABASE_URL")
 

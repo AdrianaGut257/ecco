@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 import { colors } from "../../constants/colors";
 import Text from "./text";
 
@@ -47,17 +47,42 @@ export default function Chip({
   onRemove,
   disabled,
 }: Props) {
+  const className = `min-h-[36px] flex-row items-center gap-1.5 rounded-chip border px-3.5 py-2 ${
+    selected ? ACTIVE[tone] : IDLE[tone]
+  } ${disabled ? "opacity-50" : ""}`;
+
+  if (!onPress) {
+    return (
+      <View className={className}>
+        <Text
+          variant="caption1"
+          className={selected ? ACTIVE_LABEL[tone] : IDLE_LABEL[tone]}
+        >
+          {label}
+        </Text>
+        {onRemove && (
+          <Pressable
+            onPress={onRemove}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel={`Quitar ${label}`}
+          >
+            <Ionicons name="close" size={14} color={ACTIVE_ICON[tone]} />
+          </Pressable>
+        )}
+      </View>
+    );
+  }
+
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected, disabled }}
-      disabled={disabled || !onPress}
+      disabled={disabled}
       onPress={onPress}
-      className={`min-h-[36px] flex-row items-center gap-1.5 rounded-chip border px-3.5 py-2 ${
-        selected ? ACTIVE[tone] : IDLE[tone]
-      } ${disabled ? "opacity-50" : ""}`}
+      className={className}
     >
-      {selected && onPress && (
+      {selected && (
         <Ionicons name="checkmark" size={13} color={ACTIVE_ICON[tone]} />
       )}
       <Text
@@ -66,16 +91,6 @@ export default function Chip({
       >
         {label}
       </Text>
-      {onRemove && (
-        <Pressable
-          onPress={onRemove}
-          hitSlop={10}
-          accessibilityRole="button"
-          accessibilityLabel={`Quitar ${label}`}
-        >
-          <Ionicons name="close" size={14} color={ACTIVE_ICON[tone]} />
-        </Pressable>
-      )}
     </Pressable>
   );
 }

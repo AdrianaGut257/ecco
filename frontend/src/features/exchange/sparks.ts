@@ -75,7 +75,13 @@ const rotate = <T,>(items: T[], seed: number) =>
     : items.map((_, i) => items[(i + seed) % items.length]);
 
 export function sparksFor(match: Match, hasMessages: boolean, round: number) {
+  const favorites = match.sharedFavorites.map((f) =>
+    f.kind === "item"
+      ? `¡A los dos nos gusta ${f.label}! ¿Qué es lo que más te gusta?`
+      : `Vi que también te gusta ${f.label.toLowerCase()} en ${f.interest.toLowerCase()}. ¿Qué me recomiendas?`,
+  );
   const topics = [
+    ...favorites,
     ...match.hobbies.flatMap((h) => INTEREST_TEMPLATES.map((t) => t(h))),
     ...[...new Set(match.hobbies.map((h) => CATEGORY_OF.get(h)))].flatMap(
       (c) => (c ? (CATEGORY_STARTERS[c] ?? []) : []),
@@ -85,7 +91,9 @@ export function sparksFor(match: Match, hasMessages: boolean, round: number) {
       .flatMap((item) => INTEREST_TEMPLATES.map((t) => t(item))),
   ];
   const seed = hash(`${match.id}:${match.day}`) + round;
-  const pickedTopics = rotate(topics, seed);
+  const pickedTopics = favorites.length && !hasMessages
+    ? [...rotate(favorites, seed), ...rotate(topics, seed)]
+    : rotate(topics, seed);
   const pickedWarm = rotate(WARM, seed);
 
   const ideas = hasMessages

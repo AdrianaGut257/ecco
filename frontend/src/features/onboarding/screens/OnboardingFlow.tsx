@@ -4,9 +4,9 @@ import { DEFAULT_AVATAR } from "../../../constants/avatar";
 import { friendlyError } from "../../../services/api";
 import { authService } from "../../../services/authService";
 import { sessionStore } from "../../../store/session";
-import type { AvatarConfig } from "../../../types";
+import type { AvatarConfig, InterestDetails } from "../../../types";
 import AvatarScreen from "./avatarScreen";
-import InterestDetailsScreen, { InterestItems } from "./interestDetailsScreen";
+import InterestDetailsScreen, { pickDetails } from "./interestDetailsScreen";
 import InterestsScreen from "./interestsScreen";
 import OnboardingSlidesScreen from "./onboardingSlidesScreen";
 import TermsScreen from "./termsScreen";
@@ -22,7 +22,9 @@ export default function OnboardingFlow() {
   );
   const [username, setUsername] = useState(user?.username ?? "");
   const [interests, setInterests] = useState<string[]>(user?.interests ?? []);
-  const [details, setDetails] = useState<InterestItems>({});
+  const [details, setDetails] = useState<InterestDetails>(
+    user?.interestDetails ?? {},
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +38,7 @@ export default function OnboardingFlow() {
         username,
         avatar,
         interests,
-        interestDetails: details,
+        interestDetails: pickDetails(details, interests),
         termsAccepted: true,
       });
       router.replace("/(tabs)/home");
@@ -78,9 +80,10 @@ export default function OnboardingFlow() {
       return (
         <InterestDetailsScreen
           selectedInterests={interests}
+          initialDetails={details}
           onBack={() => setStep("interests")}
-          onComplete={(items) => {
-            setDetails(items);
+          onComplete={(next) => {
+            setDetails({ ...details, ...next });
             setStep("slides");
           }}
         />

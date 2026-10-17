@@ -23,18 +23,21 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 | Módulo | Endpoints |
 |---|---|
 | `auth` | `POST /auth/register`, `/login`, `/forgot-password`, `/reset-password` |
-| `users` | `GET/PUT /users/me`: username, avatar (config), intereses, `interestDetails`, `termsAccepted`, `shareMood`. `UserOut.onboarded` indica si completó el onboarding. |
+| `users` | `GET/PUT /users/me`: username, avatar (config), intereses, `interestDetails`, `termsAccepted`, `shareMood`. `UserOut` devuelve `interestDetails` y `onboarded` (si completó el onboarding). |
 | `moods` | `POST /moods`, `GET /moods/me?days=7` |
 | `matches` | `GET /matches/current`, `POST /matches`, `GET/DELETE /matches/search`, `GET /matches/{id}`, `POST /matches/{id}/decision`, `POST /matches/{id}/end` (salir o reportar) |
 | `chat` | `GET /matches/{id}/messages?after=`, `POST /matches/{id}/messages` |
 | `garden` | `GET /garden` |
+| `suggestions` | `GET /suggestions?q=&interest=`: autocompletado con Google Knowledge Graph Search |
 | `health` | `GET /health`, `/health/db` |
 
 ### Reglas (`modules/matches/constants.py` y `service.py`)
 
 - El avatar es un `AvatarConfig` validado (`users/avatar.py`): skin, hair, hairColor, glasses, freckles, mole, earring, top y background.
 - Los temas de la búsqueda (`hobbies`, máximo 3) deben estar entre los intereses del usuario; si no, `start_search` responde 400. Ya no existe la lista fija de 6 temas.
-- Emparejamiento: puntaje = temas en común × 3 + intereses en común. Nunca se repite una pareja. `pg_advisory_xact_lock` evita emparejamientos dobles. La búsqueda dura 24 h.
+- `interestDetails` = `{interés: {subtema | "general": [ejemplos]}}`. Se limpia en `users/details.py`: espacios, duplicados sin importar mayúsculas ni tildes, máximo 15 subtemas y 15 ejemplos por grupo, 80 caracteres por ejemplo. Enviar `interestDetails` reemplaza todos los detalles.
+- Emparejamiento: puntaje = temas en común × 3 + intereses en común × 1 + subtemas en común × 2 + ejemplos en común × 4 (`affinity`). La comparación ignora mayúsculas y tildes. `MatchOut.sharedFavorites` lista los subtemas y ejemplos compartidos.
+- Sugerencias (`modules/suggestions`): el backend llama a `kgsearch.googleapis.com` con `prefix=true`, `languages=es` y tipos schema.org según el interés (`catalog.py`). Guarda en caché 24 h, limita a 60 consultas por minuto por usuario y requiere `GOOGLE_KG_API_KEY` en `backend/.env`. Sin clave devuelve `[]` y la app sigue funcionando con texto libre. Nunca se repite una pareja. `pg_advisory_xact_lock` evita emparejamientos dobles. La búsqueda dura 24 h.
 - `status_for` (desde la perspectiva de cada usuario): `active` → `deciding` (desde el día 7 hasta el 10) → `waiting` / `bloomed` (ambos siguen) / `rested`. `closed` significa que alguien salió o reportó. Un "no" de la otra persona no se revela mientras tú esperas.
 - La planta (`stage`, de 0 a 5) = días en que ambos escribieron. Con `bloomed` queda en 5.
 - Se puede escribir en `active` y `deciding` hasta el día 7; en `bloomed`, siempre. Tope de `MESSAGES_PER_DAY = 5` por persona y día.
@@ -46,13 +49,14 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 - `app/`: rutas de expo-router. `_layout` restaura la sesión (token en SecureStore, o `localStorage` en web) antes de mostrar nada. `index` redirige según el estado `onboarded`. `(tabs)/`: home, garden, exchange, profile y settings. Otras rutas: `conversation/[id]` (conexiones florecidas), `resetPassword`, `terms`, `avatarEditor` y `editInterests`.
 - `features/`:
   - `auth`: login, registro, recuperar y restablecer contraseña.
-  - `onboarding`: acuerdos → avatar → intereses → detalles → diapositivas, y al final guarda todo en un solo `PUT /users/me`.
+  - `onboarding`: acuerdos → avatar → intereses → detalles → diapositivas, y al final guarda todo en un solo `PUT /users/me`. `interestDetailsEditor` muestra por interés los subtemas (de `constants/interestTaxonomy.ts`, que cubre los 77 intereses), los ejemplos por subtema y los ejemplos generales. `itemInput` ofrece autocompletado: espera 350 ms y pide al menos 2 letras. `editInterests` reutiliza los dos pasos.
   - `exchange`:
     - `exchangeFlow` retoma una búsqueda en curso.
     - `themeSelectionScreen` muestra solo los intereses del usuario, agrupados por categoría.
     - `useMatching` consulta el estado de la búsqueda cada 3 s.
     - `conversationScreen` + `useConversation` consultan el match y los mensajes cada 4 s, solo con la pantalla enfocada.
-    - `sparks.ts` genera las ideas para conversar a partir de los temas y de la categoría de cada uno.
+    - `sparks.ts` genera las ideas para conversar: primero los gustos concretos compartidos (`sharedFavorites`), luego los temas y su categoría.
+    - `matchFoundScreen` destaca "¡Coinciden en algo muy suyo!".
     - `safetySheet` maneja salir y reportar.
     - `decisionCard` y `outcomeScreen` cubren el cierre de la semana.
   - `garden`: grupos "Siguen floreciendo", "Creciendo ahora" y "Recuerdos".

@@ -63,6 +63,30 @@ export default function MatchFoundScreen({ match, onContinue }: Props) {
               </Text>
             ) : (
               <View className="gap-3">
+                {match.sharedFavorites.length > 0 && (
+                  <View className="rounded-field bg-secondary-light-active p-3">
+                    <View className="mb-1.5 flex-row items-center gap-1.5">
+                      <Ionicons
+                        name="sparkles"
+                        size={16}
+                        color={colors.secondary["dark-active"]}
+                      />
+                      <Text variant="body3" className="text-secondary-darker">
+                        ¡Coinciden en algo muy suyo!
+                      </Text>
+                    </View>
+                    <View className="flex-row flex-wrap gap-2">
+                      {match.sharedFavorites.map((f) => (
+                        <Chip
+                          key={`${f.interest}-${f.kind}-${f.label}`}
+                          label={f.kind === "subtopic" ? `${f.interest} · ${f.label}` : f.label}
+                          tone="secondary"
+                          selected
+                        />
+                      ))}
+                    </View>
+                  </View>
+                )}
                 {match.hobbies.length > 0 && (
                   <View>
                     <Text variant="caption1" className="mb-1.5 text-primary-dark-hover">

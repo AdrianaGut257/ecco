@@ -24,10 +24,12 @@ from src.modules.matches.schemas import (
     MatchStatus,
     PartnerOut,
     SearchOut,
+    SharedFavoriteOut,
 )
 from src.modules.moods.models import MoodEntry
 from src.modules.users.avatar import avatar_from
 from src.modules.users.catalog import CATEGORY_BY_INTEREST, OTHER_CATEGORY
+from src.modules.users.details import items_of, subtopics_of
 from src.modules.users.models import User
 
 
@@ -92,6 +94,30 @@ def common_interests(a: User, b: User) -> list[CommonInterestOut]:
     return [CommonInterestOut(category=c, items=items) for c, items in groups.items()]
 
 
+def shared_favorites(a: User, b: User) -> list[SharedFavoriteOut]:
+    theirs = {i.name: i.details for i in b.interests}
+    found: list[SharedFavoriteOut] = []
+    for interest in sorted(a.interests, key=lambda i: i.name):
+        if interest.name not in theirs:
+            continue
+        other = theirs[interest.name]
+        mine_subs, their_subs = subtopics_of(interest.details), subtopics_of(other)
+        for key in sorted(mine_subs.keys() & their_subs.keys()):
+            found.append(SharedFavoriteOut(interest=interest.name, kind="subtopic", label=mine_subs[key]))
+        mine_items, their_items = items_of(interest.details), items_of(other)
+        for key in sorted(mine_items.keys() & their_items.keys()):
+            found.append(SharedFavoriteOut(interest=interest.name, kind="item", label=mine_items[key]))
+    return found
+
+
+def affinity(a: User, b: User) -> int:
+    shared = {i.name for i in a.interests} & {i.name for i in b.interests}
+    favorites = shared_favorites(a, b)
+    subtopics = sum(1 for f in favorites if f.kind == "subtopic")
+    items = sum(1 for f in favorites if f.kind == "item")
+    return len(shared) + subtopics * 2 + items * 4
+
+
 async def reciprocal_days(db: AsyncSession, match_ids: list[uuid.UUID]) -> Counter:
     if not match_ids:
         return Counter()
@@ -145,6 +171,7 @@ async def to_match_out(db: AsyncSession, match: Match, user_id: uuid.UUID, now: 
             mood=await visible_mood(db, partner, now),
         ),
         common_interests=common_interests(me_of(match, user_id), partner),
+        shared_favorites=shared_favorites(me_of(match, user_id), partner),
         hobbies=list(match.hobbies or []),
         started_at=match.started_at,
         day=day,
@@ -244,7 +271,6 @@ async def _try_pair(
             await db.execute(select(User).where(User.id.in_([c.user_id for c in candidates])))
         ).scalars()
     }
-    mine = {i.name for i in user.interests}
 
     best: MatchRequest | None = None
     best_key: tuple[int, float] | None = None
@@ -253,8 +279,8 @@ async def _try_pair(
         if candidate_user is None or not candidate_user.is_active:
             continue
         shared_hobbies = set(request.hobbies) & set(candidate.hobbies)
-        shared_interests = mine & {i.name for i in candidate_user.interests}
-        key = (len(shared_hobbies) * 3 + len(shared_interests), -candidate.created_at.timestamp())
+        score = len(shared_hobbies) * 3 + affinity(user, candidate_user)
+        key = (score, -candidate.created_at.timestamp())
         if best_key is None or key > best_key:
             best, best_key = candidate, key
 
