@@ -2,7 +2,7 @@
 
 Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interacciones sociales positivas entre jóvenes de 16 a 28 años. Se empareja a dos personas con intereses en común; tienen 7 días para conversar, con 5 mensajes al día cada una. Una planta crece los días en que ambas se escriben, y al final cada una decide en privado si quiere seguir. La documentación está en `trabajo_de_grado_micro_interacciones.md`. Las decisiones de diseño y su sustento académico están en `docs/decisiones_de_diseno.md`: **todo cambio de diseño debe justificarse ahí**.
 
-- **Frontend:** Expo 55 + React Native, expo-router, NativeWind 4.2.7 (Tailwind 3), Reanimated, react-native-svg, expo-secure-store.
+- **Frontend:** Expo 55 + React Native, expo-router, NativeWind 4.2.7 (Tailwind 3), Reanimated, react-native-svg, expo-secure-store, expo-image.
 - **Backend:** FastAPI async + SQLAlchemy + PostgreSQL (psycopg), Alembic, JWT (7 días), Mailpit para correos en desarrollo.
 
 ## Cómo levantar todo
@@ -60,6 +60,10 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
   - `profile`: avatar, "Tu semana" y `avatarCustomizer`.
   - `settings`: compartir ánimo, acuerdos y cerrar sesión.
 - `components/avatar/avatar.tsx`: un solo SVG configurable con expresión según el ánimo (`mood`).
+- Los archivos de recursos se nombran en inglés.
+- `components/avatar/moodFace.tsx`: muestra las caras de ánimo propias de `assets/svg/emotions/` con `expo-image`. Mapeo: fatal → `awful.svg`, mal → `bad.svg`, normal → `okay.svg`, bien → `good.svg`, feliz → `happy.svg` (los `MoodId` del código y de la API siguen en español).
+- `components/layout/scenery.tsx`: fondo de Inicio y de la conversación activa con `assets/svg/background/home.svg` (hoy 495×996). Ocupa el ancho completo y el alto se calcula con la proporción real de la imagen, leída en `onLoad`, así que se puede reemplazar el SVG sin tocar código y el resto se rellena de blanco. Sobre él, `AppHeader onScenery` usa `primary-darker` por contraste. En Inicio el contenido va en una sola columna y ocupa todo el ancho (decisión de la autora: que se estire al ensanchar la ventana). La tarjeta de la conversación activa conserva un máximo de 560 px. Se usa en el selector de ánimo de Inicio y en "Tu semana" del Perfil.
+- `welcomeScreen` muestra `assets/svg/semilla.svg` con `expo-image`, que dibuja SVG en Android, web y Expo Go. Rive se probó y se retiró.
 - `components/ui/`: `Button` (etiquetas con contraste AA), `Chip`, `Sheet` y `ConfirmSheet`. No uses `Alert`, que no funciona en web.
 - `lib/nativewindInterop.ts`: registra `Animated.View`/`Animated.Text` de Reanimated para que acepten `className`. Sin esto, las clases no se aplican.
 - `services/`: un servicio por módulo; ya no hay mocks. `api.ts` agrega el Bearer y limpia la sesión ante un 401.

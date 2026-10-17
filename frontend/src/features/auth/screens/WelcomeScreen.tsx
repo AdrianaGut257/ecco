@@ -1,7 +1,7 @@
 import { Redirect, useRouter } from "expo-router";
 import { View } from "react-native";
 import Container from "../../../components/layout/container";
-import Plant from "../../../components/garden/plant";
+import { Image } from "expo-image";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
 import Wordmark from "../../../components/ui/wordmark";
@@ -25,7 +25,12 @@ export default function WelcomeScreen() {
       <View className="items-center">
         <Wordmark size="lg" />
         <View className="my-6">
-          <Plant stage={1} size={200} />
+          <Image
+            source={require("../../../../assets/svg/semilla.svg")}
+            style={{ width: 113, height: 220 }}
+            contentFit="contain"
+            accessibilityLabel="Una semilla que empieza a brotar"
+          />
         </View>
         <Text variant="h3" className="text-primary-dark-hover">
           Te damos la bienvenida

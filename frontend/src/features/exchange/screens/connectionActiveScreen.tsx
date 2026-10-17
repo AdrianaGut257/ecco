@@ -7,7 +7,6 @@ import Scenery from "../../../components/layout/scenery";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
 import { CHAT_DAYS } from "../../../constants/plant";
-import { useTimeOfDay } from "../../../hooks/useTimeOfDay";
 import type { Match } from "../../../types";
 
 interface Props {
@@ -16,7 +15,6 @@ interface Props {
 }
 
 export default function ConnectionActiveScreen({ match, onContinue }: Props) {
-  const time = useTimeOfDay();
   const deciding = match.status === "deciding";
 
   const caption = deciding
@@ -26,10 +24,10 @@ export default function ConnectionActiveScreen({ match, onContinue }: Props) {
       : `Día ${match.day} de ${CHAT_DAYS}. Ya compartiste tus mensajes de hoy.`;
 
   return (
-    <Scenery time={time}>
+    <Scenery>
       <SafeAreaView className="flex-1" edges={["top"]}>
-        <AppHeader showSettings={false} />
-        <View className="flex-1 justify-center px-7">
+        <AppHeader showSettings={false} onScenery />
+        <View className="w-full max-w-[560px] flex-1 justify-center self-center px-7">
           <View className="items-center rounded-card bg-white/90 p-6">
             <View className="flex-row items-end">
               <Avatar

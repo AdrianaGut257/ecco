@@ -15,7 +15,6 @@ import Card from "../../../components/ui/card";
 import Text from "../../../components/ui/text";
 import { colors } from "../../../constants/colors";
 import { MOOD_REPLIES, MoodId } from "../../../constants/emotions";
-import { useTimeOfDay } from "../../../hooks/useTimeOfDay";
 import { friendlyError } from "../../../services/api";
 import { matchService } from "../../../services/matchService";
 import { moodService } from "../../../services/moodService";
@@ -74,7 +73,6 @@ const isToday = (iso: string) =>
 
 export default function HomeScreen() {
   const router = useRouter();
-  const time = useTimeOfDay();
   const { user } = sessionStore.use();
   const [match, setMatch] = useState<Match | null>(null);
   const [searching, setSearching] = useState(false);
@@ -172,18 +170,7 @@ export default function HomeScreen() {
           action: "Empezar",
         };
 
-  return (
-    <Scenery time={time}>
-      <SafeAreaView className="flex-1" edges={["top"]}>
-        <AppHeader showSettings={false} />
-        <ScrollView
-          contentContainerClassName="grow px-6 pb-6"
-          showsVerticalScrollIndicator={false}
-        >
-          <Text variant="h4" className="mt-2 pr-16 text-primary-dark-active">
-            {`${greeting()}, ${user?.username ?? ""}`}
-          </Text>
-
+  const portrait = (
           <View className="flex-row items-end justify-center py-4">
             <Animated.View key={mood ?? "none"} entering={FadeIn.duration(300)}>
               <Avatar
@@ -199,7 +186,9 @@ export default function HomeScreen() {
               </View>
             )}
           </View>
+  );
 
+  const moodCard = (
           <View className="gap-3 rounded-card bg-white/90 p-4">
             <Text variant="body2" className="text-center font-heading-semibold text-primary-dark-active">
               ¿Cómo te sientes hoy?
@@ -229,8 +218,10 @@ export default function HomeScreen() {
               />
             )}
           </View>
+  );
 
-          <View className="mt-3 gap-3">
+  const actions = (
+          <View className="gap-3">
             <ActionCard
               title={conversation.title}
               caption={conversation.caption}
@@ -246,6 +237,22 @@ export default function HomeScreen() {
               onPress={() => router.navigate("/(tabs)/garden")}
             />
           </View>
+  );
+
+  return (
+    <Scenery>
+      <SafeAreaView className="flex-1" edges={["top"]}>
+        <AppHeader showSettings={false} onScenery />
+        <ScrollView
+          contentContainerClassName="grow px-6 pb-6"
+          showsVerticalScrollIndicator={false}
+        >
+          <Text variant="h4" className="mt-2 text-primary-darker">
+            {`${greeting()}, ${user?.username ?? ""}`}
+          </Text>
+          {portrait}
+          {moodCard}
+          <View className="mt-3">{actions}</View>
         </ScrollView>
       </SafeAreaView>
     </Scenery>
