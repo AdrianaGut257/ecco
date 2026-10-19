@@ -3,6 +3,7 @@ import uuid
 
 from pydantic import Field, field_validator
 
+from src.core.moderation import classify
 from src.core.schemas import CamelModel
 from src.modules.users.avatar import AvatarConfig, avatar_from
 from src.modules.users.catalog import MAX_INTERESTS, MIN_INTERESTS
@@ -56,6 +57,8 @@ class ProfileUpdate(CamelModel):
         value = value.strip()
         if not USERNAME_PATTERN.match(value):
             raise ValueError("Usa entre 2 y 20 letras o números, sin espacios.")
+        if classify(value) != "ok":
+            raise ValueError("Elige un nombre que cuide a los demás.")
         return value
 
     @field_validator("interests")

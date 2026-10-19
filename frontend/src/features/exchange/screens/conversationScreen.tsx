@@ -14,6 +14,7 @@ import GrowthPlant from "../../../components/garden/growthPlant";
 import Container from "../../../components/layout/container";
 import Banner from "../../../components/ui/banner";
 import Button from "../../../components/ui/button";
+import Sheet from "../../../components/ui/sheet";
 import Text from "../../../components/ui/text";
 import { colors } from "../../../constants/colors";
 import { MOODS } from "../../../constants/emotions";
@@ -109,6 +110,8 @@ export default function ConversationScreen({
   const [text, setText] = useState("");
   const [round, setRound] = useState(0);
   const [safety, setSafety] = useState(false);
+  const [review, setReview] = useState<{ text: string; message: string } | null>(null);
+  const [blocked, setBlocked] = useState<string | null>(null);
   const [grew, setGrew] = useState(false);
   const [outcome, setOutcome] = useState<Match | null>(null);
   const listRef = useRef<FlatList<ChatMessage>>(null);
@@ -162,11 +165,20 @@ export default function ConversationScreen({
     ((match.status === "active" || deciding) && match.day <= CHAT_DAYS);
   const canSend = match.canWrite && text.trim().length > 0;
 
-  const submit = () => {
-    if (!canSend) return;
-    send(text);
+  const submit = async (value = text, confirmed = false) => {
+    if (!match.canWrite || !value.trim()) return;
     setText("");
+    setReview(null);
+    setBlocked(null);
     setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 60);
+    const outcome = await send(value, confirmed);
+    if (outcome?.kind === "review") {
+      setText(value);
+      setReview({ text: value, message: outcome.message });
+    } else if (outcome?.kind === "blocked") {
+      setText(value);
+      setBlocked(outcome.message);
+    }
   };
 
   return (
@@ -176,6 +188,7 @@ export default function ConversationScreen({
       footer={
         <View className="gap-3 px-5">
           {sendError && <Banner tone="info" message={sendError} />}
+          {blocked && <Banner tone="error" message={blocked} />}
 
           {deciding && (
             <DecisionCard
@@ -260,7 +273,10 @@ export default function ConversationScreen({
                 <View className="flex-row items-end rounded-[24px] border border-primary-light-active bg-white pl-4 pr-1.5">
                   <TextInput
                     value={text}
-                    onChangeText={setText}
+                    onChangeText={(value) => {
+                      setText(value);
+                      setBlocked(null);
+                    }}
                     placeholder="Escribe algo que cuente…"
                     placeholderTextColor={colors.primary["dark-hover"]}
                     maxLength={MAX_MESSAGE_LENGTH}
@@ -270,7 +286,7 @@ export default function ConversationScreen({
                     style={{ outlineStyle: "none" } as object}
                   />
                   <Pressable
-                    onPress={submit}
+                    onPress={() => submit()}
                     disabled={!canSend}
                     accessibilityRole="button"
                     accessibilityLabel="Enviar mensaje"
@@ -433,6 +449,34 @@ export default function ConversationScreen({
           }}
         />
       )}
+
+      <Sheet
+        visible={!!review}
+        title="¿Lo reformulamos?"
+        message={review?.message}
+        onClose={() => setReview(null)}
+      >
+        <View className="mb-4 rounded-field bg-white px-4 py-3">
+          <Text variant="body3" className="text-primary-dark-active">
+            {review?.text}
+          </Text>
+        </View>
+        <Text variant="caption1" className="mb-4 text-primary-dark-hover">
+          Las palabras amables hacen que la conversación florezca. Tómate un
+          momento: lo que escribes llega a una persona real.
+        </Text>
+        <View className="gap-3">
+          <Button icon="create-outline" iconPosition="left" onPress={() => setReview(null)}>
+            Editar mensaje
+          </Button>
+          <Button
+            variant="outlined"
+            onPress={() => review && submit(review.text, true)}
+          >
+            Enviar igual
+          </Button>
+        </View>
+      </Sheet>
 
       <SafetySheet
         visible={safety}

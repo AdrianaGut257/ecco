@@ -5,7 +5,8 @@ from fastapi import APIRouter, Query
 from sqlalchemy import select
 
 from src.core.deps import CurrentUser, DbSession
-from src.core.errors import Conflict
+from src.core.errors import BadRequest, Conflict
+from src.core.moderation import BLOCKED_MESSAGE, GENTLE_MESSAGE, classify
 from src.core.time import utcnow
 from src.modules.chat.models import Message
 from src.modules.chat.schemas import MessageIn, MessageOut
@@ -63,6 +64,12 @@ async def send_message(match_id: UUID, data: MessageIn, user: CurrentUser, db: D
         raise Conflict("Los 7 días de conversación terminaron. Es momento de decidir.")
     if await service.sent_on_day(db, match.id, user.id, day) >= MESSAGES_PER_DAY:
         raise Conflict("Ya compartiste tus mensajes de hoy. Mañana podrás escribir de nuevo.")
+
+    level = classify(data.text)
+    if level == "severe":
+        raise BadRequest(BLOCKED_MESSAGE, code="blocked")
+    if level == "mild" and not data.confirmed:
+        raise Conflict(GENTLE_MESSAGE, code="gentle_check")
 
     message = Message(match_id=match_id, sender_id=user.id, text=data.text, day=day)
     db.add(message)

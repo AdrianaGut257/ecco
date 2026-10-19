@@ -6,6 +6,12 @@ import { matchService } from "../../../services/matchService";
 import type { ChatMessage, Match } from "../../../types";
 
 export const MAX_MESSAGE_LENGTH = 500;
+
+export type SendOutcome =
+  | { kind: "sent" }
+  | { kind: "failed" }
+  | { kind: "review"; message: string }
+  | { kind: "blocked"; message: string };
 const POLL_MS = 4000;
 
 const merge = (current: ChatMessage[], incoming: ChatMessage[]) => {
@@ -75,10 +81,10 @@ export function useConversation(matchId: string, initial?: Match | null) {
   }, [focused, loading, matchId]);
 
   const deliver = useCallback(
-    async (draft: ChatMessage) => {
+    async (draft: ChatMessage, confirmed = false): Promise<SendOutcome> => {
       setSendError(null);
       try {
-        const saved = await chatService.send(matchId, draft.text);
+        const saved = await chatService.send(matchId, draft.text, confirmed);
         setMessages((prev) => {
           const next = prev.some((m) => m.id === saved.id)
             ? prev.filter((m) => m.id !== draft.id)
@@ -86,7 +92,16 @@ export function useConversation(matchId: string, initial?: Match | null) {
           track(next);
           return next;
         });
+        return { kind: "sent" };
       } catch (e) {
+        const code = e instanceof ApiError ? e.code : undefined;
+        if (code === "gentle_check" || code === "blocked") {
+          setMessages((prev) => prev.filter((m) => m.id !== draft.id));
+          return {
+            kind: code === "blocked" ? "blocked" : "review",
+            message: friendlyError(e),
+          };
+        }
         const blocked = e instanceof ApiError && e.kind === "validation";
         setMessages((prev) =>
           blocked
@@ -96,6 +111,7 @@ export function useConversation(matchId: string, initial?: Match | null) {
               ),
         );
         if (blocked) setSendError(friendlyError(e));
+        return { kind: "failed" };
       } finally {
         refreshMatch().catch(() => undefined);
       }
@@ -104,9 +120,9 @@ export function useConversation(matchId: string, initial?: Match | null) {
   );
 
   const send = useCallback(
-    (raw: string) => {
+    async (raw: string, confirmed = false): Promise<SendOutcome | null> => {
       const text = raw.trim().slice(0, MAX_MESSAGE_LENGTH);
-      if (!text || !match) return;
+      if (!text || !match) return null;
       const draft: ChatMessage = {
         id: `tmp-${Date.now()}`,
         matchId,
@@ -126,7 +142,7 @@ export function useConversation(matchId: string, initial?: Match | null) {
             }
           : m,
       );
-      deliver(draft);
+      return deliver(draft, confirmed);
     },
     [match, matchId, deliver],
   );

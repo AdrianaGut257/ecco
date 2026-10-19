@@ -29,6 +29,7 @@ export class ApiError extends Error {
     public kind: ApiErrorKind,
     message: string,
     public status?: number,
+    public code?: string,
   ) {
     super(message);
   }
@@ -78,11 +79,10 @@ async function request<T>(
     if (!response.ok) {
       const kind = kindFromStatus(response.status);
       if (kind === "unauthorized" && token) sessionStore.clear();
-      const detail = await response
-        .json()
-        .then((data) => (typeof data?.detail === "string" ? data.detail : null))
-        .catch(() => null);
-      throw new ApiError(kind, detail ?? FRIENDLY[kind], response.status);
+      const data = await response.json().catch(() => null);
+      const detail = typeof data?.detail === "string" ? data.detail : null;
+      const code = typeof data?.code === "string" ? data.code : undefined;
+      throw new ApiError(kind, detail ?? FRIENDLY[kind], response.status, code);
     }
 
     if (response.status === 204) return undefined as T;

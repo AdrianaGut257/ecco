@@ -46,11 +46,11 @@ El documento planteaba Unity, MongoDB y Blender. El prototipo se construyó con 
 | Avatares | Modelos 3D en Blender | **Avatar 2D vectorial (SVG)**, generado por código a partir de rasgos | Liviano, se personaliza en tiempo real y no requiere un motor 3D en el teléfono. |
 | Ilustraciones | — | SVG propios de la autora (semilla de bienvenida, caras de ánimo, fondo de Inicio) | Identidad visual propia y coherente. |
 | Autocompletado de gustos | — | **Google Knowledge Graph Search API** | Fuente externa y siempre actualizada de películas, series, bandas, videojuegos, libros, equipos y lugares. |
-| Moderación | "APIs de moderación" | Reporte manual con motivo y cierre de la conversación | Suficiente para el alcance del prototipo; la moderación automática queda como trabajo futuro. |
+| Moderación | "APIs de moderación" | **Moderación local antes de enviar** (dos niveles) más reporte manual | Las APIs de moderación con clasificador (Google Cloud Natural Language) requieren cuenta de facturación, y Perspective API cierra en diciembre de 2026. Se implementó un detector local en español; el clasificador automático queda como trabajo futuro. |
 
 **Plataforma:** el objetivo sigue siendo Android, según el alcance. La misma base de código funciona en navegador, lo que se aprovechó para pruebas internas.
 
-**Calidad del software:** el servidor cuenta con **45 pruebas automatizadas** que verifican autenticación, perfil, emparejamiento, chat, reglas de la semana, jardín, reportes y sugerencias. Además, el flujo completo se probó con dos usuarios simulados en el navegador.
+**Calidad del software:** el servidor cuenta con **68 pruebas automatizadas** que verifican autenticación, perfil, emparejamiento, chat, reglas de la semana, jardín, reportes, sugerencias y moderación. Además, el flujo completo se probó con dos usuarios simulados en el navegador.
 
 ---
 
@@ -76,6 +76,7 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 | ídem | ¿Cómo podríamos hacer el avatar entretenido? | Botón "Sorpréndeme" y animación de respuesta en cada cambio. | Faceta "deseable" de Morville (2005); Efecto de Usabilidad Estética. |
 | ídem (y comunicación "plana") | ¿Cómo podríamos compensar la falta de expresiones? | **El avatar muestra el ánimo del día** (ojos, cejas y boca). La otra persona lo ve, salvo que se desactive. | Causa raíz del Usuario 1: "no puedo ver expresiones, es muy plano"; Picard (1997). |
 | Temor a la hostilidad | ¿Cómo podríamos dar reporte y bloqueo sin interrumpir? | Ícono de escudo en la conversación → "Tu bienestar es primero": salir o reportar con motivo. La otra persona no ve el motivo y no vuelven a coincidir. | Mapa de Motivaciones (6/15); Usuarios 4 y 5; Shneiderman (manejo amable de errores). |
+| ídem | ¿Cómo podríamos reducir el hate o la toxicidad dentro de la app? | **Moderación antes de enviar en dos niveles:** pausa amable "¿Lo reformulamos?" para lo leve y bloqueo para lo grave. | Katsaros et al. (2022); Gross (1998); Shneiderman. Garantiza que las micro interacciones sean *positivas*, como dice el objetivo general. |
 | ídem | ¿Cómo podríamos transmitir confianza antes de la primera conversación? | Pantalla "Un lugar seguro" con acuerdos breves y recordatorio de que se puede salir cuando se quiera. | Síntesis de Empatizar (4.4), necesidad (d). |
 | Pocos vínculos pero significativos | ¿Cómo podríamos priorizar la calidad sobre la cantidad? | Una conversación a la vez, 7 días, 5 mensajes por día (hasta 500 caracteres). | Takano (2018); "número razonable de mensajes", 15 % (Vakili, 2024); Saffer (2013). Los 500 caracteres atienden la reserva del Usuario 4. |
 | ídem | ¿Cómo podríamos hacer que cada mensaje se sienta significativo? | **Planta que crece solo los días en que ambos escriben**, con una micro-interacción al crecer. Nunca se marchita. | Godard y Holtzman (2024): el uso activo y recíproco se asocia con bienestar (r = 0,15) y apoyo percibido (r = 0,34). |
@@ -153,6 +154,12 @@ Cuando alguien busca, el sistema compara a esa persona con quienes están buscan
 - Límite de intentos de inicio de sesión y de recuperación de contraseña. La recuperación se hace con un enlace por correo que vence en 30 minutos.
 - No se piden fotos. El ánimo compartido es opcional. La decisión final es privada, y un "no" de la otra persona no se revela mientras uno espera.
 - Reporte con motivo (me hizo sentir incómodo/a, contenido ofensivo, acoso o presión, spam, otro) y comentario opcional. La conversación se cierra y la pareja no vuelve a formarse.
+- **Moderación antes de enviar.** Cada mensaje se analiza en el servidor antes de guardarse, así que la regla no se puede saltar desde la app:
+  - **Leve** (tono brusco, burlas, "cállate", "eres tonto"): aparece "¿Lo reformulamos?" con el mensaje, y las opciones **Editar mensaje** o **Enviar igual**. No castiga: invita a reconsiderar.
+  - **Grave** (insultos fuertes, amenazas, acoso sexual, incitación a autolesión): "Este mensaje no cuida a la otra persona, así que no lo enviamos". No descuenta del límite diario y el texto vuelve al campo para reformularlo.
+  - El detector reconoce disfraces comunes: letras separadas ("p u t a"), números por letras ("h1j0"), signos entre letras, tildes y letras alargadas ("tooonto"). Además evita falsos positivos con palabras inocentes, como "zorra" o "perra" referidas a animales.
+  - También se rechazan nombres de usuario ofensivos.
+  - **Limitación:** es una lista de expresiones, no un modelo que entienda el contexto. Puede no detectar ofensas nuevas o muy sutiles; un clasificador automático queda como trabajo futuro.
 - Los acuerdos aclaran que **ECCO no reemplaza la ayuda profesional**.
 
 ### 4.6. Sistema de diseño (IHC Afectiva y UX/UI emocional)
@@ -199,6 +206,7 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 4. **Ancho en pantallas grandes:** se probaron un ancho máximo y luego dos columnas. La autora prefirió una sola columna que ocupe todo el ancho.
 5. **Gustos específicos:** se agregó la jerarquía de subtemas y ejemplos con autocompletado, para que el emparejamiento por afinidad sea más preciso.
 6. **Retroalimentación del autocompletado:** cuando no hay sugerencias se avisa "Sin sugerencias. Toca + para agregarlo tal como lo escribiste" (visibilidad del estado del sistema; Norman, 2013). También se redujo el tiempo de espera percibido.
+7. **Interacciones positivas:** al preparar la presentación, la autora notó que el objetivo habla de micro interacciones *positivas* y que nada impedía enviar un mensaje ofensivo. Se agregó la moderación en dos niveles antes de enviar.
 
 ---
 
@@ -219,6 +227,7 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 - ¿Ver el ánimo de la otra persona en su avatar aporta cercanía o incomoda?
 - ¿Coincidir en gustos específicos hace la conversación más fluida que coincidir solo en intereses generales?
 - ¿La planta motiva a escribir sin generar presión?
+- ¿La pausa "¿Lo reformulamos?" se percibe como cuidado o como censura? ¿Hubo falsos positivos?
 
 **Instrumentos sugeridos** (coherentes con la sección 1.6.3): observación con *Think Aloud*, un cuestionario de usabilidad estandarizado (por ejemplo, SUS) y preguntas abiertas sobre la experiencia emocional.
 
@@ -250,6 +259,7 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 ## 8. Referencias nuevas para agregar (APA 7)
 
 - Google. (s. f.). *Knowledge Graph Search API*. Google for Developers. https://developers.google.com/knowledge-graph
+- Katsaros, M., Yang, K., & Fratamico, L. (2022). Reconsidering tweets: Intervening during tweet creation decreases offensive content. *Proceedings of the International AAAI Conference on Web and Social Media, 16*, 477–487. https://ojs.aaai.org/index.php/ICWSM/article/view/19308 *[verificar páginas]*
 - W3C. (2023). *Web Content Accessibility Guidelines (WCAG) 2.2*. https://www.w3.org/TR/WCAG22/
 - Baudon, P., & Jachens, L. (2021). Mobile apps promoting emotion regulation, positive mental health, and well-being in the general population: Systematic review and meta-analysis. *JMIR Mental Health, 8*(11), e31170. https://mental.jmir.org/2021/11/e31170 *[verificar DOI]*
 - *Social connection as a key target for youth mental health* (2025). ScienceDirect. https://www.sciencedirect.com/science/article/pii/S2212657025000054 *[completar autores y revista]*

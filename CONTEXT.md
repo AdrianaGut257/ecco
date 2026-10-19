@@ -40,6 +40,7 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 - Sugerencias (`modules/suggestions`): el backend llama a `kgsearch.googleapis.com` con `prefix=true`, `languages=es` y tipos schema.org según el interés (`catalog.py`). Reutiliza una sola conexión HTTP con Google, que se cierra en el `lifespan` de `main.py`. Guarda en caché 24 h, limita a 60 consultas por minuto por usuario y requiere `GOOGLE_KG_API_KEY` en `backend/.env`. Sin clave devuelve `[]` y la app sigue funcionando con texto libre. Nunca se repite una pareja. `pg_advisory_xact_lock` evita emparejamientos dobles. La búsqueda dura 24 h.
 - `status_for` (desde la perspectiva de cada usuario): `active` → `deciding` (desde el día 7 hasta el 10) → `waiting` / `bloomed` (ambos siguen) / `rested`. `closed` significa que alguien salió o reportó. Un "no" de la otra persona no se revela mientras tú esperas.
 - La planta (`stage`, de 0 a 5) = días en que ambos escribieron. Con `bloomed` queda en 5.
+- Moderación (`core/moderation.py`): `classify(text)` devuelve `ok`, `mild` o `severe` usando listas de expresiones en español. Normaliza minúsculas, tildes, leet (1→i, 3→e…), signos, letras separadas y repeticiones de 3 o más. Al enviar un mensaje, `severe` responde 400 con `code: "blocked"` y `mild` sin `confirmed: true` responde 409 con `code: "gentle_check"`; ninguno descuenta del límite. `AppError` acepta `code`, y el frontend lo lee en `ApiError.code`. Los nombres y usernames con `classify != ok` se rechazan.
 - Se puede escribir en `active` y `deciding` hasta el día 7; en `bloomed`, siempre. Tope de `MESSAGES_PER_DAY = 5` por persona y día.
 - La pareja ve tu ánimo de las últimas 24 h en tu avatar si `share_mood` está activo.
 - `GET /garden` oculta los matches que tú cerraste.
@@ -58,6 +59,7 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
     - `sparks.ts` genera las ideas para conversar: primero los gustos concretos compartidos (`sharedFavorites`), luego los temas y su categoría.
     - `matchFoundScreen` destaca "¡Coinciden en algo muy suyo!".
     - `safetySheet` maneja salir y reportar.
+    - `conversationScreen` muestra la hoja "¿Lo reformulamos?" (Editar / Enviar igual) ante `gentle_check` y un aviso ante `blocked`; en ambos casos devuelve el texto al campo. `useConversation.send` devuelve un `SendOutcome`.
     - `decisionCard` y `outcomeScreen` cubren el cierre de la semana.
   - `garden`: grupos "Siguen floreciendo", "Creciendo ahora" y "Recuerdos".
   - `home`: check-in de ánimo (con respiración guiada si el ánimo es bajo) y tarjetas de estado.

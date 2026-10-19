@@ -7,6 +7,6 @@ export const chatService = {
       `/matches/${matchId}/messages${after ? `?after=${encodeURIComponent(after)}` : ""}`,
     ),
 
-  send: (matchId: string, text: string) =>
-    api.post<ChatMessage>(`/matches/${matchId}/messages`, { text }),
+  send: (matchId: string, text: string, confirmed = false) =>
+    api.post<ChatMessage>(`/matches/${matchId}/messages`, { text, confirmed }),
 };

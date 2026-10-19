@@ -13,8 +13,9 @@ class AppError(Exception):
     status_code = 400
     default_detail = "Algo no salió como esperábamos."
 
-    def __init__(self, detail: str | None = None):
+    def __init__(self, detail: str | None = None, code: str | None = None):
         self.detail = detail or self.default_detail
+        self.code = code
         super().__init__(self.detail)
 
 
@@ -57,7 +58,10 @@ def _message(error: dict) -> str:
 def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def app_error_handler(_: Request, exc: AppError):
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+        content = {"detail": exc.detail}
+        if exc.code:
+            content["code"] = exc.code
+        return JSONResponse(status_code=exc.status_code, content=content)
 
     @app.exception_handler(RequestValidationError)
     async def validation_handler(_: Request, exc: RequestValidationError):

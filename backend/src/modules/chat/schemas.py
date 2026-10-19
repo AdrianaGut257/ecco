@@ -10,6 +10,7 @@ MAX_MESSAGE_LENGTH = 500
 
 class MessageIn(CamelModel):
     text: str
+    confirmed: bool = False
 
     @field_validator("text")
     @classmethod
