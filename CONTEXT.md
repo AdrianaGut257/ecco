@@ -4,6 +4,7 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 
 - **Frontend:** Expo 55 + React Native, expo-router, NativeWind 4.2.7 (Tailwind 3), Reanimated, react-native-svg, expo-secure-store, expo-image.
 - **Backend:** FastAPI async + SQLAlchemy + PostgreSQL (psycopg), Alembic, JWT (7 días), Mailpit para correos en desarrollo.
+- **Figma:** https://www.figma.com/design/Qght10FTdpM2wPuOaY5oJ3 (equipo "MI APP"). Páginas Portada, Fundamentos (57 variables: Color, Radius y Spacing, más 14 estilos de texto), Componentes (Botón, Chip, Aviso, Tarjeta, Burbuja de chat, Campo de texto, Barra de pestañas, Opción de ánimo y 34 íconos Ionicons), Recursos (Planta, Cara de ánimo, Avatar/Ánimo, Avatar/Estilo, Semilla y Fondo Inicio) y Pantallas (21 pantallas en 5 secciones). Si cambia la UI, hay que actualizar Figma también.
 
 ## Cómo levantar todo
 
@@ -47,7 +48,7 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 
 ## Frontend (`frontend/src/`)
 
-- `app/`: rutas de expo-router. `_layout` restaura la sesión (token en SecureStore, o `localStorage` en web) antes de mostrar nada. `index` redirige según el estado `onboarded`. `(tabs)/`: home, garden, exchange, profile y settings. Otras rutas: `conversation/[id]` (conexiones florecidas), `resetPassword`, `terms`, `avatarEditor` y `editInterests`.
+- `app/`: rutas de expo-router. `_layout` restaura la sesión (token en SecureStore, o `localStorage` en web) antes de mostrar nada. `index` redirige según el estado `onboarded`: con sesión y onboarding completo va a `/welcome` (la bienvenida con la semilla, que aparece cada vez que se abre la app), y si no, a `/onboarding`. `(tabs)/`: home, garden, exchange, profile y settings. Otras rutas: `conversation/[id]` (conexiones florecidas), `resetPassword`, `terms`, `avatarEditor` y `editInterests`.
 - `features/`:
   - `auth`: login, registro, recuperar y restablecer contraseña.
   - `onboarding`: acuerdos → avatar → intereses → detalles → diapositivas, y al final guarda todo en un solo `PUT /users/me`. `interestDetailsEditor` muestra por interés los subtemas (de `constants/interestTaxonomy.ts`, que cubre los 77 intereses), los ejemplos por subtema y los ejemplos generales. `itemInput` ofrece autocompletado: espera 250 ms y pide al menos 2 letras. Guarda en el teléfono las respuestas ya recibidas y, mientras llega la nueva, muestra al instante las que coinciden con un prefijo ya consultado. Google tarda ~1 s en responder. `editInterests` reutiliza los dos pasos.

@@ -6,7 +6,7 @@ export default function Index() {
   const { user } = sessionStore.use();
 
   if (user) {
-    return <Redirect href={user.onboarded ? "/(tabs)/home" : "/onboarding"} />;
+    return <Redirect href={user.onboarded ? "/welcome" : "/onboarding"} />;
   }
   return <IntroScreen />;
 }
