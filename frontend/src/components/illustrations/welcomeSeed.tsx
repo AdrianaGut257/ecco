@@ -23,6 +23,7 @@ const BODY_MASK = "M14.8315 94.4332C-17.2343 134.811 11.6444 190.615 18.5537 200
 const SPROUT = "M83.062 76.5L67.687 84.375L62.437 72.75C62.437 72.75 72.8712 49.3462 68.472 45.8221C64.0729 42.298 55.5878 44.5222 55.5878 44.5222C55.5878 44.5222 36.8971 50.501 28.3872 39.0633C19.8773 27.6255 23.2331 14.1081 42.9894 14.1081C62.7457 14.1081 70.4763 36.4638 70.4763 36.4638C70.4763 36.4638 85.9377 -7.46781 108.271 1.11064C130.604 9.68908 114.284 30.9888 101.113 33.6045C87.9419 36.2202 80.03 32.3049 76.2027 39.8433C72.3754 47.3816 81.187 68.25 81.187 68.25L83.062 76.5Z";
 
 const ease = Easing.inOut(Easing.ease);
+const SHOW_SPARKLES = false;
 
 interface Props {
   height?: number;
@@ -43,7 +44,6 @@ export default function WelcomeSeed({ height = 220 }: Props) {
 
   const enter = useSharedValue(reduced ? 1 : 0);
   const float = useSharedValue(0);
-  const sprout = useSharedValue(reduced ? 1 : 0);
   const wave = useSharedValue(0);
   const blink = useSharedValue(1);
   const sparkle = useSharedValue(0);
@@ -51,9 +51,8 @@ export default function WelcomeSeed({ height = 220 }: Props) {
   useEffect(() => {
     if (reduced) return;
     enter.value = withSpring(1, { damping: 9, stiffness: 110 });
-    sprout.value = withDelay(450, withTiming(1, { duration: 650, easing: Easing.out(Easing.back(1.6)) }));
     wave.value = withDelay(
-      1000,
+      700,
       withSequence(
         withTiming(14, { duration: 180, easing: ease }),
         withTiming(-10, { duration: 200, easing: ease }),
@@ -91,7 +90,7 @@ export default function WelcomeSeed({ height = 220 }: Props) {
         -1,
       ),
     );
-    sparkle.value = withDelay(
+    if (SHOW_SPARKLES) sparkle.value = withDelay(
       1100,
       withRepeat(
         withSequence(
@@ -102,7 +101,7 @@ export default function WelcomeSeed({ height = 220 }: Props) {
         -1,
       ),
     );
-  }, [reduced, enter, sprout, wave, float, blink, sparkle]);
+  }, [reduced, enter, wave, float, blink, sparkle]);
 
   const seedStyle = useAnimatedStyle(() => ({
     opacity: Math.min(enter.value * 1.5, 1),
@@ -119,7 +118,6 @@ export default function WelcomeSeed({ height = 220 }: Props) {
       { translateX: pivotX },
       { translateY: pivotY },
       { rotate: `${wave.value}deg` },
-      { scale: sprout.value },
       { translateX: -pivotX },
       { translateY: -pivotY },
     ],
@@ -190,12 +188,16 @@ export default function WelcomeSeed({ height = 220 }: Props) {
         </Animated.View>
       </Animated.View>
 
-      <Animated.View style={[styles.spark, { left: 4, top: height * 0.12 }, sparkLeft]} pointerEvents="none">
-        <Ionicons name="sparkles" size={22} color={colors.primary.normal} />
-      </Animated.View>
-      <Animated.View style={[styles.spark, { right: 0, top: height * 0.3 }, sparkRight]} pointerEvents="none">
-        <Ionicons name="sparkles" size={18} color={colors.secondary["dark-hover"]} />
-      </Animated.View>
+      {SHOW_SPARKLES && (
+        <>
+          <Animated.View style={[styles.spark, { left: 4, top: height * 0.12 }, sparkLeft]} pointerEvents="none">
+            <Ionicons name="sparkles" size={22} color={colors.primary.normal} />
+          </Animated.View>
+          <Animated.View style={[styles.spark, { right: 0, top: height * 0.3 }, sparkRight]} pointerEvents="none">
+            <Ionicons name="sparkles" size={18} color={colors.secondary["dark-hover"]} />
+          </Animated.View>
+        </>
+      )}
     </View>
   );
 }
