@@ -1,7 +1,8 @@
 import { Redirect, useRouter } from "expo-router";
 import { View } from "react-native";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import WelcomeSeed from "../../../components/illustrations/welcomeSeed";
 import Container from "../../../components/layout/container";
-import { Image } from "expo-image";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
 import Wordmark from "../../../components/ui/wordmark";
@@ -17,30 +18,34 @@ export default function WelcomeScreen() {
     <Container
       center
       footer={
-        <Button onPress={() => router.replace("/(tabs)/home")}>
-          Continuar
-        </Button>
+        <Animated.View entering={FadeIn.delay(1600).duration(400)}>
+          <Button onPress={() => router.replace("/(tabs)/home")}>
+            Continuar
+          </Button>
+        </Animated.View>
       }
     >
       <View className="items-center">
         <Wordmark size="lg" />
         <View className="my-6">
-          <Image
-            source={require("../../../../assets/svg/semilla.svg")}
-            style={{ width: 113, height: 220 }}
-            contentFit="contain"
-            accessibilityLabel="Una semilla que empieza a brotar"
-          />
+          <WelcomeSeed height={220} />
         </View>
-        <Text variant="h3" className="text-primary-dark-hover">
-          Te damos la bienvenida
-        </Text>
-        <Text variant="h3" className="text-primary-dark-hover">
-          {user.username}
-        </Text>
-        <Text variant="body3" className="mt-2 text-primary-dark-hover">
-          Qué bueno verte de nuevo
-        </Text>
+        <Animated.View
+          entering={FadeInDown.delay(1100).duration(500)}
+          className="items-center"
+        >
+          <Text variant="h3" className="text-primary-dark-hover">
+            Te damos la bienvenida
+          </Text>
+          <Text variant="h3" className="text-primary-dark-hover">
+            {user.username}
+          </Text>
+        </Animated.View>
+        <Animated.View entering={FadeIn.delay(1400).duration(500)}>
+          <Text variant="body3" className="mt-2 text-primary-dark-hover">
+            Qué bueno verte de nuevo
+          </Text>
+        </Animated.View>
       </View>
     </Container>
   );

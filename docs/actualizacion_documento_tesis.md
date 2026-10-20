@@ -191,6 +191,7 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - La cara elegida se agranda al registrar el ánimo.
 - Respiración guiada con un círculo que se expande y se contrae.
 - Pantalla de cierre de la semana, que cuida el final de la experiencia (Regla del Pico-Final).
+- Bienvenida animada: la semilla llega, brota, saluda con sus hojas, parpadea y flota, y después aparece el texto "Te damos la bienvenida". Es el primer momento de cada sesión (Regla del Pico-Final). Con "Reducir movimiento" activado, se muestra quieta.
 
 **Lenguaje:** mensajes en segunda persona, cálidos y sin culpa ("Ya compartiste tus mensajes de hoy. Mañana podrás escribir de nuevo"; "Cerrar aquí" en vez de "Mejor no").
 
