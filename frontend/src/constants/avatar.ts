@@ -1,6 +1,7 @@
 import type {
   AvatarConfig,
   AvatarKind,
+  BackgroundColor,
   Bangs,
   Earrings,
   FacialHair,
@@ -68,20 +69,22 @@ export const TOP_BY_KIND: Record<AvatarKind, TopColor[]> = {
   boy: ["7", "12", "11", "8", "13", "14", "10", "15"],
 };
 
-export const BACKGROUND: Record<Swatch, string> = {
+export const BACKGROUND: Record<BackgroundColor, string> = {
   "1": "#FBE5D4",
   "2": "#E4EFCE",
   "3": "#E1F1F7",
   "4": "#ECE8FA",
   "5": "#FDF3C8",
   "6": "#F7CBCC",
+  "7": "#D3ECE6",
 };
 
 export const SWATCHES: Swatch[] = ["1", "2", "3", "4", "5", "6"];
 
-export const BACKGROUND_BY_KIND: Record<AvatarKind, Swatch[]> = {
+// El rosado (6) es solo de chica; los chicos tienen en su lugar un verde menta (7).
+export const BACKGROUND_BY_KIND: Record<AvatarKind, BackgroundColor[]> = {
   girl: SWATCHES,
-  boy: ["1", "2", "3", "4", "5"],
+  boy: ["1", "2", "3", "4", "5", "7"],
 };
 
 export const KINDS: { id: AvatarKind; label: string }[] = [
@@ -155,8 +158,9 @@ export const OUTFITS: Option<Outfit>[] = [
   { id: "tie", label: "Con corbata", kind: "boy" },
   { id: "crew", label: "Polera", kind: "boy" },
   { id: "vneckWide", label: "Cuello en V", kind: "boy" },
-  { id: "raglan", label: "Raglán", kind: "boy" },
-  { id: "jersey", label: "Deportiva", kind: "boy" },
+  { id: "raglan", label: "Raglán" },
+  { id: "jersey", label: "Deportiva" },
+  { id: "hoodieLight", label: "Con capucha", kind: "girl" },
   { id: "hoodie", label: "Con capucha", kind: "boy" },
 ];
 

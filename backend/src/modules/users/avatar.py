@@ -5,6 +5,7 @@ from pydantic import model_validator
 from src.core.schemas import CamelModel
 
 Swatch = Literal["1", "2", "3", "4", "5", "6"]
+BackgroundColor = Literal["1", "2", "3", "4", "5", "6", "7"]
 TopColor = Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
 HairStyle = Literal[
     "flip", "bob", "long", "wavy", "halfBun", "bun",
@@ -17,7 +18,7 @@ Bangs = Literal[
     "tuft", "parted", "messyFringe", "waves", "spiky", "shaggy", "curtains", "sideFringe", "quiff", "curls",
     "none",
 ]
-Outfit = Literal["tee", "tank", "strap", "vneck", "shirt", "tie", "vneckWide", "raglan", "jersey", "hoodie", "crew"]
+Outfit = Literal["tee", "tank", "strap", "vneck", "shirt", "tie", "vneckWide", "raglan", "jersey", "hoodie", "hoodieLight", "crew"]
 
 LEGACY_HAIR = {
     "short": ("bob", "swept"),
@@ -42,7 +43,7 @@ class AvatarConfig(CamelModel):
     mole: bool = False
     outfit: Outfit = "tee"
     top: TopColor = "1"
-    background: Swatch = "1"
+    background: BackgroundColor = "1"
 
     @model_validator(mode="before")
     @classmethod

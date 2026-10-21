@@ -60,8 +60,10 @@ export type Outfit =
   | "raglan"
   | "jersey"
   | "hoodie"
+  | "hoodieLight"
   | "crew";
 export type AvatarKind = "girl" | "boy";
+export type BackgroundColor = Swatch | "7";
 export type TopColor =
   | Swatch
   | "7"
@@ -88,7 +90,7 @@ export interface AvatarConfig {
   mole: boolean;
   outfit: Outfit;
   top: TopColor;
-  background: Swatch;
+  background: BackgroundColor;
 }
 
 export interface User {
