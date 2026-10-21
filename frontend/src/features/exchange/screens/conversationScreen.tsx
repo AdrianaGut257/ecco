@@ -15,6 +15,7 @@ import Container from "../../../components/layout/container";
 import Banner from "../../../components/ui/banner";
 import Button from "../../../components/ui/button";
 import Sheet from "../../../components/ui/sheet";
+import PressableScale from "../../../components/ui/pressableScale";
 import Text from "../../../components/ui/text";
 import { colors } from "../../../constants/colors";
 import { MOODS } from "../../../constants/emotions";
@@ -219,7 +220,7 @@ export default function ConversationScreen({
           {writableToday && (
             <>
               {match.canWrite && text.length === 0 && sparks.length > 0 && (
-                <View>
+                <View className="w-full">
                   <View className="mb-1.5 flex-row items-center justify-between">
                     <Text variant="caption1" className="text-primary-dark-hover">
                       {messages.length === 0
@@ -246,6 +247,7 @@ export default function ConversationScreen({
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
+                    className="w-full grow-0"
                     contentContainerClassName="gap-2"
                   >
                     {sparks.map((idea) => (
@@ -285,7 +287,8 @@ export default function ConversationScreen({
                     className="max-h-28 min-h-[48px] flex-1 py-3 font-body text-body2 text-primary-dark-active"
                     style={{ outlineStyle: "none" } as object}
                   />
-                  <Pressable
+                  <PressableScale
+                    scaleTo={0.88}
                     onPress={() => submit()}
                     disabled={!canSend}
                     accessibilityRole="button"
@@ -302,7 +305,7 @@ export default function ConversationScreen({
                       size={17}
                       color={canSend ? colors.primary.darker : colors.primary.normal}
                     />
-                  </Pressable>
+                  </PressableScale>
                 </View>
               ) : (
                 <View className="flex-row items-center gap-2 rounded-field bg-secondary-light-active px-4 py-3">

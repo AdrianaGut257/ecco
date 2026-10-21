@@ -250,8 +250,9 @@ export default function LivingMoodFace({
   };
   const [ex, ey] = parts.leftEye;
 
+  // Caja cuadrada fija: todas las caras miden lo mismo aunque su dibujo no tenga la misma proporción.
   return (
-    <View style={{ width, height }}>
+    <View style={{ width: size, height: size }} className="items-center justify-center">
       <Animated.View style={[{ width, height }, body]}>
         <View style={layer}>
           <SvgXml

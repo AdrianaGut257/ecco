@@ -1,6 +1,8 @@
 import { Image } from "expo-image";
-import { ReactNode, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { ReactNode, useCallback, useState } from "react";
 import { View } from "react-native";
+import { tabBarBackdrop } from "../../store/tabBarBackdrop";
 
 interface Props {
   children: ReactNode;
@@ -12,6 +14,13 @@ const FALLBACK_RATIO = 996 / 495;
 export default function Scenery({ children }: Props) {
   const [width, setWidth] = useState(0);
   const [ratio, setRatio] = useState(FALLBACK_RATIO);
+
+  useFocusEffect(
+    useCallback(() => {
+      tabBarBackdrop.set("#FFFFFF");
+      return tabBarBackdrop.reset;
+    }, []),
+  );
 
   return (
     <View

@@ -315,11 +315,13 @@ export default function HomeScreen() {
   return (
     <Scenery>
       <SafeAreaView className="flex-1" edges={["top"]}>
-        <AppHeader showSettings={false} onScenery />
         <ScrollView
           contentContainerClassName="grow px-6 pb-6"
           showsVerticalScrollIndicator={false}
         >
+          <View className="-mx-6">
+            <AppHeader showSettings={false} onScenery />
+          </View>
           <Text variant="h4" className="mt-2 text-primary-darker">
             {`${greeting()}, ${user?.username ?? ""}`}
           </Text>

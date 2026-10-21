@@ -7,7 +7,7 @@ import Text from "../../../components/ui/text";
 import type { MoodId } from "../../../constants/emotions";
 import { moodService } from "../../../services/moodService";
 
-const DAY_LABELS = ["D", "L", "M", "M", "J", "V", "S"];
+const DAY_LABELS = ["D", "L", "M", "X", "J", "V", "S"];
 
 export default function MoodWeek() {
   const [days, setDays] = useState<{ date: Date; mood: MoodId | null }[]>([]);

@@ -105,6 +105,7 @@ export default function SettingsScreen() {
                   true: colors.secondary["dark-hover"],
                 }}
                 thumbColor={colors.white}
+                {...({ activeThumbColor: colors.white } as object)}
               />
             </View>
             <Text variant="caption1" className="ml-8 text-primary-dark-hover">

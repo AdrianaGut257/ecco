@@ -12,6 +12,7 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 import { colors } from "../../constants/colors";
+import { tabBarBackdrop } from "../../store/tabBarBackdrop";
 import PressableScale from "../ui/pressableScale";
 import Text from "../ui/text";
 
@@ -33,8 +34,12 @@ const RIGHT = ["profile", "settings"];
 
 const BAR_HEIGHT = 62;
 const RADIUS = 24;
-const BUTTON = 58;
-const NOTCH = BUTTON / 2 + 7;
+const BUTTON = 56;
+// El botón se hunde DIP px dentro de la barra; lo que sobresale (PROTRUDE) se reserva en el diseño
+// para que no tape el contenido de ninguna pantalla.
+const DIP = 10;
+const PROTRUDE = BUTTON / 2 - DIP;
+const NOTCH = BUTTON / 2 + 6;
 const SHOULDER = 12;
 const FILL = colors.primary.light;
 const EDGE = colors.primary["light-active"];
@@ -42,17 +47,18 @@ const EDGE = colors.primary["light-active"];
 // Borde superior de la barra, con la muesca en el centro donde se apoya el botón de Conversar.
 function topEdge(width: number) {
   const cx = width / 2;
-  const d = 9;
-  const dx = Math.sqrt(NOTCH * NOTCH - d * d);
+  const top = PROTRUDE;
+  const d = 5;
+  const ox = Math.sqrt(NOTCH * NOTCH - (d - DIP) * (d - DIP));
   return [
-    `M0 ${RADIUS}`,
-    `Q0 0 ${RADIUS} 0`,
-    `L${cx - NOTCH - SHOULDER} 0`,
-    `Q${cx - NOTCH + 1} 0 ${cx - dx} ${d}`,
-    `A${NOTCH} ${NOTCH} 0 0 0 ${cx + dx} ${d}`,
-    `Q${cx + NOTCH - 1} 0 ${cx + NOTCH + SHOULDER} 0`,
-    `L${width - RADIUS} 0`,
-    `Q${width} 0 ${width} ${RADIUS}`,
+    `M0 ${top + RADIUS}`,
+    `Q0 ${top} ${RADIUS} ${top}`,
+    `L${cx - ox - SHOULDER} ${top}`,
+    `Q${cx - ox - 2} ${top} ${cx - ox} ${top + d}`,
+    `A${NOTCH} ${NOTCH} 0 1 0 ${cx + ox} ${top + d}`,
+    `Q${cx + ox + 2} ${top} ${cx + ox + SHOULDER} ${top}`,
+    `L${width - RADIUS} ${top}`,
+    `Q${width} ${top} ${width} ${top + RADIUS}`,
   ].join(" ");
 }
 
@@ -83,10 +89,11 @@ function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
 
 export default function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { color: backdrop } = tabBarBackdrop.use();
   const [width, setWidth] = useState(0);
   const currentName = state.routes[state.index]?.name;
   const bottom = Math.max(insets.bottom, 8);
-  const height = BAR_HEIGHT + bottom;
+  const height = PROTRUDE + BAR_HEIGHT + bottom;
 
   const go = (name: string) => {
     const route = state.routes.find((r) => r.name === name);
@@ -133,8 +140,7 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
 
   return (
     <View
-      style={{ height }}
-      className="bg-primary-light"
+      style={{ height, backgroundColor: backdrop }}
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
     >
       {width > 0 && (
@@ -155,7 +161,10 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
           />
         </Svg>
       )}
-      <View className="flex-row px-2" style={{ height: BAR_HEIGHT }}>
+      <View
+        className="flex-row px-2"
+        style={{ height: BAR_HEIGHT, marginTop: PROTRUDE }}
+      >
         {LEFT.map(renderItem)}
         <View style={{ width: NOTCH * 2 + SHOULDER }} />
         {RIGHT.map(renderItem)}
@@ -168,7 +177,7 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         accessibilityState={{ selected: centerFocused }}
         style={{
           position: "absolute",
-          top: -BUTTON / 2,
+          top: 0,
           left: width / 2 - BUTTON / 2,
           width: BUTTON,
           height: BUTTON,

@@ -39,7 +39,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <Container scroll center>
+    <Container scroll>
       <BackButton className="mb-8" fallbackRoute="/login" />
 
       {sent ? (
