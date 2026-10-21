@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Avatar from "../../../components/avatar/avatar";
 import Plant from "../../../components/garden/plant";
@@ -14,13 +15,12 @@ import Button from "../../../components/ui/button";
 import Card from "../../../components/ui/card";
 import Text from "../../../components/ui/text";
 import { colors } from "../../../constants/colors";
-import { MOOD_REPLIES, MoodId } from "../../../constants/emotions";
+import { MOOD_REPLIES, MOODS, MoodId } from "../../../constants/emotions";
 import { friendlyError } from "../../../services/api";
 import { matchService } from "../../../services/matchService";
 import { moodService } from "../../../services/moodService";
 import { sessionStore } from "../../../store/session";
 import type { Match } from "../../../types";
-import BreathingCard from "../components/breathingCard";
 import EmotionSelector from "../components/emotionSelector";
 
 interface ActionProps {
@@ -67,6 +67,8 @@ const greeting = () => {
 };
 
 const SEARCH_POLL_MS = 5000;
+const COLLAPSE_MS = 2200;
+const BREATHE_DELAY_MS = 1100;
 
 const isToday = (iso: string) =>
   new Date(iso).toDateString() === new Date().toDateString();
@@ -81,6 +83,12 @@ export default function HomeScreen() {
   const [mood, setMood] = useState<MoodId | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const collapseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (collapseTimer.current) clearTimeout(collapseTimer.current);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -126,12 +134,26 @@ export default function HomeScreen() {
     return () => clearInterval(id);
   }, [focused, searching]);
 
+  const breathe = (id: MoodId) => router.push({ pathname: "/breathe", params: { mood: id } });
+
+  // Tras elegir, la cara reacciona y se muestra la respuesta; luego la tarjeta se recoge en un resumen.
+  // Con "mal" o "fatal" se abre antes la pantalla de respiración.
   const selectMood = async (id: MoodId) => {
     setMood(id);
+    setEditing(true);
     setSaving(true);
     setError(null);
+    if (collapseTimer.current) clearTimeout(collapseTimer.current);
     try {
       await moodService.save(id);
+      const isLow = id === "fatal" || id === "mal";
+      collapseTimer.current = setTimeout(
+        () => {
+          setEditing(false);
+          if (isLow) breathe(id);
+        },
+        isLow ? BREATHE_DELAY_MS : COLLAPSE_MS,
+      );
     } catch (e) {
       setError(friendlyError(e));
     } finally {
@@ -188,8 +210,60 @@ export default function HomeScreen() {
           </View>
   );
 
-  const moodCard = (
-          <View className="gap-3 rounded-card bg-white/90 p-4">
+  const moodLabel = MOODS.find((m) => m.id === mood)?.label.toLowerCase();
+
+  const moodSummary = mood && (
+    <Animated.View
+      key="summary"
+      entering={FadeIn.duration(350)}
+      exiting={FadeOut.duration(150)}
+      className="gap-2 rounded-card bg-white/90 p-4"
+    >
+      <View className="flex-row items-center gap-3">
+        <LivingMoodFace mood={mood} size={44} />
+        <View className="flex-1">
+          <Text variant="body2" className="font-heading-semibold text-primary-dark-active">
+            {`Hoy te sientes ${moodLabel}`}
+          </Text>
+          <Text variant="caption1" className="text-primary-dark-hover">
+            {MOOD_REPLIES[mood]}
+          </Text>
+        </View>
+      </View>
+      <View className="flex-row flex-wrap justify-end gap-2">
+        {low && (
+          <Button
+            color="tertiary"
+            variant="outlined"
+            size="small"
+            fullWidth={false}
+            icon="leaf-outline"
+            onPress={() => breathe(mood)}
+          >
+            Respirar
+          </Button>
+        )}
+        <Button
+          color="primary"
+          variant="outlined"
+          size="small"
+          fullWidth={false}
+          icon="create-outline"
+          onPress={() => setEditing(true)}
+        >
+          Cambiar
+        </Button>
+      </View>
+    </Animated.View>
+  );
+
+  const moodCard = !editing && mood ? moodSummary : (
+          <Animated.View
+            key="selector"
+            entering={FadeIn.duration(350)}
+            exiting={FadeOut.duration(150)}
+            className="gap-3 rounded-card bg-white/90 p-4"
+          >
             <Text variant="body2" className="text-center font-heading-semibold text-primary-dark-active">
               ¿Cómo te sientes hoy?
             </Text>
@@ -208,7 +282,6 @@ export default function HomeScreen() {
                 {`${match.partner.username} verá tu ánimo en la cara de tu avatar.`}
               </Text>
             )}
-            {low && <BreathingCard />}
             {error && (
               <Banner
                 tone="error"
@@ -217,7 +290,7 @@ export default function HomeScreen() {
                 onAction={() => mood && selectMood(mood)}
               />
             )}
-          </View>
+          </Animated.View>
   );
 
   const actions = (
@@ -252,7 +325,9 @@ export default function HomeScreen() {
           </Text>
           {portrait}
           {moodCard}
-          <View className="mt-3">{actions}</View>
+          <Animated.View layout={LinearTransition.duration(300)} className="mt-3">
+            {actions}
+          </Animated.View>
         </ScrollView>
       </SafeAreaView>
     </Scenery>

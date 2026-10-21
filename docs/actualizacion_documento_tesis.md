@@ -84,7 +84,7 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 | ídem | ¿Cómo podríamos medir el éxito en bienestar y no en uso? | Registro diario del ánimo y vista privada "Tu semana". Sin rachas ni notificaciones de enganche. | Feng et al. (2026); Gross (1998); insumo para la prueba piloto. |
 | Mensajes positivos sin métricas | ¿Cómo podríamos sugerir mensajes positivos cuando no se sabe qué decir? | Frases de validación mezcladas en las ideas ("Gracias por quedarte en la conversación"). | Pedido explícito del Usuario 1; Clark, Algoe y Green (2018). |
 | ídem | ¿Cómo podríamos evitar métricas de comparación? | Ningún contador público: el jardín muestra plantas, no números. | Factor 4 del Capítulo 3; límites del alcance. |
-| ídem | ¿Cómo podríamos hacer que la app acompañe en un mal día? | Respuestas empáticas al ánimo y **respiración guiada de 25 s** cuando el ánimo es bajo. | Baudon y Jachens (2021): regulación emocional instantánea. |
+| ídem | ¿Cómo podríamos hacer que la app acompañe en un mal día? | Respuestas empáticas al ánimo y, si es bajo, una **pantalla de respiración guiada** (4 respiraciones lentas, unos 40 s, en el color de la emoción) que se abre antes de seguir y se puede saltar. | Baudon y Jachens (2021): regulación emocional instantánea. |
 
 ### 3.3. Ideas descartadas o pospuestas
 
@@ -190,7 +190,9 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - Animación de búsqueda con mensajes que cambian.
 - El avatar "salta" al personalizarlo.
 - La cara elegida se agranda al registrar el ánimo.
-- Respiración guiada con un círculo que se expande y se contrae.
+- Respiración guiada a pantalla completa cuando el ánimo es "Mal" o "Fatal": un círculo crece al inhalar (4 s) y se encoge al exhalar (6 s), con un halo translúcido detrás que se expande todavía más. En el centro, la cara de la emoción respira con la persona: cierra los ojos, se estira al inhalar y sopla con la boca en "o" al exhalar, durante 4 respiraciones, con fondo en el color de la emoción. Busca que la persona no entre a la conversación desde el malestar (regulación previa; Gross, 1998). Al final pregunta, opcionalmente, cómo se siente ahora: sirve como medición antes/después.
+- Las caras de ánimo expresan su emoción todo el tiempo, animadas por partes: feliz da saltitos, bien se mece y sonríe, normal mira a los lados y tuerce la boca, mal suspira y mira hacia abajo, y a fatal le cae una lágrima. Todas parpadean y, al elegir una, reacciona. Luego la tarjeta se recoge en un resumen ("Hoy te sientes bien · Cambiar").
+- Nueva barra de navegación con una muesca central para el botón de "Conversar".
 - Pantalla de cierre de la semana, que cuida el final de la experiencia (Regla del Pico-Final).
 - Bienvenida animada: la semilla llega con sus hojas, saluda con ellas, parpadea y flota, y después aparece el texto "Te damos la bienvenida". Es el primer momento de cada sesión (Regla del Pico-Final). Con "Reducir movimiento" activado, se muestra quieta.
 
@@ -260,6 +262,10 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 
 ## 8. Referencias nuevas para agregar (APA 7)
 
+- Gross, J. J. (1998). The emerging field of emotion regulation: An integrative review. *Review of General Psychology, 2*(3), 271–299. https://doi.org/10.1037/1089-2680.2.3.271
+- Lehrer, P. M., & Gevirtz, R. (2014). Heart rate variability biofeedback: How and why does it work? *Frontiers in Psychology, 5*, 756. https://doi.org/10.3389/fpsyg.2014.00756
+- Lieberman, M. D., Eisenberger, N. I., Crockett, M. J., Tom, S. M., Pfeifer, J. H., & Way, B. M. (2007). Putting feelings into words: Affect labeling disrupts amygdala activity in response to affective stimuli. *Psychological Science, 18*(5), 421–428. https://doi.org/10.1111/j.1467-9280.2007.01916.x
+- Zaccaro, A., Piarulli, A., Laurino, M., Garbella, E., Menicucci, D., Neri, B., & Gemignani, A. (2018). How breath-control can change your life: A systematic review on psycho-physiological correlates of slow breathing. *Frontiers in Human Neuroscience, 12*, 353. https://doi.org/10.3389/fnhum.2018.00353
 - Google. (s. f.). *Knowledge Graph Search API*. Google for Developers. https://developers.google.com/knowledge-graph
 - Katsaros, M., Yang, K., & Fratamico, L. (2022). Reconsidering tweets: Intervening during tweet creation decreases offensive content. *Proceedings of the International AAAI Conference on Web and Social Media, 16*, 477–487. https://ojs.aaai.org/index.php/ICWSM/article/view/19308 *[verificar páginas]*
 - W3C. (2023). *Web Content Accessibility Guidelines (WCAG) 2.2*. https://www.w3.org/TR/WCAG22/

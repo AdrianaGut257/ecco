@@ -1,7 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Svg, { Path } from "react-native-svg";
 import { colors } from "../../constants/colors";
 import Text from "../ui/text";
 
@@ -21,9 +23,37 @@ const CENTER = "exchange";
 const LEFT = ["home", "garden"];
 const RIGHT = ["profile", "settings"];
 
+const BAR_HEIGHT = 62;
+const RADIUS = 24;
+const BUTTON = 58;
+const NOTCH = BUTTON / 2 + 7;
+const SHOULDER = 12;
+const FILL = colors.primary.light;
+const EDGE = colors.primary["light-active"];
+
+// Borde superior de la barra, con la muesca en el centro donde se apoya el botón de Conversar.
+function topEdge(width: number) {
+  const cx = width / 2;
+  const d = 9;
+  const dx = Math.sqrt(NOTCH * NOTCH - d * d);
+  return [
+    `M0 ${RADIUS}`,
+    `Q0 0 ${RADIUS} 0`,
+    `L${cx - NOTCH - SHOULDER} 0`,
+    `Q${cx - NOTCH + 1} 0 ${cx - dx} ${d}`,
+    `A${NOTCH} ${NOTCH} 0 0 0 ${cx + dx} ${d}`,
+    `Q${cx + NOTCH - 1} 0 ${cx + NOTCH + SHOULDER} 0`,
+    `L${width - RADIUS} 0`,
+    `Q${width} 0 ${width} ${RADIUS}`,
+  ].join(" ");
+}
+
 export default function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const [width, setWidth] = useState(0);
   const currentName = state.routes[state.index]?.name;
+  const bottom = Math.max(insets.bottom, 8);
+  const height = BAR_HEIGHT + bottom;
 
   const go = (name: string) => {
     const route = state.routes.find((r) => r.name === name);
@@ -41,6 +71,7 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
   const renderItem = (name: string) => {
     const item = ITEMS[name];
     const focused = currentName === name;
+
     return (
       <Pressable
         key={name}
@@ -48,13 +79,16 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         accessibilityRole="tab"
         accessibilityState={{ selected: focused }}
         accessibilityLabel={item.label}
-        className="flex-1 items-center gap-0.5 py-2"
+        className="flex-1 items-center justify-center gap-0.5"
+        style={{ height: BAR_HEIGHT }}
       >
         <Ionicons
           name={focused ? item.active : item.icon}
           size={22}
           color={
-            focused ? colors.primary["dark-active"] : colors.primary["dark-hover"]
+            focused
+              ? colors.primary["dark-active"]
+              : colors.primary["dark-hover"]
           }
         />
         <Text
@@ -69,32 +103,61 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
     );
   };
 
+  const centerFocused = currentName === CENTER;
+
   return (
     <View
-      style={{ paddingBottom: Math.max(insets.bottom, 8) }}
-      className="flex-row items-end border-t border-primary-light-active bg-primary-light px-2 pt-1"
+      style={{ height }}
+      className="bg-primary-light"
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
     >
-      {LEFT.map(renderItem)}
-      <View className="flex-1 items-center">
-        <Pressable
-          onPress={() => go(CENTER)}
-          accessibilityRole="tab"
-          accessibilityLabel="Conversar"
-          accessibilityState={{ selected: currentName === CENTER }}
-          className={`-mt-7 h-16 w-16 items-center justify-center rounded-full border-4 border-primary-light ${
-            currentName === CENTER
-              ? "bg-secondary-normal-active"
-              : "bg-secondary-normal active:bg-secondary-normal-active"
-          }`}
+      {width > 0 && (
+        <Svg
+          width={width}
+          height={height}
+          style={{ position: "absolute", top: 0, left: 0 }}
         >
-          <Ionicons
-            name="chatbubble-ellipses"
-            size={28}
-            color={colors.secondary.darker}
+          <Path
+            d={`${topEdge(width)} L${width} ${height} L0 ${height}Z`}
+            fill={FILL}
           />
-        </Pressable>
+          <Path
+            d={topEdge(width)}
+            stroke={EDGE}
+            strokeWidth={1.5}
+            fill="none"
+          />
+        </Svg>
+      )}
+      <View className="flex-row px-2" style={{ height: BAR_HEIGHT }}>
+        {LEFT.map(renderItem)}
+        <View style={{ width: NOTCH * 2 + SHOULDER }} />
+        {RIGHT.map(renderItem)}
       </View>
-      {RIGHT.map(renderItem)}
+      <Pressable
+        onPress={() => go(CENTER)}
+        accessibilityRole="tab"
+        accessibilityLabel="Conversar"
+        accessibilityState={{ selected: centerFocused }}
+        style={{
+          position: "absolute",
+          top: -BUTTON / 2,
+          left: width / 2 - BUTTON / 2,
+          width: BUTTON,
+          height: BUTTON,
+        }}
+        className={`items-center justify-center rounded-full ${
+          centerFocused
+            ? "bg-secondary-normal-active"
+            : "bg-secondary-normal active:bg-secondary-normal-active"
+        }`}
+      >
+        <Ionicons
+          name="chatbubble-ellipses"
+          size={28}
+          color={colors.secondary.darker}
+        />
+      </Pressable>
     </View>
   );
 }
