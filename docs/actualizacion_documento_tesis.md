@@ -192,7 +192,8 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - La cara elegida se agranda al registrar el ánimo.
 - Respiración guiada a pantalla completa cuando el ánimo es "Mal" o "Fatal": un círculo crece al inhalar (4 s) y se encoge al exhalar (6 s), con un halo translúcido detrás que se expande todavía más. En el centro, la cara de la emoción respira con la persona: cierra los ojos, se estira al inhalar y sopla con la boca en "o" al exhalar, durante 4 respiraciones, con fondo en el color de la emoción. Busca que la persona no entre a la conversación desde el malestar (regulación previa; Gross, 1998). Al final pregunta, opcionalmente, cómo se siente ahora: sirve como medición antes/después.
 - Las caras de ánimo expresan su emoción todo el tiempo, animadas por partes: feliz da saltitos, bien se mece y sonríe, normal mira a los lados y tuerce la boca, mal suspira y mira hacia abajo, y a fatal le cae una lágrima. Todas parpadean y, al elegir una, reacciona. Luego la tarjeta se recoge en un resumen ("Hoy te sientes bien · Cambiar").
-- Nueva barra de navegación con una muesca central para el botón de "Conversar".
+- Nueva barra de navegación con una muesca central para el botón de "Conversar"; el ícono de la pestaña elegida da un saltito.
+- Botones y chips se hunden un poco al tocarlos y vuelven con un rebote suave.
 - Pantalla de cierre de la semana, que cuida el final de la experiencia (Regla del Pico-Final).
 - Bienvenida animada: la semilla llega con sus hojas, saluda con ellas, parpadea y flota, y después aparece el texto "Te damos la bienvenida". Es el primer momento de cada sesión (Regla del Pico-Final). Con "Reducir movimiento" activado, se muestra quieta.
 

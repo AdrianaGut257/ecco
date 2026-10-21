@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
+import Animated, { ZoomIn } from "react-native-reanimated";
 import { colors } from "../../constants/colors";
+import PressableScale from "./pressableScale";
 import Text from "./text";
 
 type Tone = "primary" | "secondary";
@@ -75,7 +77,8 @@ export default function Chip({
   }
 
   return (
-    <Pressable
+    <PressableScale
+      scaleTo={0.93}
       accessibilityRole="button"
       accessibilityState={{ selected, disabled }}
       disabled={disabled}
@@ -83,7 +86,9 @@ export default function Chip({
       className={className}
     >
       {selected && (
-        <Ionicons name="checkmark" size={13} color={ACTIVE_ICON[tone]} />
+        <Animated.View entering={ZoomIn.springify().damping(11)}>
+          <Ionicons name="checkmark" size={13} color={ACTIVE_ICON[tone]} />
+        </Animated.View>
       )}
       <Text
         variant="caption1"
@@ -91,6 +96,6 @@ export default function Chip({
       >
         {label}
       </Text>
-    </Pressable>
+    </PressableScale>
   );
 }

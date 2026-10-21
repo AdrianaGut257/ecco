@@ -2,11 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { ComponentProps, ReactNode } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   PressableProps,
   View,
 } from "react-native";
 import { colors } from "../../constants/colors";
+import PressableScale from "./pressableScale";
 import Text from "./text";
 
 export type ButtonColor =
@@ -19,7 +19,7 @@ type Variant = "filled" | "outlined";
 type Size = "big" | "small";
 export type IconName = ComponentProps<typeof Ionicons>["name"];
 
-interface ButtonProps extends Omit<PressableProps, "children"> {
+interface ButtonProps extends Omit<PressableProps, "children" | "style"> {
   children: ReactNode;
   color?: ButtonColor;
   variant?: Variant;
@@ -160,7 +160,7 @@ export default function Button({
   ) : null;
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityState={{ disabled: inactive, busy: loading }}
       disabled={inactive}
@@ -184,6 +184,6 @@ export default function Button({
           {iconPosition === "right" && glyph}
         </View>
       )}
-    </Pressable>
+    </PressableScale>
   );
 }

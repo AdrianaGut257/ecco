@@ -1,10 +1,18 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { useEffect, useState } from "react";
+import { View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withSequence,
+  withSpring,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 import { colors } from "../../constants/colors";
+import PressableScale from "../ui/pressableScale";
 import Text from "../ui/text";
 
 type IconName = keyof typeof Ionicons.glyphMap;
@@ -48,6 +56,31 @@ function topEdge(width: number) {
   ].join(" ");
 }
 
+// El ícono da un saltito al quedar activo.
+function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
+  const reduced = useReducedMotion();
+  const pop = useSharedValue(1);
+  useEffect(() => {
+    if (!focused || reduced) return;
+    pop.value = withSequence(
+      withSpring(1.22, { damping: 8, stiffness: 400 }),
+      withSpring(1, { damping: 10, stiffness: 220 }),
+    );
+  }, [focused, reduced, pop]);
+  const style = useAnimatedStyle(() => ({ transform: [{ scale: pop.value }] }));
+  return (
+    <Animated.View style={style}>
+      <Ionicons
+        name={name}
+        size={22}
+        color={
+          focused ? colors.primary["dark-active"] : colors.primary["dark-hover"]
+        }
+      />
+    </Animated.View>
+  );
+}
+
 export default function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const [width, setWidth] = useState(0);
@@ -73,7 +106,8 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
     const focused = currentName === name;
 
     return (
-      <Pressable
+      <PressableScale
+        scaleTo={0.9}
         key={name}
         onPress={() => go(name)}
         accessibilityRole="tab"
@@ -82,15 +116,7 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         className="flex-1 items-center justify-center gap-0.5"
         style={{ height: BAR_HEIGHT }}
       >
-        <Ionicons
-          name={focused ? item.active : item.icon}
-          size={22}
-          color={
-            focused
-              ? colors.primary["dark-active"]
-              : colors.primary["dark-hover"]
-          }
-        />
+        <TabIcon name={focused ? item.active : item.icon} focused={focused} />
         <Text
           variant="caption2"
           className={
@@ -99,7 +125,7 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         >
           {item.label}
         </Text>
-      </Pressable>
+      </PressableScale>
     );
   };
 
@@ -134,7 +160,8 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         <View style={{ width: NOTCH * 2 + SHOULDER }} />
         {RIGHT.map(renderItem)}
       </View>
-      <Pressable
+      <PressableScale
+        scaleTo={0.88}
         onPress={() => go(CENTER)}
         accessibilityRole="tab"
         accessibilityLabel="Conversar"
@@ -157,7 +184,7 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
           size={28}
           color={colors.secondary.darker}
         />
-      </Pressable>
+      </PressableScale>
     </View>
   );
 }
