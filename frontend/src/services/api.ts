@@ -1,6 +1,18 @@
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 import { sessionStore } from "../store/session";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8000/api";
+const resolveBaseUrl = () => {
+  const configured =
+    process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8000/api";
+  if (Platform.OS === "web") return configured;
+  const devHost = Constants.expoConfig?.hostUri?.split(":")[0];
+  return devHost
+    ? configured.replace(/localhost|127\.0\.0\.1/, devHost)
+    : configured;
+};
+
+const BASE_URL = resolveBaseUrl();
 const TIMEOUT_MS = 10000;
 
 export type ApiErrorKind =
@@ -17,6 +29,7 @@ export class ApiError extends Error {
     public kind: ApiErrorKind,
     message: string,
     public status?: number,
+    public code?: string,
   ) {
     super(message);
   }
@@ -34,9 +47,11 @@ const FRIENDLY: Record<ApiErrorKind, string> = {
 };
 
 const kindFromStatus = (status: number): ApiErrorKind => {
-  if (status === 401 || status === 403) return "unauthorized";
+  if (status === 401) return "unauthorized";
+  if (status === 403) return "validation";
   if (status === 404) return "notFound";
-  if (status === 400 || status === 409 || status === 422) return "validation";
+  if (status === 400 || status === 409 || status === 422 || status === 429)
+    return "validation";
   if (status >= 500) return "server";
   return "unknown";
 };
@@ -63,12 +78,11 @@ async function request<T>(
 
     if (!response.ok) {
       const kind = kindFromStatus(response.status);
-      if (kind === "unauthorized") sessionStore.clear();
-      const detail = await response
-        .json()
-        .then((data) => (typeof data?.detail === "string" ? data.detail : null))
-        .catch(() => null);
-      throw new ApiError(kind, detail ?? FRIENDLY[kind], response.status);
+      if (kind === "unauthorized" && token) sessionStore.clear();
+      const data = await response.json().catch(() => null);
+      const detail = typeof data?.detail === "string" ? data.detail : null;
+      const code = typeof data?.code === "string" ? data.code : undefined;
+      throw new ApiError(kind, detail ?? FRIENDLY[kind], response.status, code);
     }
 
     if (response.status === 204) return undefined as T;

@@ -1,4 +1,9 @@
+import asyncio
 import os
+import sys
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 for key, value in {
     "APP_NAME": "ECCO",
@@ -116,7 +121,7 @@ STRONG = "Clave#2026"
 
 @pytest.fixture
 def make_user(client):
-    async def _make(name="Ana", email=None, interests=None, avatar="a1"):
+    async def _make(name="Ana", email=None, interests=None, avatar=None):
         email = email or f"{name.lower()}@ejemplo.com"
         res = await client.post(
             "/auth/register", json={"name": name, "email": email, "password": STRONG}
@@ -124,7 +129,11 @@ def make_user(client):
         assert res.status_code == 201, res.text
         data = res.json()
         headers = {"Authorization": f"Bearer {data['accessToken']}"}
-        payload = {"avatarId": avatar, "interests": interests or ["Películas", "Series", "Pop"]}
+        payload = {
+            "avatar": avatar or {"hair": "long", "glasses": "round"},
+            "interests": interests or ["Películas", "Series", "Pop"],
+            "termsAccepted": True,
+        }
         res = await client.put("/users/me", json=payload, headers=headers)
         assert res.status_code == 200, res.text
         return {"headers": headers, "user": res.json(), "email": email}

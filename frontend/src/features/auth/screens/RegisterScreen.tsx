@@ -129,7 +129,7 @@ export default function RegisterScreen() {
                 <Text
                   variant="caption1"
                   className={
-                    passed ? "text-secondary-dark" : "text-primary-dark-hover"
+                    passed ? "text-secondary-dark-hover" : "text-primary-dark-hover"
                   }
                 >
                   {rule.label}
@@ -163,7 +163,7 @@ export default function RegisterScreen() {
           ¿Ya tienes cuenta?
         </Text>
         <Pressable onPress={() => router.replace("/login")} hitSlop={8}>
-          <Text variant="caption1" className="text-primary-normal-active">
+          <Text variant="caption1" className="text-primary-dark-active">
             Inicia sesión
           </Text>
         </Pressable>

@@ -1,0 +1,207 @@
+import { Ionicons } from "@expo/vector-icons";
+import { ReactNode, useEffect, useId } from "react";
+import { StyleSheet, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+import Svg, { ClipPath, Defs, Ellipse, G, Path } from "react-native-svg";
+import { colors } from "../../constants/colors";
+
+// Dibujo de assets/svg/semilla.svg separado en capas para animarlas por separado.
+const W = 157;
+const H = 306;
+const BODY = "M14.8315 94.4332C-17.2343 134.811 11.6444 190.615 18.5537 200.233C25.463 209.851 40.4343 228.327 69.6391 238.725C98.844 249.123 123.375 238.298 132.375 231.375C141.375 224.453 159.805 204.52 156.375 181.125C152.946 157.73 137.798 156.001 135.087 136.125C132.375 116.25 142.5 116.25 142.5 99.3752C142.5 82.5002 140.25 72.3212 121.875 60.7508C103.5 49.1804 82.2373 61.6995 80.233 64.039C78.2288 66.3785 81.341 72.7502 80.233 75.0002C79.1251 77.2502 72.0001 80.6252 69.3751 78.7502C66.7501 76.8752 66.6558 68.942 64.0789 67.9184C61.502 66.8949 40.8425 61.6796 14.8315 94.4332Z";
+const BODY_MASK = "M14.8315 94.4332C-17.2343 134.811 11.6444 190.615 18.5537 200.233C25.463 209.851 40.4343 228.327 69.6391 238.725C98.844 249.123 123.375 238.298 132.375 231.375C141.375 224.453 159.805 204.52 156.375 181.125C152.946 157.73 137.798 156.001 135.087 136.125C132.375 116.25 142.5 116.25 142.5 99.3752C142.5 82.5002 140.25 72.3212 121.875 60.7508C103.5 49.1804 82.2373 61.6995 80.233 64.039C78.2288 66.3785 80.233 74.2502 80.233 74.2502L70.5001 78.7502C70.5001 78.7502 66.6558 68.942 64.0789 67.9184C61.502 66.8949 40.8425 61.6796 14.8315 94.4332Z";
+const SPROUT = "M83.062 76.5L67.687 84.375L62.437 72.75C62.437 72.75 72.8712 49.3462 68.472 45.8221C64.0729 42.298 55.5878 44.5222 55.5878 44.5222C55.5878 44.5222 36.8971 50.501 28.3872 39.0633C19.8773 27.6255 23.2331 14.1081 42.9894 14.1081C62.7457 14.1081 70.4763 36.4638 70.4763 36.4638C70.4763 36.4638 85.9377 -7.46781 108.271 1.11064C130.604 9.68908 114.284 30.9888 101.113 33.6045C87.9419 36.2202 80.03 32.3049 76.2027 39.8433C72.3754 47.3816 81.187 68.25 81.187 68.25L83.062 76.5Z";
+
+const ease = Easing.inOut(Easing.ease);
+const SHOW_SPARKLES = false;
+
+interface Props {
+  height?: number;
+}
+
+function Layer({ children }: { children: ReactNode }) {
+  return (
+    <Svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} style={StyleSheet.absoluteFill}>
+      {children}
+    </Svg>
+  );
+}
+
+export default function WelcomeSeed({ height = 220 }: Props) {
+  const width = (height * W) / H;
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const reduced = useReducedMotion();
+
+  const enter = useSharedValue(reduced ? 1 : 0);
+  const float = useSharedValue(0);
+  const wave = useSharedValue(0);
+  const blink = useSharedValue(1);
+  const sparkle = useSharedValue(0);
+
+  useEffect(() => {
+    if (reduced) return;
+    enter.value = withSpring(1, { damping: 9, stiffness: 110 });
+    wave.value = withDelay(
+      700,
+      withSequence(
+        withTiming(14, { duration: 180, easing: ease }),
+        withTiming(-10, { duration: 200, easing: ease }),
+        withTiming(9, { duration: 200, easing: ease }),
+        withTiming(-5, { duration: 180, easing: ease }),
+        withTiming(0, { duration: 160, easing: ease }),
+        withRepeat(
+          withSequence(
+            withTiming(4, { duration: 1500, easing: ease }),
+            withTiming(-4, { duration: 1500, easing: ease }),
+          ),
+          -1,
+          true,
+        ),
+      ),
+    );
+    float.value = withDelay(
+      1300,
+      withRepeat(
+        withSequence(
+          withTiming(-6, { duration: 1500, easing: ease }),
+          withTiming(0, { duration: 1500, easing: ease }),
+        ),
+        -1,
+      ),
+    );
+    blink.value = withDelay(
+      1800,
+      withRepeat(
+        withSequence(
+          withTiming(0.12, { duration: 90 }),
+          withTiming(1, { duration: 120 }),
+          withDelay(3200, withTiming(1, { duration: 0 })),
+        ),
+        -1,
+      ),
+    );
+    if (SHOW_SPARKLES) sparkle.value = withDelay(
+      1100,
+      withRepeat(
+        withSequence(
+          withTiming(1, { duration: 700, easing: ease }),
+          withTiming(0, { duration: 900, easing: ease }),
+          withDelay(1400, withTiming(0, { duration: 0 })),
+        ),
+        -1,
+      ),
+    );
+  }, [reduced, enter, wave, float, blink, sparkle]);
+
+  const seedStyle = useAnimatedStyle(() => ({
+    opacity: Math.min(enter.value * 1.5, 1),
+    transform: [
+      { translateY: (1 - enter.value) * 40 + float.value },
+      { scale: 0.82 + enter.value * 0.18 },
+    ],
+  }));
+  const pivotX = (0.47 - 0.5) * width;
+  const pivotY = (0.27 - 0.5) * height;
+  const eyesY = (0.438 - 0.5) * height;
+  const sproutStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: pivotX },
+      { translateY: pivotY },
+      { rotate: `${wave.value}deg` },
+      { translateX: -pivotX },
+      { translateY: -pivotY },
+    ],
+  }));
+  const eyesStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: eyesY }, { scaleY: blink.value }, { translateY: -eyesY }],
+  }));
+  const sparkLeft = useAnimatedStyle(() => {
+    const t = Math.max(0, Math.min(1, sparkle.value * 1.4));
+    return { opacity: t, transform: [{ scale: 0.5 + t * 0.5 }, { translateY: -6 * t }] };
+  });
+  const sparkRight = useAnimatedStyle(() => {
+    const t = Math.max(0, Math.min(1, sparkle.value * 1.4 - 0.3));
+    return { opacity: t, transform: [{ scale: 0.5 + t * 0.5 }, { translateY: -6 * t }] };
+  });
+
+  return (
+    <View
+      style={{ width: width + 48, height }}
+      className="items-center"
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel="Una semilla que brota y te saluda"
+    >
+      <Animated.View style={[{ width, height }, seedStyle]}>
+        <Layer>
+          <Path d="M106.125 250.5C109.646 253.225 124.5 258 131.625 265.5C138.75 273 139.609 280.056 138.75 288.375C137.891 296.693 122.25 302.625 122.25 302.625C122.25 302.625 131.13 291.75 130.917 285C130.703 278.25 126.375 270.075 120 266.25C113.625 262.425 102.81 260.072 97.125 255C91.5403 250.017 90.75 238.125 90.75 238.125L102.75 238.124C102.75 238.124 102.604 247.774 106.125 250.5Z" fill="#F3C19A" />
+          <Path d="M119.626 252.75C116.762 256.909 106.539 259.458 99.7502 262.125C92.9612 264.792 87.4493 272.02 92.0842 276.815C96.7192 281.611 109.875 284.25 109.875 284.25C109.875 284.25 103.734 277.773 103.219 275.25C102.704 272.727 103.086 270.295 107.625 266.625C112.164 262.955 122.903 265.655 128.625 256.875C136.083 245.43 128.625 230.25 128.625 230.25L119.626 235.585C119.626 235.585 122.489 248.591 119.626 252.75Z" fill="#F3C19A" />
+        </Layer>
+
+        <Animated.View style={[StyleSheet.absoluteFill, sproutStyle]}>
+          <Layer>
+            <Path d={SPROUT} fill="#AAC85B" />
+            <Defs>
+              <ClipPath id={`sprout-${id}`}>
+                <Path d={SPROUT} />
+              </ClipPath>
+            </Defs>
+            <G clipPath={`url(#sprout-${id})`}>
+              <Path d="M118.875 27.375C118.875 27.375 105.375 36.375 90 36.375C74.625 36.375 79.125 41.625 79.125 41.625M22.5 38.25C22.5 38.25 34.5 49.125 46.125 46.5C57.75 43.875 64.5 46.5 64.5 46.5M90 75.75C90 75.75 80.25 83.625 71.25 84.375C62.25 85.125 57.75 71.625 57.75 71.625" strokeWidth={9} strokeLinecap="round" stroke="#74A24A" fill="none" />
+            </G>
+          </Layer>
+        </Animated.View>
+
+        <Layer>
+          <Path d={BODY} fill="#F1A871" />
+          <Defs>
+            <ClipPath id={`body-${id}`}>
+              <Path d={BODY_MASK} />
+            </ClipPath>
+          </Defs>
+          <G clipPath={`url(#body-${id})`}>
+            <Path d="M10.4999 86.9987C-24.7954 130.069 6.9174 199.086 14.2499 209.999C21.5824 220.912 91.4503 279.212 98.9999 284.249C103.228 287.069 180.264 189.029 161.25 205.124C134.026 228.168 140.625 226.124 93.3749 235.499C46.1249 244.874 12.683 183.719 22.1249 162.749C35.637 132.739 16.21 140.385 19.7963 127.124C23.3825 113.862 26.8362 119.543 32.7112 112.874C38.5862 106.205 34.4737 92.3505 40.3026 82.9767C46.1315 73.6029 64.1249 67.8735 64.1249 67.8735C64.1249 67.8735 39.8741 51.1534 10.4999 86.9987Z" fill="#D88D5C" />
+            <Path d="M56.0918 80.675C52.7259 76.0673 33.2135 92.1567 40.3026 98.1053C46.133 102.998 47.7738 97.5846 49.7481 92.7028C51.7224 87.821 59.4577 85.2828 56.0918 80.675Z" fill="#D88D5C" />
+            <Path d="M41.2298 192.854C35.9036 193.389 27.9916 172.784 32.7112 170.624C37.4308 168.464 43.2718 170.01 45.9296 172.847C48.5875 175.683 43.8248 178.309 42.9922 182.017C42.1596 185.724 46.5558 192.319 41.2298 192.854Z" fill="#D88D5C" />
+            <Path d="M130.289 221.998C139.634 219.088 147.525 206.638 144.216 202.052C140.907 197.466 135.647 198.714 131.432 200.83C127.217 202.947 121.257 209.41 119.911 214.076C118.565 218.741 120.944 224.907 130.289 221.998Z" fill="#F3C19A" />
+            <Path d="M66.9421 143.303C66.9421 143.303 67.2285 151.881 74.3866 151.881C81.5446 151.881 81.2582 143.303 81.2582 143.303" strokeWidth={3} strokeLinecap="round" stroke="#B27652" fill="none" />
+          </G>
+        </Layer>
+
+        <Animated.View style={[StyleSheet.absoluteFill, eyesStyle]}>
+          <Layer>
+            <Ellipse cx={53.7712} cy={134.203} rx={11.4529} ry={14.2972} fill="#4D311B" />
+            <Ellipse cx={57.4934} cy={130.304} rx={3.72219} ry={5.19899} fill="#D9D9D9" />
+            <Ellipse cx={96.147} cy={134.203} rx={11.4529} ry={14.2972} fill="#4D311B" />
+            <Ellipse cx={92.4246} cy={130.304} rx={3.72219} ry={5.19899} fill="#D9D9D9" />
+          </Layer>
+        </Animated.View>
+      </Animated.View>
+
+      {SHOW_SPARKLES && (
+        <>
+          <Animated.View style={[styles.spark, { left: 4, top: height * 0.12 }, sparkLeft]} pointerEvents="none">
+            <Ionicons name="sparkles" size={22} color={colors.primary.normal} />
+          </Animated.View>
+          <Animated.View style={[styles.spark, { right: 0, top: height * 0.3 }, sparkRight]} pointerEvents="none">
+            <Ionicons name="sparkles" size={18} color={colors.secondary["dark-hover"]} />
+          </Animated.View>
+        </>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  spark: { position: "absolute" },
+});

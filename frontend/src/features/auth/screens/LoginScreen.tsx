@@ -76,7 +76,7 @@ export default function LoginScreen() {
           ¿Aún no tienes cuenta?
         </Text>
         <Pressable onPress={() => router.push("/register")} hitSlop={8}>
-          <Text variant="caption1" className="text-primary-normal-active">
+          <Text variant="caption1" className="text-primary-dark-active">
             Regístrate
           </Text>
         </Pressable>

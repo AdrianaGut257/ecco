@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, PressableProps } from "react-native";
+import { PressableProps } from "react-native";
 import { colors } from "../../constants/colors";
 import type { IconName } from "./button";
+import PressableScale from "./pressableScale";
 
 type Tone = "primary" | "secondary" | "tertiary" | "error";
 
-interface Props extends Omit<PressableProps, "children"> {
+interface Props extends Omit<PressableProps, "children" | "style"> {
   icon: IconName;
   label: string;
   tone?: Tone;
@@ -40,7 +41,8 @@ export default function IconButton({
 }: Props) {
   const filled = variant === "filled";
   return (
-    <Pressable
+    <PressableScale
+      scaleTo={0.9}
       accessibilityRole="button"
       accessibilityLabel={label}
       disabled={disabled}
@@ -54,8 +56,8 @@ export default function IconButton({
       <Ionicons
         name={icon}
         size={size * 0.5}
-        color={filled ? colors.white : colors[tone]["normal-active"]}
+        color={filled ? colors[tone].darker : colors[tone]["dark-hover"]}
       />
-    </Pressable>
+    </PressableScale>
   );
 }

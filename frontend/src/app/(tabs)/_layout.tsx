@@ -3,9 +3,10 @@ import TabBar from "../../components/navigation/tabBar";
 import { useAuth } from "../../features/auth/hooks/useAuth";
 
 export default function TabsLayout() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) return <Redirect href="/login" />;
+  if (user && !user.onboarded) return <Redirect href="/onboarding" />;
 
   return (
     <Tabs

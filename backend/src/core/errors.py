@@ -4,14 +4,18 @@ from fastapi.responses import JSONResponse
 
 GENERIC_VALIDATION = "Hay algo que revisar en lo que enviaste."
 VALUE_ERROR_PREFIX = "Value error, "
+FIELD_MESSAGES = {
+    "email": "Ese correo no parece válido. Revísalo con calma.",
+}
 
 
 class AppError(Exception):
     status_code = 400
     default_detail = "Algo no salió como esperábamos."
 
-    def __init__(self, detail: str | None = None):
+    def __init__(self, detail: str | None = None, code: str | None = None):
         self.detail = detail or self.default_detail
+        self.code = code
         super().__init__(self.detail)
 
 
@@ -47,13 +51,17 @@ def _message(error: dict) -> str:
     msg = str(error.get("msg", ""))
     if msg.startswith(VALUE_ERROR_PREFIX):
         return msg[len(VALUE_ERROR_PREFIX):]
-    return GENERIC_VALIDATION
+    field = str(error.get("loc", ("",))[-1])
+    return FIELD_MESSAGES.get(field, GENERIC_VALIDATION)
 
 
 def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def app_error_handler(_: Request, exc: AppError):
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+        content = {"detail": exc.detail}
+        if exc.code:
+            content["code"] = exc.code
+        return JSONResponse(status_code=exc.status_code, content=content)
 
     @app.exception_handler(RequestValidationError)
     async def validation_handler(_: Request, exc: RequestValidationError):

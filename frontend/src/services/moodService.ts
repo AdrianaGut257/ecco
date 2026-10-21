@@ -1,10 +1,9 @@
 import type { MoodId } from "../constants/emotions";
+import type { MoodEntry } from "../types";
 import { api } from "./api";
-import { USE_MOCKS, wait } from "./mocks";
 
 export const moodService = {
-  async save(mood: MoodId): Promise<void> {
-    if (!USE_MOCKS) return api.post("/moods", { mood });
-    await wait(300);
-  },
+  save: (mood: MoodId) => api.post<MoodEntry>("/moods", { mood }),
+
+  history: (days = 7) => api.get<MoodEntry[]>(`/moods/me?days=${days}`),
 };

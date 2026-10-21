@@ -29,19 +29,19 @@ async def generate_username(db: AsyncSession, name: str) -> str:
     return f"{base}{random.randint(10000, 99999)}"
 
 
-def _replace_interests(user: User, names: list[str], details: dict | None) -> None:
-    details = details or {}
+def _replace_interests(user: User, names: list[str]) -> None:
     existing = {interest.name: interest for interest in user.interests}
-
     for name, interest in existing.items():
         if name not in names:
             user.interests.remove(interest)
-        elif name in details:
-            interest.details = details[name]
-
     for name in names:
         if name not in existing:
-            user.interests.append(UserInterest(name=name, details=details.get(name)))
+            user.interests.append(UserInterest(name=name))
+
+
+def _apply_details(user: User, details: dict) -> None:
+    for interest in user.interests:
+        interest.details = details.get(interest.name) or None
 
 
 async def update_profile(db: AsyncSession, user: User, data: ProfileUpdate) -> User:
@@ -50,10 +50,14 @@ async def update_profile(db: AsyncSession, user: User, data: ProfileUpdate) -> U
             raise Conflict(USERNAME_TAKEN)
     if data.username is not None:
         user.username = data.username
-    if data.avatar_id is not None:
-        user.avatar_id = data.avatar_id
+    if data.avatar is not None:
+        user.avatar = data.avatar.model_dump()
+    if data.share_mood is not None:
+        user.share_mood = data.share_mood
     if data.interests is not None:
-        _replace_interests(user, data.interests, data.interest_details)
+        _replace_interests(user, data.interests)
+    if data.interest_details is not None:
+        _apply_details(user, data.interest_details)
     if data.terms_accepted and user.terms_accepted_at is None:
         user.terms_accepted_at = utcnow()
 

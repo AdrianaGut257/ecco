@@ -2,11 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { ComponentProps, ReactNode } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   PressableProps,
   View,
 } from "react-native";
 import { colors } from "../../constants/colors";
+import PressableScale from "./pressableScale";
 import Text from "./text";
 
 export type ButtonColor =
@@ -19,7 +19,7 @@ type Variant = "filled" | "outlined";
 type Size = "big" | "small";
 export type IconName = ComponentProps<typeof Ionicons>["name"];
 
-interface ButtonProps extends Omit<PressableProps, "children"> {
+interface ButtonProps extends Omit<PressableProps, "children" | "style"> {
   children: ReactNode;
   color?: ButtonColor;
   variant?: Variant;
@@ -39,7 +39,7 @@ const FILLED: Record<ButtonColor, string> = {
   tertiary:
     "bg-tertiary-normal hover:bg-tertiary-normal-hover active:bg-tertiary-normal-active",
   error:
-    "bg-error-normal hover:bg-error-normal-hover active:bg-error-normal-active",
+    "bg-error-normal-active hover:bg-error-dark active:bg-error-dark-hover",
   white: "bg-white hover:bg-primary-light-hover active:bg-primary-light-active",
 };
 
@@ -72,37 +72,50 @@ const OUTLINED_DISABLED: Record<ButtonColor, string> = {
 };
 
 const LABEL_FILLED: Record<ButtonColor, string> = {
-  primary: "text-white",
-  secondary: "text-white",
-  tertiary: "text-white",
+  primary: "text-primary-darker",
+  secondary: "text-secondary-darker",
+  tertiary: "text-tertiary-darker",
   error: "text-white",
-  white: "text-primary-normal-active",
+  white: "text-primary-dark-active",
 };
 
 const LABEL_OUTLINED: Record<ButtonColor, string> = {
-  primary: "text-primary-normal-active",
-  secondary: "text-secondary-dark",
-  tertiary: "text-tertiary-dark",
+  primary: "text-primary-dark-hover",
+  secondary: "text-secondary-dark-hover",
+  tertiary: "text-tertiary-dark-hover",
   error: "text-error-normal-active",
   white: "text-white",
+};
+
+const ICON_FILLED: Record<ButtonColor, string> = {
+  primary: colors.primary.darker,
+  secondary: colors.secondary.darker,
+  tertiary: colors.tertiary.darker,
+  error: colors.white,
+  white: colors.primary["dark-active"],
+};
+
+const ICON_OUTLINED: Record<ButtonColor, string> = {
+  primary: colors.primary["dark-hover"],
+  secondary: colors.secondary["dark-hover"],
+  tertiary: colors.tertiary["dark-hover"],
+  error: colors.error["normal-active"],
+  white: colors.white,
 };
 
 const LABEL_DISABLED: Record<ButtonColor, string> = {
   primary: "text-primary-normal",
   secondary: "text-secondary-normal",
   tertiary: "text-tertiary-normal",
-  error: "text-error-light-active",
+  error: "text-error-normal-hover",
   white: "text-primary-normal",
 };
 
 const iconColor = (color: ButtonColor, variant: Variant, disabled: boolean) => {
-  if (color === "white") {
-    return variant === "outlined" && !disabled
-      ? colors.white
-      : colors.primary["normal-active"];
+  if (disabled) {
+    return color === "white" ? colors.primary.normal : colors[color].normal;
   }
-  if (disabled) return colors[color].normal;
-  return variant === "filled" ? colors.white : colors[color]["normal-active"];
+  return variant === "filled" ? ICON_FILLED[color] : ICON_OUTLINED[color];
 };
 
 export default function Button({
@@ -135,7 +148,8 @@ export default function Button({
       ? LABEL_FILLED[color]
       : LABEL_OUTLINED[color];
 
-  const padding = size === "big" ? "px-6 py-3.5" : "px-4 py-2";
+  const padding =
+    size === "big" ? "min-h-[48px] px-6 py-3.5" : "min-h-[40px] px-4 py-2.5";
   const iconSize = size === "big" ? 20 : 16;
   const glyph = icon ? (
     <Ionicons
@@ -146,7 +160,7 @@ export default function Button({
   ) : null;
 
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityState={{ disabled: inactive, busy: loading }}
       disabled={inactive}
@@ -170,6 +184,6 @@ export default function Button({
           {iconPosition === "right" && glyph}
         </View>
       )}
-    </Pressable>
+    </PressableScale>
   );
 }

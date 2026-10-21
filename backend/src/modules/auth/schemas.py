@@ -2,9 +2,11 @@ import re
 
 from pydantic import EmailStr, field_validator
 
+from src.core.moderation import classify
 from src.core.schemas import CamelModel
 from src.modules.users.schemas import UserOut
 
+NAME_NOT_ALLOWED = "Elige un nombre que cuide a los demás."
 PASSWORD_MESSAGE = (
     "Tu contraseña necesita 8 caracteres, una mayúscula, un número y un carácter especial."
 )
@@ -34,6 +36,8 @@ class RegisterIn(CamelModel):
         value = value.strip()
         if not 2 <= len(value) <= 40:
             raise ValueError("Tu nombre debe tener entre 2 y 40 caracteres.")
+        if classify(value) != "ok":
+            raise ValueError(NAME_NOT_ALLOWED)
         return value
 
     @field_validator("email")

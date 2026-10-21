@@ -15,6 +15,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.postgres.base import Base
+from src.modules.users.avatar import DEFAULT_AVATAR
 
 
 class User(Base):
@@ -25,7 +26,8 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(20))
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
-    avatar_id: Mapped[str] = mapped_column(String(10), default="a1")
+    avatar: Mapped[dict] = mapped_column(JSON, default=lambda: dict(DEFAULT_AVATAR))
+    share_mood: Mapped[bool] = mapped_column(Boolean, default=True)
     terms_accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

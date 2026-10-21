@@ -16,11 +16,15 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { colors } from "../constants/colors";
+import { authService } from "../services/authService";
+import { sessionStore } from "../store/session";
 import "../global.css";
+import "../lib/nativewindInterop";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const { ready } = sessionStore.use();
   const [fontsLoaded, fontError] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
@@ -33,10 +37,16 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) SplashScreen.hideAsync();
-  }, [fontsLoaded, fontError]);
+    authService.restoreSession();
+  }, []);
 
-  if (!fontsLoaded && !fontError) return null;
+  const loaded = (fontsLoaded || !!fontError) && ready;
+
+  useEffect(() => {
+    if (loaded) SplashScreen.hideAsync();
+  }, [loaded]);
+
+  if (!loaded) return null;
 
   return (
     <Stack

@@ -20,7 +20,7 @@ export default function InterestPicker({ selected, onToggle }: Props) {
             <Ionicons
               name={category.icon}
               size={18}
-              color={colors.primary.normal}
+              color={colors.primary["dark-hover"]}
             />
             <Text variant="caption1" className="text-primary-dark-hover">
               {category.title}

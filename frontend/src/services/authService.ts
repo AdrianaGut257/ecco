@@ -1,40 +1,46 @@
-import type { AuthSession, LoginPayload, RegisterPayload } from "../types";
+import { sessionStore } from "../store/session";
+import { tokenStorage } from "../store/tokenStorage";
+import type {
+  AuthSession,
+  LoginPayload,
+  ProfilePatch,
+  RegisterPayload,
+  User,
+} from "../types";
 import { ApiError, api } from "./api";
-import { MOCK_USER, USE_MOCKS, wait } from "./mocks";
 
 export const authService = {
-  async login(payload: LoginPayload): Promise<AuthSession> {
-    if (!USE_MOCKS) return api.post<AuthSession>("/auth/login", payload);
-    await wait();
-    if (payload.password === "fallo") {
-      throw new ApiError(
-        "unauthorized",
-        "El correo o la contraseña no coinciden. Prueba de nuevo.",
-        401,
-      );
+  login: (payload: LoginPayload) =>
+    api.post<AuthSession>("/auth/login", payload),
+
+  register: (payload: RegisterPayload) =>
+    api.post<AuthSession>("/auth/register", payload),
+
+  requestPasswordReset: (email: string) =>
+    api.post<void>("/auth/forgot-password", { email }),
+
+  resetPassword: (token: string, password: string) =>
+    api.post<void>("/auth/reset-password", { token, password }),
+
+  async updateProfile(patch: ProfilePatch): Promise<User> {
+    const user = await api.put<User>("/users/me", patch);
+    sessionStore.setUser(user);
+    return user;
+  },
+
+  async restoreSession(): Promise<void> {
+    const token = await tokenStorage.get();
+    if (!token) return sessionStore.markReady();
+    sessionStore.setToken(token);
+    try {
+      const user = await api.get<User>("/users/me");
+      sessionStore.setSession(token, user);
+    } catch (error) {
+      if (error instanceof ApiError && error.kind === "unauthorized") {
+        sessionStore.clear();
+      } else {
+        sessionStore.markReady();
+      }
     }
-    return {
-      accessToken: "mock-token",
-      user: { ...MOCK_USER, email: payload.email },
-    };
-  },
-
-  async register(payload: RegisterPayload): Promise<AuthSession> {
-    if (!USE_MOCKS) return api.post<AuthSession>("/auth/register", payload);
-    await wait();
-    return {
-      accessToken: "mock-token",
-      user: { ...MOCK_USER, username: payload.name, email: payload.email },
-    };
-  },
-
-  async requestPasswordReset(email: string): Promise<void> {
-    if (!USE_MOCKS) return api.post("/auth/forgot-password", { email });
-    await wait();
-  },
-
-  async saveProfile(avatarId: string, interests: string[]): Promise<void> {
-    if (!USE_MOCKS) return api.put("/users/me", { avatarId, interests });
-    await wait(400);
   },
 };

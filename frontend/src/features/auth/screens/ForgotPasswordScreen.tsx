@@ -39,7 +39,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <Container scroll center>
+    <Container scroll>
       <BackButton className="mb-8" fallbackRoute="/login" />
 
       {sent ? (
@@ -61,7 +61,7 @@ export default function ForgotPasswordScreen() {
             className="items-center"
             hitSlop={8}
           >
-            <Text variant="body3" className="text-primary-normal-active">
+            <Text variant="body3" className="text-primary-dark-active">
               {loading ? "Enviando…" : "Enviar de nuevo"}
             </Text>
           </Pressable>

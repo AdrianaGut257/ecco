@@ -18,7 +18,5 @@ CATEGORY_BY_INTEREST: dict[str, str] = {
 
 OTHER_CATEGORY = "Otros"
 
-AVATAR_IDS = {"a1", "a2", "a3", "a4", "a5", "a6"}
-DEFAULT_AVATAR = "a1"
 MIN_INTERESTS = 3
 MAX_INTERESTS = 40

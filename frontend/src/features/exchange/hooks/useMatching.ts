@@ -1,43 +1,66 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { friendlyError } from "../../../services/api";
 import { matchService } from "../../../services/matchService";
-import type { Match } from "../../../types";
+import type { Match, SearchState } from "../../../types";
 
-type Status = "idle" | "searching" | "found" | "error";
+type Status = "searching" | "found" | "error" | "expired";
 
-export function useMatching() {
-  const [status, setStatus] = useState<Status>("idle");
+const POLL_MS = 3000;
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export function useMatching(hobbies: string[], resume: boolean) {
+  const [status, setStatus] = useState<Status>("searching");
   const [match, setMatch] = useState<Match | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const alive = useRef(true);
+  const run = useRef(0);
+  const key = hobbies.join("|");
 
-  useEffect(() => {
-    alive.current = true;
-    return () => {
-      alive.current = false;
-    };
-  }, []);
-
-  const start = useCallback(async (hobbies: string[]) => {
+  const loop = useCallback(async (first: () => Promise<SearchState>) => {
+    const id = ++run.current;
     setStatus("searching");
     setError(null);
-    try {
-      const found = await matchService.find(hobbies);
-      if (!alive.current) return;
-      setMatch(found);
-      setStatus("found");
-    } catch (e) {
-      if (!alive.current) return;
-      setError(friendlyError(e));
-      setStatus("error");
+    let request = first;
+    while (run.current === id) {
+      try {
+        const state = await request();
+        if (run.current !== id) return;
+        if (state.status === "matched" && state.match) {
+          setMatch(state.match);
+          setStatus("found");
+          return;
+        }
+        if (state.status === "idle") {
+          setStatus("expired");
+          return;
+        }
+      } catch (e) {
+        if (run.current !== id) return;
+        setError(friendlyError(e));
+        setStatus("error");
+        return;
+      }
+      await wait(POLL_MS);
+      request = matchService.searchState;
     }
   }, []);
 
-  const reset = useCallback(() => {
-    setStatus("idle");
-    setMatch(null);
-    setError(null);
+  const start = useCallback(
+    () => loop(() => matchService.startSearch(key.split("|"))),
+    [loop, key],
+  );
+
+  useEffect(() => {
+    if (resume) loop(matchService.searchState);
+    else start();
+    return () => {
+      run.current++;
+    };
+  }, [resume, loop, start]);
+
+  const cancel = useCallback(async () => {
+    run.current++;
+    await matchService.cancelSearch().catch(() => undefined);
   }, []);
 
-  return { status, match, error, start, reset };
+  return { status, match, error, retry: start, cancel };
 }

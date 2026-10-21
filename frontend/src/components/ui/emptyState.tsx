@@ -22,7 +22,7 @@ export default function EmptyState({
   return (
     <View className="items-center px-6 py-10">
       <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-primary-light-active">
-        <Ionicons name={icon} size={36} color={colors.primary.normal} />
+        <Ionicons name={icon} size={36} color={colors.primary["dark-hover"]} />
       </View>
       <Text variant="subtitle2" className="mb-1 text-center">
         {title}

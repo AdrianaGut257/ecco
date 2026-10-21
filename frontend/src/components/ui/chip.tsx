@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
+import Animated, { ZoomIn } from "react-native-reanimated";
 import { colors } from "../../constants/colors";
+import PressableScale from "./pressableScale";
 import Text from "./text";
 
 type Tone = "primary" | "secondary";
@@ -29,6 +31,16 @@ const IDLE_LABEL: Record<Tone, string> = {
   secondary: "text-secondary-dark-hover",
 };
 
+const ACTIVE_LABEL: Record<Tone, string> = {
+  primary: "text-primary-darker",
+  secondary: "text-secondary-darker",
+};
+
+const ACTIVE_ICON: Record<Tone, string> = {
+  primary: colors.primary.darker,
+  secondary: colors.secondary.darker,
+};
+
 export default function Chip({
   label,
   selected = false,
@@ -37,32 +49,53 @@ export default function Chip({
   onRemove,
   disabled,
 }: Props) {
+  const className = `min-h-[36px] flex-row items-center gap-1.5 rounded-chip border px-3.5 py-2 ${
+    selected ? ACTIVE[tone] : IDLE[tone]
+  } ${disabled ? "opacity-50" : ""}`;
+
+  if (!onPress) {
+    return (
+      <View className={className}>
+        <Text
+          variant="caption1"
+          className={selected ? ACTIVE_LABEL[tone] : IDLE_LABEL[tone]}
+        >
+          {label}
+        </Text>
+        {onRemove && (
+          <Pressable
+            onPress={onRemove}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel={`Quitar ${label}`}
+          >
+            <Ionicons name="close" size={14} color={ACTIVE_ICON[tone]} />
+          </Pressable>
+        )}
+      </View>
+    );
+  }
+
   return (
-    <Pressable
+    <PressableScale
+      scaleTo={0.93}
       accessibilityRole="button"
       accessibilityState={{ selected, disabled }}
-      disabled={disabled || !onPress}
+      disabled={disabled}
       onPress={onPress}
-      className={`flex-row items-center gap-1.5 rounded-chip border px-3 py-1.5 ${
-        selected ? ACTIVE[tone] : IDLE[tone]
-      } ${disabled ? "opacity-50" : ""}`}
+      className={className}
     >
+      {selected && (
+        <Animated.View entering={ZoomIn.springify().damping(11)}>
+          <Ionicons name="checkmark" size={13} color={ACTIVE_ICON[tone]} />
+        </Animated.View>
+      )}
       <Text
         variant="caption1"
-        className={selected ? "text-white" : IDLE_LABEL[tone]}
+        className={selected ? ACTIVE_LABEL[tone] : IDLE_LABEL[tone]}
       >
         {label}
       </Text>
-      {onRemove && (
-        <Pressable
-          onPress={onRemove}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={`Quitar ${label}`}
-        >
-          <Ionicons name="close" size={12} color={colors.white} />
-        </Pressable>
-      )}
-    </Pressable>
+    </PressableScale>
   );
 }

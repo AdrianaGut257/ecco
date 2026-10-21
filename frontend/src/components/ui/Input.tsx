@@ -53,7 +53,7 @@ const Input = forwardRef<TextInput, Props>(function Input(
         <TextInput
           ref={ref}
           secureTextEntry={secure && hidden}
-          placeholderTextColor={colors.primary["normal-hover"]}
+          placeholderTextColor={colors.primary["dark-hover"]}
           accessibilityLabel={label}
           onFocus={(e) => {
             setFocused(true);

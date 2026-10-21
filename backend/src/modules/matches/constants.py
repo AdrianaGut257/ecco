@@ -3,4 +3,6 @@ DECISION_GRACE_DAYS = 3
 SEARCH_TTL_HOURS = 24
 MAX_HOBBIES = 3
 PLANT_STAGES = 6
-HOBBIES = {"Viajes", "Música", "Juegos", "Comida", "Naturaleza", "Películas"}
+MESSAGES_PER_DAY = 5
+MOOD_VISIBLE_HOURS = 24
+REPORT_REASONS = {"ofensivo", "acoso", "spam", "incomodo", "otro"}

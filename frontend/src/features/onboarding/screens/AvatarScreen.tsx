@@ -4,18 +4,26 @@ import BackButton from "../../../components/ui/backButton";
 import Button from "../../../components/ui/button";
 import Input from "../../../components/ui/input";
 import Text from "../../../components/ui/text";
-import AvatarPicker from "../components/avatarPicker";
+import type { AvatarConfig } from "../../../types";
+import AvatarCustomizer from "../../profile/components/avatarCustomizer";
 
 const NAME_PATTERN = /^[\p{L}\p{N}_.-]{2,20}$/u;
 
 interface Props {
+  initialAvatar: AvatarConfig;
+  initialName: string;
   onBack: () => void;
-  onComplete: (avatarId: string, name: string) => void;
+  onComplete: (avatar: AvatarConfig, name: string) => void;
 }
 
-export default function AvatarScreen({ onBack, onComplete }: Props) {
-  const [avatarId, setAvatarId] = useState<string | null>(null);
-  const [name, setName] = useState("");
+export default function AvatarScreen({
+  initialAvatar,
+  initialName,
+  onBack,
+  onComplete,
+}: Props) {
+  const [avatar, setAvatar] = useState<AvatarConfig>(initialAvatar);
+  const [name, setName] = useState(initialName);
   const [touched, setTouched] = useState(false);
 
   const trimmed = name.trim();
@@ -29,36 +37,33 @@ export default function AvatarScreen({ onBack, onComplete }: Props) {
     <Container
       scroll
       footer={
-        <Button
-          disabled={!avatarId || !nameValid}
-          onPress={() => avatarId && onComplete(avatarId, trimmed)}
-        >
+        <Button disabled={!nameValid} onPress={() => onComplete(avatar, trimmed)}>
           Continuar
         </Button>
       }
     >
       <BackButton className="mb-4" onPress={onBack} />
       <Text variant="h2" className="mb-1">
-        Crea un avatar
+        Crea tu avatar
       </Text>
       <Text variant="body3" className="mb-6 text-primary-dark-hover">
-        Elige uno para empezar. Podrás cambiarlo cuando quieras.
+        Sin fotos: muéstrate como quieras. Podrás cambiarlo cuando quieras.
       </Text>
 
-      <AvatarPicker value={avatarId} onChange={setAvatarId} />
+      <AvatarCustomizer value={avatar} onChange={setAvatar} />
 
       <Input
-        label="¿Cómo te llamas?"
+        label="¿Cómo quieres que te llamen?"
         value={name}
         onChangeText={setName}
         onBlur={() => setTouched(true)}
         error={nameError}
-        hint="Es el nombre que verá la otra persona."
+        hint="Es el nombre que verá la otra persona. Puede ser un apodo."
         placeholder="Tu nombre o apodo"
         autoCapitalize="none"
         autoCorrect={false}
         maxLength={20}
-        className="mt-6"
+        className="mt-2"
       />
     </Container>
   );
