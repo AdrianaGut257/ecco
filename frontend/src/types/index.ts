@@ -14,7 +14,17 @@ export type HairStyle =
   | "layered"
   | "blunt"
   | "straight"
-  | "volume";
+  | "volume"
+  | "classic"
+  | "sidePart"
+  | "fringe"
+  | "shortWaves"
+  | "spiky"
+  | "shaggy"
+  | "curtains"
+  | "quiff"
+  | "afro"
+  | "bald";
 export type Bangs =
   | "lock"
   | "swept"
@@ -24,23 +34,50 @@ export type Bangs =
   | "short"
   | "straightCut"
   | "choppy"
-  | "sweep";
+  | "sweep"
+  | "tuft"
+  | "parted"
+  | "messyFringe"
+  | "waves"
+  | "spiky"
+  | "shaggy"
+  | "curtains"
+  | "sideFringe"
+  | "quiff"
+  | "curls"
+  | "none";
 export type Glasses = "none" | "round" | "square" | "wide";
 export type Earrings = "none" | "hoops" | "small" | "studs";
-export type Outfit = "tee" | "tank" | "strap" | "vneck";
+export type FacialHair = "none" | "goatee" | "full" | "chinstrap" | "short";
+export type Outfit =
+  | "tee"
+  | "tank"
+  | "strap"
+  | "vneck"
+  | "shirt"
+  | "tie"
+  | "vneckWide"
+  | "raglan"
+  | "jersey"
+  | "hoodie"
+  | "crew";
+export type AvatarKind = "girl" | "boy";
+export type TopColor = Swatch | "7" | "8" | "9" | "10";
 
 export interface AvatarConfig {
+  kind: AvatarKind;
   skin: Swatch;
   hair: HairStyle;
   bangs: Bangs;
   hairColor: Swatch;
+  facialHair: FacialHair;
   glasses: Glasses;
   earrings: Earrings;
   headband: boolean;
   freckles: boolean;
   mole: boolean;
   outfit: Outfit;
-  top: Swatch;
+  top: TopColor;
   background: Swatch;
 }
 

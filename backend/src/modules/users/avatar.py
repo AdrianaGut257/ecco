@@ -5,11 +5,19 @@ from pydantic import model_validator
 from src.core.schemas import CamelModel
 
 Swatch = Literal["1", "2", "3", "4", "5", "6"]
+TopColor = Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 HairStyle = Literal[
     "flip", "bob", "long", "wavy", "halfBun", "bun",
     "pixie", "curly", "layered", "blunt", "straight", "volume",
+    "classic", "sidePart", "fringe", "shortWaves", "spiky",
+    "shaggy", "curtains", "quiff", "afro", "bald",
 ]
-Bangs = Literal["lock", "swept", "wispy", "middle", "full", "short", "straightCut", "choppy", "sweep"]
+Bangs = Literal[
+    "lock", "swept", "wispy", "middle", "full", "short", "straightCut", "choppy", "sweep",
+    "tuft", "parted", "messyFringe", "waves", "spiky", "shaggy", "curtains", "sideFringe", "quiff", "curls",
+    "none",
+]
+Outfit = Literal["tee", "tank", "strap", "vneck", "shirt", "tie", "vneckWide", "raglan", "jersey", "hoodie", "crew"]
 
 LEGACY_HAIR = {
     "short": ("bob", "swept"),
@@ -21,17 +29,19 @@ LEGACY_HAIR = {
 
 
 class AvatarConfig(CamelModel):
+    kind: Literal["girl", "boy"] = "girl"
     skin: Swatch = "2"
     hair: HairStyle = "bob"
     bangs: Bangs = "swept"
     hair_color: Swatch = "1"
+    facial_hair: Literal["none", "goatee", "full", "chinstrap", "short"] = "none"
     glasses: Literal["none", "round", "square", "wide"] = "none"
     earrings: Literal["none", "hoops", "small", "studs"] = "none"
     headband: bool = False
     freckles: bool = False
     mole: bool = False
-    outfit: Literal["tee", "tank", "strap", "vneck"] = "tee"
-    top: Swatch = "1"
+    outfit: Outfit = "tee"
+    top: TopColor = "1"
     background: Swatch = "1"
 
     @model_validator(mode="before")

@@ -1,16 +1,17 @@
 import { useId } from "react";
 import Svg, { Circle, ClipPath, Defs, Ellipse, G, Path, Rect } from "react-native-svg";
-import { BACKGROUND, DEFAULT_AVATAR, HAIR, SKIN, TOP } from "../../constants/avatar";
+import { BACKGROUND, BEARD, DEFAULT_AVATAR, HAIR, SKIN, TOP } from "../../constants/avatar";
 import type { MoodId } from "../../constants/emotions";
 import type { AvatarConfig } from "../../types";
 import {
   BACK_HAIR,
+  BEARD_PATHS,
   EARRING_PATHS,
   EARS,
   FRONT_HAIR,
   GLASSES_PATHS,
   HEADBAND,
-  OUTFIT_PATHS,
+  OUTFIT_LAYERS,
 } from "./parts";
 
 interface Props {
@@ -63,6 +64,31 @@ function Eyes({ shape, ink }: { shape: EyeShape; ink: string }) {
   return <Path d={d} stroke={ink} strokeWidth={2.2} strokeLinecap="round" fill="none" />;
 }
 
+function shade(hex: string, amount = 0.18) {
+  const n = parseInt(hex.slice(1), 16);
+  const channel = (shift: number) => Math.round(((n >> shift) & 255) * (1 - amount));
+  return `rgb(${channel(16)}, ${channel(8)}, ${channel(0)})`;
+}
+
+function Outfit({ outfit, color }: { outfit: AvatarConfig["outfit"]; color: string }) {
+  const layers = OUTFIT_LAYERS[outfit] ?? OUTFIT_LAYERS.tee;
+  return (
+    <G>
+      {layers.map((layer, i) =>
+        layer.stroke ? (
+          <Path key={i} d={layer.d} stroke={layer.stroke} strokeWidth={1} fill="none" />
+        ) : (
+          <Path
+            key={i}
+            d={layer.d}
+            fill={layer.fill === "main" ? color : layer.fill === "shade" ? shade(color) : layer.fill}
+          />
+        ),
+      )}
+    </G>
+  );
+}
+
 function Earrings({ style }: { style: AvatarConfig["earrings"] }) {
   if (style === "none") return null;
   const [left, right] = EARRING_PATHS[style];
@@ -89,6 +115,8 @@ export default function Avatar({ config, mood = null, size = 96, label }: Props)
   const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const tone = SKIN[look.skin] ?? SKIN[DEFAULT_AVATAR.skin];
   const hair = HAIR[look.hairColor];
+  const back = BACK_HAIR[look.hair] ?? BACK_HAIR[DEFAULT_AVATAR.hair];
+  const front = look.hair === "bald" || look.bangs === "none" ? null : FRONT_HAIR[look.bangs] ?? FRONT_HAIR.swept;
   const face = FACES[mood ?? "bien"];
   const eyeInk = look.skin === "5" || look.skin === "6" ? DEEP_EYE : EYE;
 
@@ -109,9 +137,11 @@ export default function Avatar({ config, mood = null, size = 96, label }: Props)
       </Defs>
       <Circle cx={57} cy={57} r={81} fill={BACKGROUND[look.background]} />
       <G clipPath={`url(#frame${id})`}>
-        <G clipPath={`url(#hair${id})`}>
-          <Path d={BACK_HAIR[look.hair] ?? BACK_HAIR[DEFAULT_AVATAR.hair]} fill={hair} />
-        </G>
+        {back ? (
+          <G clipPath={`url(#hair${id})`}>
+            <Path d={back} fill={hair} />
+          </G>
+        ) : null}
         <Rect x={47.5} y={80} width={19} height={23} fill={tone.base} />
         <Path d={EARS.right} fill={tone.base} />
         <Path d={EARS.rightInner} fill={tone.blush} />
@@ -138,22 +168,21 @@ export default function Avatar({ config, mood = null, size = 96, label }: Props)
           fill={face.filled ? tone.mouth : "none"}
         />
         {look.mole && <Circle cx={66.5} cy={56} r={1.1} fill={eyeInk} opacity={0.75} />}
+        {look.facialHair !== "none" && BEARD_PATHS[look.facialHair] && (
+          <Path d={BEARD_PATHS[look.facialHair]} fill={BEARD[look.hairColor]} />
+        )}
         <Path d={TORSO} fill={tone.base} />
-        <Path d={OUTFIT_PATHS[look.outfit] ?? OUTFIT_PATHS.tee} fill={TOP[look.top]} />
+        <Outfit outfit={look.outfit} color={TOP[look.top] ?? TOP["1"]} />
         <Ellipse cx={28} cy={129} rx={9.5} ry={10} fill={tone.base} />
         <Ellipse cx={86} cy={129} rx={9.5} ry={10} fill={tone.base} />
         {look.glasses !== "none" && (
           <Path d={GLASSES_PATHS[look.glasses]} stroke={EYE} strokeWidth={1} strokeLinecap="square" fill="none" />
         )}
-        <Path
-          d={FRONT_HAIR[look.bangs] ?? FRONT_HAIR[DEFAULT_AVATAR.bangs]}
-          fill={hair}
-          stroke={hair}
-          strokeWidth={1.2}
-          strokeLinejoin="round"
-        />
+        {front && (
+          <Path d={front} fill={hair} stroke={hair} strokeWidth={1.2} strokeLinejoin="round" />
+        )}
         {look.headband && <Path d={HEADBAND} fill={HEADBAND_COLOR} />}
-        <Earrings style={look.earrings} />
+        {look.kind !== "boy" && <Earrings style={look.earrings} />}
       </G>
     </Svg>
   );

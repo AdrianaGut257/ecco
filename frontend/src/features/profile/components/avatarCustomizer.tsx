@@ -15,9 +15,13 @@ import {
   BANGS,
   DETAILS,
   EARRINGS,
+  FACIAL_HAIR,
+  forKind,
   GLASSES,
   HAIR,
   HAIR_STYLES,
+  KIND_LOOK,
+  KINDS,
   OUTFITS,
   SKIN_SWATCH,
   SWATCHES,
@@ -42,16 +46,16 @@ interface Props {
 const pick = <T,>(items: readonly T[]) =>
   items[Math.floor(Math.random() * items.length)];
 
-function Swatches({
+function Swatches<K extends string>({
   label,
   palette,
   value,
   onSelect,
 }: {
   label: string;
-  palette: Record<Swatch, string>;
-  value: Swatch;
-  onSelect: (s: Swatch) => void;
+  palette: Record<K, string>;
+  value: K;
+  onSelect: (s: K) => void;
 }) {
   return (
     <View className="mb-5">
@@ -59,7 +63,7 @@ function Swatches({
         {label}
       </Text>
       <View className="flex-row flex-wrap gap-3">
-        {SWATCHES.map((s) => {
+        {(Object.keys(palette) as K[]).map((s) => {
           const active = value === s;
           return (
             <Pressable
@@ -175,6 +179,10 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
   const [tab, setTab] = useState<Tab>("face");
   const pop = useSharedValue(1);
   const set = (patch: Partial<AvatarConfig>) => onChange({ ...value, ...patch });
+  const kind = value.kind;
+  const hairStyles = forKind(HAIR_STYLES, kind);
+  const bangsFor = (hair: AvatarConfig["hair"]) =>
+    HAIR_STYLES.find((h) => h.id === hair)!.bangs;
 
   useEffect(() => {
     pop.value = withSequence(
@@ -188,19 +196,25 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
   }));
 
   const surprise = () => {
-    const style = pick(HAIR_STYLES);
+    const style = pick(hairStyles);
+    const girl = kind === "girl";
     onChange({
+      kind,
       skin: pick(SWATCHES),
       hair: style.id,
-      bangs: Math.random() < 0.7 ? style.bangs : pick(BANGS).id,
+      bangs:
+        style.id !== "bald" && Math.random() < 0.3
+          ? pick(forKind(BANGS, kind)).id
+          : style.bangs,
       hairColor: pick(SWATCHES),
+      facialHair: girl || Math.random() < 0.5 ? "none" : pick(FACIAL_HAIR).id,
       glasses: pick(GLASSES).id,
-      earrings: pick(EARRINGS).id,
-      headband: Math.random() < 0.2,
+      earrings: girl && Math.random() < 0.6 ? pick(EARRINGS).id : "none",
+      headband: girl && Math.random() < 0.2,
       freckles: Math.random() < 0.3,
       mole: Math.random() < 0.2,
-      outfit: pick(OUTFITS).id,
-      top: pick(SWATCHES),
+      outfit: pick(forKind(OUTFITS, kind)).id,
+      top: pick(Object.keys(TOP) as AvatarConfig["top"][]),
       background: pick(SWATCHES),
     });
   };
@@ -223,6 +237,13 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
           </Text>
         </Pressable>
       </View>
+
+      <Options
+        label="Estilo de avatar"
+        options={KINDS}
+        value={kind}
+        onSelect={(next) => next !== kind && set({ kind: next, ...KIND_LOOK[next] })}
+      />
 
       <View
         accessibilityRole="tablist"
@@ -267,12 +288,14 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
             value={value.glasses}
             onSelect={(glasses) => set({ glasses })}
           />
-          <Options
-            label="Aretes"
-            options={EARRINGS}
-            value={value.earrings}
-            onSelect={(earrings) => set({ earrings })}
-          />
+          {kind === "girl" && (
+            <Options
+              label="Aretes"
+              options={EARRINGS}
+              value={value.earrings}
+              onSelect={(earrings) => set({ earrings })}
+            />
+          )}
           <View className="mb-5">
             <Text
               variant="caption1"
@@ -298,39 +321,46 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
         <>
           <Looks
             label="Peinado"
-            options={HAIR_STYLES}
+            options={hairStyles}
             selected={value.hair}
-            preview={(hair) => ({
-              ...value,
-              hair,
-              bangs: HAIR_STYLES.find((h) => h.id === hair)!.bangs,
-            })}
-            onSelect={(hair) =>
-              set({ hair, bangs: HAIR_STYLES.find((h) => h.id === hair)!.bangs })
-            }
+            preview={(hair) => ({ ...value, hair, bangs: bangsFor(hair) })}
+            onSelect={(hair) => set({ hair, bangs: bangsFor(hair) })}
           />
-          <Looks
-            label="Flequillo (combínalo con cualquier peinado)"
-            options={BANGS}
-            selected={value.bangs}
-            preview={(bangs) => ({ ...value, bangs })}
-            onSelect={(bangs) => set({ bangs })}
-          />
-          <View className="mb-5">
-            <Text
-              variant="caption1"
-              className="mb-2 ml-1 text-primary-dark-hover"
-            >
-              Accesorios
-            </Text>
-            <View className="flex-row flex-wrap gap-2">
-              <Chip
-                label="Diadema"
-                selected={value.headband}
-                onPress={() => set({ headband: !value.headband })}
-              />
+          {value.hair !== "bald" && (
+            <Looks
+              label="Flequillo (combínalo con cualquier peinado)"
+              options={forKind(BANGS, kind)}
+              selected={value.bangs}
+              preview={(bangs) => ({ ...value, bangs })}
+              onSelect={(bangs) => set({ bangs })}
+            />
+          )}
+          {kind === "boy" && (
+            <Looks
+              label="Barba"
+              options={FACIAL_HAIR}
+              selected={value.facialHair}
+              preview={(facialHair) => ({ ...value, facialHair })}
+              onSelect={(facialHair) => set({ facialHair })}
+            />
+          )}
+          {kind === "girl" && (
+            <View className="mb-5">
+              <Text
+                variant="caption1"
+                className="mb-2 ml-1 text-primary-dark-hover"
+              >
+                Accesorios
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                <Chip
+                  label="Diadema"
+                  selected={value.headband}
+                  onPress={() => set({ headband: !value.headband })}
+                />
+              </View>
             </View>
-          </View>
+          )}
           <Swatches
             label="Color de cabello"
             palette={HAIR}
@@ -344,7 +374,7 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
         <>
           <Looks
             label="Ropa"
-            options={OUTFITS}
+            options={forKind(OUTFITS, kind)}
             selected={value.outfit}
             preview={(outfit) => ({ ...value, outfit })}
             onSelect={(outfit) => set({ outfit })}

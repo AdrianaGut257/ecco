@@ -1,11 +1,14 @@
 import type {
   AvatarConfig,
+  AvatarKind,
   Bangs,
   Earrings,
+  FacialHair,
   Glasses,
   HairStyle,
   Outfit,
   Swatch,
+  TopColor,
 } from "../types";
 
 export interface SkinTone {
@@ -38,13 +41,20 @@ export const HAIR: Record<Swatch, string> = {
   "6": "#8E7CC3",
 };
 
-export const TOP: Record<Swatch, string> = {
+// En el diseño la barba es más cálida que el cabello negro; con los demás colores, toma el mismo del cabello.
+export const BEARD: Record<Swatch, string> = { ...HAIR, "1": "#411B10" };
+
+export const TOP: Record<TopColor, string> = {
   "1": "#A5A4FF",
   "2": "#A9CA62",
   "3": "#9FD3E6",
   "4": "#F2AA74",
   "5": "#F7D86A",
   "6": "#E8E2DA",
+  "7": "#214185",
+  "8": "#027E7E",
+  "9": "#FD4D6B",
+  "10": "#9B3D35",
 };
 
 export const BACKGROUND: Record<Swatch, string> = {
@@ -58,48 +68,93 @@ export const BACKGROUND: Record<Swatch, string> = {
 
 export const SWATCHES: Swatch[] = ["1", "2", "3", "4", "5", "6"];
 
-export const HAIR_STYLES: { id: HairStyle; label: string; bangs: Bangs }[] = [
-  { id: "bob", label: "Bob", bangs: "swept" },
-  { id: "flip", label: "Melena con puntas", bangs: "lock" },
-  { id: "blunt", label: "Melena recta", bangs: "straightCut" },
-  { id: "pixie", label: "Corto", bangs: "short" },
-  { id: "long", label: "Largo", bangs: "wispy" },
-  { id: "straight", label: "Largo recto", bangs: "choppy" },
-  { id: "layered", label: "Largo en capas", bangs: "full" },
-  { id: "volume", label: "Con volumen", bangs: "sweep" },
-  { id: "wavy", label: "Ondulado", bangs: "middle" },
-  { id: "curly", label: "Rizado", bangs: "middle" },
-  { id: "bun", label: "Moño", bangs: "full" },
-  { id: "halfBun", label: "Medio moño", bangs: "full" },
+export const KINDS: { id: AvatarKind; label: string }[] = [
+  { id: "girl", label: "Chica" },
+  { id: "boy", label: "Chico" },
 ];
 
-export const BANGS: { id: Bangs; label: string }[] = [
-  { id: "full", label: "Flequillo" },
-  { id: "straightCut", label: "Recto" },
-  { id: "choppy", label: "Recto en puntas" },
-  { id: "wispy", label: "Desfilado" },
-  { id: "swept", label: "De lado" },
-  { id: "lock", label: "Mechón" },
-  { id: "middle", label: "Raya al medio" },
-  { id: "sweep", label: "Cortina de lado" },
-  { id: "short", label: "Corto" },
+type Option<T> = { id: T; label: string; kind?: AvatarKind };
+
+export const HAIR_STYLES: (Option<HairStyle> & { bangs: Bangs })[] = [
+  { id: "bob", label: "Bob", bangs: "swept", kind: "girl" },
+  { id: "flip", label: "Melena con puntas", bangs: "lock", kind: "girl" },
+  { id: "blunt", label: "Melena recta", bangs: "straightCut", kind: "girl" },
+  { id: "pixie", label: "Corto", bangs: "short", kind: "girl" },
+  { id: "long", label: "Largo", bangs: "wispy", kind: "girl" },
+  { id: "straight", label: "Largo recto", bangs: "choppy", kind: "girl" },
+  { id: "layered", label: "Largo en capas", bangs: "full", kind: "girl" },
+  { id: "volume", label: "Con volumen", bangs: "sweep", kind: "girl" },
+  { id: "wavy", label: "Ondulado", bangs: "middle", kind: "girl" },
+  { id: "curly", label: "Rizado", bangs: "middle", kind: "girl" },
+  { id: "bun", label: "Moño", bangs: "full", kind: "girl" },
+  { id: "halfBun", label: "Medio moño", bangs: "full", kind: "girl" },
+  { id: "classic", label: "Clásico", bangs: "tuft", kind: "boy" },
+  { id: "sidePart", label: "Raya al costado", bangs: "parted", kind: "boy" },
+  { id: "fringe", label: "Con flequillo", bangs: "messyFringe", kind: "boy" },
+  { id: "shortWaves", label: "Ondas", bangs: "waves", kind: "boy" },
+  { id: "spiky", label: "Despeinado", bangs: "spiky", kind: "boy" },
+  { id: "shaggy", label: "Alborotado", bangs: "shaggy", kind: "boy" },
+  { id: "curtains", label: "Cortina", bangs: "curtains", kind: "boy" },
+  { id: "quiff", label: "Tupé", bangs: "quiff", kind: "boy" },
+  { id: "afro", label: "Afro", bangs: "curls", kind: "boy" },
+  { id: "bald", label: "Sin cabello", bangs: "none", kind: "boy" },
 ];
 
-export const OUTFITS: { id: Outfit; label: string }[] = [
-  { id: "tee", label: "Polera" },
-  { id: "vneck", label: "Cuello en V" },
-  { id: "tank", label: "Blusa" },
-  { id: "strap", label: "Tirantes" },
+export const BANGS: Option<Bangs>[] = [
+  { id: "full", label: "Flequillo", kind: "girl" },
+  { id: "straightCut", label: "Recto", kind: "girl" },
+  { id: "choppy", label: "Recto en puntas", kind: "girl" },
+  { id: "wispy", label: "Desfilado", kind: "girl" },
+  { id: "swept", label: "De lado", kind: "girl" },
+  { id: "lock", label: "Mechón", kind: "girl" },
+  { id: "middle", label: "Raya al medio", kind: "girl" },
+  { id: "sweep", label: "Cortina de lado", kind: "girl" },
+  { id: "short", label: "Corto", kind: "girl" },
+  { id: "tuft", label: "Mechón arriba", kind: "boy" },
+  { id: "parted", label: "Peinado de lado", kind: "boy" },
+  { id: "messyFringe", label: "Flequillo", kind: "boy" },
+  { id: "sideFringe", label: "Flequillo de lado", kind: "boy" },
+  { id: "waves", label: "Ondas", kind: "boy" },
+  { id: "spiky", label: "Puntas", kind: "boy" },
+  { id: "shaggy", label: "Alborotado", kind: "boy" },
+  { id: "curtains", label: "Cortina", kind: "boy" },
+  { id: "quiff", label: "Tupé", kind: "boy" },
+  { id: "curls", label: "Rizos", kind: "boy" },
 ];
 
-export const GLASSES: { id: Glasses; label: string }[] = [
+export const FACIAL_HAIR: Option<FacialHair>[] = [
+  { id: "none", label: "Sin barba" },
+  { id: "short", label: "Barba corta" },
+  { id: "chinstrap", label: "Barba fina" },
+  { id: "goatee", label: "Candado" },
+  { id: "full", label: "Barba completa" },
+];
+
+export const OUTFITS: Option<Outfit>[] = [
+  { id: "tee", label: "Polera", kind: "girl" },
+  { id: "vneck", label: "Cuello en V", kind: "girl" },
+  { id: "tank", label: "Blusa", kind: "girl" },
+  { id: "strap", label: "Tirantes", kind: "girl" },
+  { id: "shirt", label: "Camisa", kind: "boy" },
+  { id: "tie", label: "Con corbata", kind: "boy" },
+  { id: "crew", label: "Polera", kind: "boy" },
+  { id: "vneckWide", label: "Cuello en V", kind: "boy" },
+  { id: "raglan", label: "Raglán", kind: "boy" },
+  { id: "jersey", label: "Deportiva", kind: "boy" },
+  { id: "hoodie", label: "Con capucha", kind: "boy" },
+];
+
+export const forKind = <T extends { kind?: AvatarKind }>(items: T[], kind: AvatarKind) =>
+  items.filter((item) => !item.kind || item.kind === kind);
+
+export const GLASSES: Option<Glasses>[] = [
   { id: "none", label: "Sin lentes" },
   { id: "round", label: "Redondos" },
   { id: "square", label: "Cuadrados" },
   { id: "wide", label: "Rectangulares" },
 ];
 
-export const EARRINGS: { id: Earrings; label: string }[] = [
+export const EARRINGS: Option<Earrings>[] = [
   { id: "none", label: "Sin aretes" },
   { id: "hoops", label: "Argollas" },
   { id: "small", label: "Argollas pequeñas" },
@@ -111,17 +166,21 @@ export const DETAILS: { id: "freckles" | "mole"; label: string }[] = [
   { id: "mole", label: "Lunar" },
 ];
 
+export const KIND_LOOK: Record<
+  AvatarKind,
+  Pick<AvatarConfig, "hair" | "bangs" | "outfit" | "top" | "facialHair" | "headband" | "earrings">
+> = {
+  girl: { hair: "bob", bangs: "swept", outfit: "tee", top: "1", facialHair: "none", headband: false, earrings: "none" },
+  boy: { hair: "classic", bangs: "tuft", outfit: "shirt", top: "7", facialHair: "none", headband: false, earrings: "none" },
+};
+
 export const DEFAULT_AVATAR: AvatarConfig = {
+  kind: "girl",
+  ...KIND_LOOK.girl,
   skin: "2",
-  hair: "bob",
-  bangs: "swept",
   hairColor: "1",
   glasses: "none",
-  earrings: "none",
-  headband: false,
   freckles: false,
   mole: false,
-  outfit: "tee",
-  top: "1",
   background: "1",
 };
