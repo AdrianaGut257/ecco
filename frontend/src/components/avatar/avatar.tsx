@@ -1,23 +1,17 @@
 import { useId } from "react";
-import Svg, {
-  Circle,
-  ClipPath,
-  Defs,
-  Ellipse,
-  G,
-  Path,
-  Rect,
-} from "react-native-svg";
-import {
-  BACKGROUND,
-  DEFAULT_AVATAR,
-  HAIR,
-  SKIN,
-  TOP,
-} from "../../constants/avatar";
-import { colors } from "../../constants/colors";
+import Svg, { Circle, ClipPath, Defs, Ellipse, G, Path, Rect } from "react-native-svg";
+import { BACKGROUND, DEFAULT_AVATAR, HAIR, SKIN, TOP } from "../../constants/avatar";
 import type { MoodId } from "../../constants/emotions";
 import type { AvatarConfig } from "../../types";
+import {
+  BACK_HAIR,
+  EARRING_PATHS,
+  EARS,
+  FRONT_HAIR,
+  GLASSES_PATHS,
+  HEADBAND,
+  OUTFIT_PATHS,
+} from "./parts";
 
 interface Props {
   config?: Partial<AvatarConfig> | null;
@@ -26,197 +20,140 @@ interface Props {
   label?: string;
 }
 
-const INK = colors.primary.darker;
-const DEEP_INK = "#140B07";
-const BLUSH = colors.error.normal;
+const EYE = "#2F3432";
+const HEADBAND_COLOR = "#1E9C9A";
+const DEEP_EYE = "#140B07";
 
-const MOUTHS: Record<MoodId, { d: string; filled?: boolean }> = {
-  fatal: { d: "M44 59 Q50 54 56 59" },
-  mal: { d: "M45 58 Q50 55.5 55 58" },
-  normal: { d: "M45 57 L55 57" },
-  bien: { d: "M44 55.5 Q50 61 56 55.5" },
-  feliz: { d: "M43 54.5 Q50 64 57 54.5 Z", filled: true },
+const HEAD =
+  "M91.5 41.5C91.5 64.42 76.05 83 57 83C37.95 83 22.5 64.42 22.5 41.5C22.5 18.58 37.95 0 57 0C76.05 0 91.5 18.58 91.5 41.5Z";
+const TORSO = "M86.5 131H27.5C27.5 131 37.5 92 57 92C76.5 92 86.5 131 86.5 131Z";
+
+type EyeShape = "open" | "happy" | "closed";
+
+const FACES: Record<MoodId, { eyes: EyeShape; mouth: string; filled?: boolean }> = {
+  fatal: { eyes: "closed", mouth: "M50.5 58.5C50.5 58.5 52.9 53.5 57 53.5C61.1 53.5 63.5 58.5 63.5 58.5" },
+  mal: { eyes: "open", mouth: "M51 57C51 57 53.5 54.5 57 54.5C60.5 54.5 63 57 63 57" },
+  normal: { eyes: "open", mouth: "M51.5 55.5H62.5" },
+  bien: { eyes: "open", mouth: "M50.5 53C50.5 53 52.89 58 57 58C61.11 58 63.5 53 63.5 53" },
+  feliz: { eyes: "happy", mouth: "M50 52.5C50 52.5 51.5 61 57 61C62.5 61 64 52.5 64 52.5Z", filled: true },
 };
 
-const CURLS = [
-  [29, 40],
-  [31, 31],
-  [37, 24],
-  [45, 20],
-  [55, 20],
-  [63, 24],
-  [69, 31],
-  [71, 40],
+const FRECKLES = [
+  [38.5, 44],
+  [42, 43],
+  [45, 44.5],
+  [75.5, 44],
+  [72, 43],
+  [69, 44.5],
 ];
 
-function BackHair({ hair, color }: { hair: AvatarConfig["hair"]; color: string }) {
-  if (hair === "long") {
+function Eyes({ shape, ink }: { shape: EyeShape; ink: string }) {
+  if (shape === "open") {
     return (
-      <Path
-        d="M26 46 C24 24 38 15 50 15 C62 15 76 24 74 46 L77 76 C71 80 64 78 62 73 L62 52 L38 52 L38 73 C36 78 29 80 23 76 Z"
-        fill={color}
-      />
-    );
-  }
-  if (hair === "bun") return <Circle cx={50} cy={15} r={8.5} fill={color} />;
-  return null;
-}
-
-function FrontHair({ hair, color }: { hair: AvatarConfig["hair"]; color: string }) {
-  switch (hair) {
-    case "buzz":
-      return (
-        <Path
-          d="M29 41 C29 27 39 20 50 20 C61 20 71 27 71 41 C66 33 58 29.5 50 29.5 C42 29.5 34 33 29 41 Z"
-          fill={color}
-          opacity={0.75}
-        />
-      );
-    case "curly":
-      return (
-        <G>
-          <Path
-            d="M29 42 C28 26 39 18 50 18 C61 18 72 26 71 42 C66 33 58 30 50 30 C42 30 34 33 29 42 Z"
-            fill={color}
-          />
-          {CURLS.map(([cx, cy]) => (
-            <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={6.5} fill={color} />
-          ))}
-        </G>
-      );
-    case "long":
-      return (
-        <Path
-          d="M29 43 C28 26 39 19 51 19 C63 19 73 27 71 43 C67 33 57 28 46 30 C39 32 33 37 29 43 Z"
-          fill={color}
-        />
-      );
-    default:
-      return (
-        <Path
-          d="M28 44 C27 26 38 18 51 18 C64 18 74 27 72 44 C70 36 64 31.5 58 30.5 C50 34 40 34.5 33 33 C30 36 29 40 28 44 Z"
-          fill={color}
-        />
-      );
-  }
-}
-
-function Eyes({ mood, ink }: { mood: MoodId | null; ink: string }) {
-  if (mood === "fatal") {
-    return (
-      <G stroke={ink} strokeWidth={1.8} strokeLinecap="round">
-        <Path d="M39 47 Q42 49 45 47" fill="none" />
-        <Path d="M55 47 Q58 49 61 47" fill="none" />
+      <G fill={ink}>
+        <Ellipse cx={46.5} cy={38.5} rx={2} ry={4.5} />
+        <Ellipse cx={67.5} cy={38.5} rx={2} ry={4.5} />
       </G>
     );
   }
-  if (mood === "feliz") {
-    return (
-      <G stroke={ink} strokeWidth={1.8} strokeLinecap="round" fill="none">
-        <Path d="M39 47 Q42 43.5 45 47" />
-        <Path d="M55 47 Q58 43.5 61 47" />
-      </G>
-    );
-  }
-  return (
-    <G>
-      <Ellipse cx={42} cy={46} rx={2.6} ry={3.2} fill={ink} />
-      <Ellipse cx={58} cy={46} rx={2.6} ry={3.2} fill={ink} />
-      <Circle cx={42.9} cy={44.9} r={0.9} fill={colors.white} />
-      <Circle cx={58.9} cy={44.9} r={0.9} fill={colors.white} />
-    </G>
-  );
+  const d =
+    shape === "happy"
+      ? "M44 40Q46.5 34.5 49 40M65 40Q67.5 34.5 70 40"
+      : "M44 38.5Q46.5 42 49 38.5M65 38.5Q67.5 42 70 38.5";
+  return <Path d={d} stroke={ink} strokeWidth={2.2} strokeLinecap="round" fill="none" />;
 }
 
-function Brows({ mood, color }: { mood: MoodId | null; color: string }) {
-  const sad = mood === "fatal" || mood === "mal";
-  return (
-    <G stroke={color} strokeWidth={1.6} strokeLinecap="round" fill="none">
-      <Path d={sad ? "M38.5 40 Q42 38 45 39" : "M38.5 40 Q42 37.5 45.5 39.5"} />
-      <Path d={sad ? "M55 39 Q58 38 61.5 40" : "M54.5 39.5 Q58 37.5 61.5 40"} />
-    </G>
-  );
-}
-
-function Glasses({ style, ink }: { style: AvatarConfig["glasses"]; ink: string }) {
+function Earrings({ style }: { style: AvatarConfig["earrings"] }) {
   if (style === "none") return null;
-  const common = { stroke: ink, strokeWidth: 1.5, fill: "none" } as const;
+  const [left, right] = EARRING_PATHS[style];
+  if (style === "studs") {
+    const stud = { stroke: "#AA7137", strokeWidth: 2, strokeLinecap: "square", fill: "none" } as const;
+    return (
+      <G>
+        <Path d={left} {...stud} />
+        <Path d={right} {...stud} />
+      </G>
+    );
+  }
+  const fill = style === "hoops" ? "#FECD9C" : "#D5A26E";
   return (
-    <G>
-      {style === "round" ? (
-        <>
-          <Circle cx={42} cy={46} r={6.2} {...common} />
-          <Circle cx={58} cy={46} r={6.2} {...common} />
-        </>
-      ) : (
-        <>
-          <Rect x={35.5} y={41} width={13} height={10} rx={2} {...common} />
-          <Rect x={51.5} y={41} width={13} height={10} rx={2} {...common} />
-        </>
-      )}
-      <Path d="M48 46 L52 46" {...common} />
+    <G fill={fill}>
+      <Path d={left} />
+      <Path d={right} />
     </G>
   );
 }
 
 export default function Avatar({ config, mood = null, size = 96, label }: Props) {
   const look = { ...DEFAULT_AVATAR, ...(config ?? {}) };
-  const clipId = `avatar-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
-  const skin = SKIN[look.skin];
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const tone = SKIN[look.skin] ?? SKIN[DEFAULT_AVATAR.skin];
   const hair = HAIR[look.hairColor];
-  const mouth = MOUTHS[mood ?? "bien"];
-  const ink = look.skin === "5" || look.skin === "6" ? DEEP_INK : INK;
+  const face = FACES[mood ?? "bien"];
+  const eyeInk = look.skin === "5" || look.skin === "6" ? DEEP_EYE : EYE;
 
   return (
     <Svg
       width={size}
       height={size}
-      viewBox="0 0 100 100"
+      viewBox="-24 -24 162 162"
       {...(label ? { accessibilityLabel: label, role: "img" as const } : {})}
     >
       <Defs>
-        <ClipPath id={clipId}>
-          <Circle cx={50} cy={50} r={50} />
+        <ClipPath id={`frame${id}`}>
+          <Circle cx={57} cy={57} r={81} />
+        </ClipPath>
+        <ClipPath id={`hair${id}`}>
+          <Rect x={-24} y={-24} width={162} height={155} />
         </ClipPath>
       </Defs>
-      <Circle cx={50} cy={50} r={50} fill={BACKGROUND[look.background]} />
-      <G clipPath={`url(#${clipId})`}>
-        <BackHair hair={look.hair} color={hair} />
-        <Path
-          d="M14 104 C16 82 30 73 50 73 C70 73 84 82 86 104 Z"
-          fill={TOP[look.top]}
-        />
-        <Rect x={44} y={60} width={12} height={15} rx={5} fill={skin} />
-        <Path d="M44 66 Q50 70 56 66 L56 62 L44 62 Z" fill={INK} opacity={0.08} />
-        <Circle cx={29} cy={47} r={4.5} fill={skin} />
-        <Circle cx={71} cy={47} r={4.5} fill={skin} />
-        {look.earring && <Circle cx={29} cy={53} r={1.8} fill="#E3B26B" />}
-        <Ellipse cx={50} cy={45} rx={21} ry={23} fill={skin} />
-        <FrontHair hair={look.hair} color={hair} />
-        <Brows mood={mood} color={hair} />
-        <Eyes mood={mood} ink={ink} />
-        <Ellipse cx={36} cy={53.5} rx={3.6} ry={2.1} fill={BLUSH} opacity={0.22} />
-        <Ellipse cx={64} cy={53.5} rx={3.6} ry={2.1} fill={BLUSH} opacity={0.22} />
+      <Circle cx={57} cy={57} r={81} fill={BACKGROUND[look.background]} />
+      <G clipPath={`url(#frame${id})`}>
+        <G clipPath={`url(#hair${id})`}>
+          <Path d={BACK_HAIR[look.hair] ?? BACK_HAIR[DEFAULT_AVATAR.hair]} fill={hair} />
+        </G>
+        <Rect x={47.5} y={80} width={19} height={23} fill={tone.base} />
+        <Path d={EARS.right} fill={tone.base} />
+        <Path d={EARS.rightInner} fill={tone.blush} />
+        <Path d={EARS.left} fill={tone.base} />
+        <Path d={EARS.leftInner} fill={tone.blush} />
+        <Path d={HEAD} fill={tone.base} />
+        <Ellipse cx={57} cy={41.5} rx={34} ry={41} stroke={tone.line} strokeWidth={1} fill="none" />
         {look.freckles && (
-          <G fill={ink} opacity={0.4}>
-            <Circle cx={37} cy={51} r={0.7} />
-            <Circle cx={39.5} cy={52.6} r={0.7} />
-            <Circle cx={35.5} cy={53.2} r={0.7} />
-            <Circle cx={63} cy={51} r={0.7} />
-            <Circle cx={60.5} cy={52.6} r={0.7} />
-            <Circle cx={64.5} cy={53.2} r={0.7} />
+          <G fill={tone.mouth} opacity={0.45}>
+            {FRECKLES.map(([cx, cy]) => (
+              <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={0.9} />
+            ))}
           </G>
         )}
-        {look.mole && <Circle cx={61} cy={58} r={0.9} fill={ink} opacity={0.75} />}
+        <Ellipse cx={42.64} cy={46.25} rx={4.5} ry={2.23} transform="rotate(11.92 42.64 46.25)" fill={tone.blush} />
+        <Ellipse cx={71.36} cy={46.25} rx={4.5} ry={2.23} transform="rotate(-11.92 71.36 46.25)" fill={tone.blush} />
+        <Eyes shape={face.eyes} ink={eyeInk} />
         <Path
-          d={mouth.d}
-          stroke={ink}
-          strokeWidth={1.8}
+          d={face.mouth}
+          stroke={tone.mouth}
+          strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill={mouth.filled ? ink : "none"}
+          fill={face.filled ? tone.mouth : "none"}
         />
-        <Glasses style={look.glasses} ink={ink} />
+        {look.mole && <Circle cx={66.5} cy={56} r={1.1} fill={eyeInk} opacity={0.75} />}
+        <Path d={TORSO} fill={tone.base} />
+        <Path d={OUTFIT_PATHS[look.outfit] ?? OUTFIT_PATHS.tee} fill={TOP[look.top]} />
+        <Ellipse cx={28} cy={129} rx={9.5} ry={10} fill={tone.base} />
+        <Ellipse cx={86} cy={129} rx={9.5} ry={10} fill={tone.base} />
+        {look.glasses !== "none" && (
+          <Path d={GLASSES_PATHS[look.glasses]} stroke={EYE} strokeWidth={1} strokeLinecap="square" fill="none" />
+        )}
+        <Path
+          d={FRONT_HAIR[look.bangs] ?? FRONT_HAIR[DEFAULT_AVATAR.bangs]}
+          fill={hair}
+          stroke={hair}
+          strokeWidth={1.2}
+          strokeLinejoin="round"
+        />
+        {look.headband && <Path d={HEADBAND} fill={HEADBAND_COLOR} />}
+        <Earrings style={look.earrings} />
       </G>
     </Svg>
   );

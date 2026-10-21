@@ -2,14 +2,44 @@ import type { MoodId } from "../constants/emotions";
 
 export type Swatch = "1" | "2" | "3" | "4" | "5" | "6";
 
+export type HairStyle =
+  | "flip"
+  | "bob"
+  | "long"
+  | "wavy"
+  | "halfBun"
+  | "bun"
+  | "pixie"
+  | "curly"
+  | "layered"
+  | "blunt"
+  | "straight"
+  | "volume";
+export type Bangs =
+  | "lock"
+  | "swept"
+  | "wispy"
+  | "middle"
+  | "full"
+  | "short"
+  | "straightCut"
+  | "choppy"
+  | "sweep";
+export type Glasses = "none" | "round" | "square" | "wide";
+export type Earrings = "none" | "hoops" | "small" | "studs";
+export type Outfit = "tee" | "tank" | "strap" | "vneck";
+
 export interface AvatarConfig {
   skin: Swatch;
-  hair: "short" | "long" | "curly" | "bun" | "buzz";
+  hair: HairStyle;
+  bangs: Bangs;
   hairColor: Swatch;
-  glasses: "none" | "round" | "square";
+  glasses: Glasses;
+  earrings: Earrings;
+  headband: boolean;
   freckles: boolean;
   mole: boolean;
-  earring: boolean;
+  outfit: Outfit;
   top: Swatch;
   background: Swatch;
 }

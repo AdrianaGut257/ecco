@@ -54,6 +54,23 @@ async def test_unknown_avatar_option_rejected(client, make_user):
     assert res.status_code == 422
 
 
+async def test_avatar_accepts_new_styles(client, make_user):
+    ana = await make_user("Ana")
+    look = {"hair": "halfBun", "bangs": "choppy", "outfit": "vneck", "earrings": "hoops", "glasses": "wide", "headband": True}
+    res = await client.put("/users/me", json={"avatar": look}, headers=ana["headers"])
+    assert res.status_code == 200
+    assert {k: res.json()["avatar"][k] for k in look} == look
+
+
+def test_legacy_avatar_is_upgraded():
+    from src.modules.users.avatar import avatar_from
+
+    old = avatar_from({"skin": "3", "hair": "buzz", "hair_color": "4", "earring": True})
+    assert (old.hair, old.bangs, old.earrings, old.skin, old.hair_color) == ("pixie", "short", "studs", "3", "4")
+    assert avatar_from({"hair": "short", "earring": False}).earrings == "none"
+    assert avatar_from({"outfit": "sweater"}).outfit == "tee"
+
+
 async def test_needs_at_least_three_interests(client, make_user):
     ana = await make_user("Ana")
     res = await client.put("/users/me", json={"interests": ["Pop"]}, headers=ana["headers"])
