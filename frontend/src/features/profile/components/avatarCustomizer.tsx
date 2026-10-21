@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -12,6 +12,7 @@ import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
 import {
   BACKGROUND,
+  BACKGROUND_BY_KIND,
   BANGS,
   DETAILS,
   EARRINGS,
@@ -26,6 +27,7 @@ import {
   SKIN_SWATCH,
   SWATCHES,
   TOP,
+  TOP_BY_KIND,
 } from "../../../constants/avatar";
 import { colors } from "../../../constants/colors";
 import type { AvatarConfig, Swatch } from "../../../types";
@@ -46,14 +48,51 @@ interface Props {
 const pick = <T,>(items: readonly T[]) =>
   items[Math.floor(Math.random() * items.length)];
 
+const COLUMNS = 4;
+const GAP = 10;
+
+// Cuadrícula fija de 4 columnas: celdas grandes en el teléfono y con tope en pantallas anchas.
+function Grid<T extends { id: string }>({
+  items,
+  maxCell,
+  label,
+  renderItem,
+}: {
+  items: T[];
+  maxCell: number;
+  label: string;
+  renderItem: (item: T, cell: number) => ReactNode;
+}) {
+  const [width, setWidth] = useState(0);
+  const cell = Math.min((width - GAP * (COLUMNS - 1)) / COLUMNS, maxCell);
+  return (
+    <View
+      accessibilityRole="radiogroup"
+      accessibilityLabel={label}
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      className="flex-row flex-wrap"
+      style={{ gap: GAP }}
+    >
+      {width > 0 &&
+        items.map((item) => (
+          <View key={item.id} style={{ width: cell }}>
+            {renderItem(item, cell)}
+          </View>
+        ))}
+    </View>
+  );
+}
+
 function Swatches<K extends string>({
   label,
   palette,
+  keys = Object.keys(palette) as K[],
   value,
   onSelect,
 }: {
   label: string;
   palette: Record<K, string>;
+  keys?: K[];
   value: K;
   onSelect: (s: K) => void;
 }) {
@@ -62,35 +101,41 @@ function Swatches<K extends string>({
       <Text variant="caption1" className="mb-2 ml-1 text-primary-dark-hover">
         {label}
       </Text>
-      <View className="flex-row flex-wrap gap-3">
-        {(Object.keys(palette) as K[]).map((s) => {
-          const active = value === s;
+      <Grid
+        label={label}
+        maxCell={72}
+        items={keys.map((id) => ({ id }))}
+        renderItem={({ id }, cell) => {
+          const active = value === id;
+          const size = Math.min(cell, 56);
           return (
             <Pressable
-              key={s}
-              onPress={() => onSelect(s)}
+              onPress={() => onSelect(id)}
               accessibilityRole="radio"
               accessibilityState={{ selected: active }}
-              accessibilityLabel={`${label} ${s}`}
-              hitSlop={4}
-              className={`h-11 w-11 items-center justify-center rounded-full ${
-                active
-                  ? "border-[3px] border-primary-dark-hover"
-                  : "border border-primary-light-active"
-              }`}
-              style={{ backgroundColor: palette[s] }}
+              accessibilityLabel={`${label} ${keys.indexOf(id) + 1}`}
+              className="items-center"
             >
-              {active && (
-                <Ionicons
-                  name="checkmark"
-                  size={18}
-                  color={colors.primary.darker}
-                />
-              )}
+              <View
+                className={`items-center justify-center rounded-full ${
+                  active
+                    ? "border-[3px] border-primary-dark-hover"
+                    : "border border-primary-light-active"
+                }`}
+                style={{ width: size, height: size, backgroundColor: palette[id] }}
+              >
+                {active && (
+                  <Ionicons
+                    name="checkmark"
+                    size={20}
+                    color={colors.primary.darker}
+                  />
+                )}
+              </View>
             </Pressable>
           );
-        })}
-      </View>
+        }}
+      />
     </View>
   );
 }
@@ -143,34 +188,36 @@ function Looks<T extends string>({
       <Text variant="caption1" className="mb-2 ml-1 text-primary-dark-hover">
         {label}
       </Text>
-      <View accessibilityRole="radiogroup" className="flex-row flex-wrap gap-3">
-        {options.map((o) => {
+      <Grid
+        label={label}
+        maxCell={120}
+        items={options}
+        renderItem={(o, cell) => {
           const active = selected === o.id;
           return (
             <Pressable
-              key={o.id}
               onPress={() => onSelect(o.id)}
               accessibilityRole="radio"
               accessibilityState={{ selected: active }}
               accessibilityLabel={o.label}
-              className={`w-[84px] items-center rounded-card p-1.5 ${
+              className={`items-center rounded-card px-0.5 py-1.5 ${
                 active
                   ? "border-[3px] border-primary-dark-hover bg-white"
                   : "border border-primary-light-active"
               }`}
             >
-              <Avatar config={preview(o.id)} size={64} />
+              <Avatar config={preview(o.id)} size={cell - 14} />
               <Text
                 variant="caption1"
                 numberOfLines={2}
-                className="mt-1 text-center text-primary-dark-hover"
+                className="mt-1 text-center tracking-normal text-primary-dark-hover"
               >
                 {o.label}
               </Text>
             </Pressable>
           );
-        })}
-      </View>
+        }}
+      />
     </View>
   );
 }
@@ -214,8 +261,8 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
       freckles: Math.random() < 0.3,
       mole: Math.random() < 0.2,
       outfit: pick(forKind(OUTFITS, kind)).id,
-      top: pick(Object.keys(TOP) as AvatarConfig["top"][]),
-      background: pick(SWATCHES),
+      top: pick(TOP_BY_KIND[kind]),
+      background: pick(BACKGROUND_BY_KIND[kind]),
     });
   };
 
@@ -242,7 +289,14 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
         label="Estilo de avatar"
         options={KINDS}
         value={kind}
-        onSelect={(next) => next !== kind && set({ kind: next, ...KIND_LOOK[next] })}
+        onSelect={(next) =>
+          next !== kind &&
+          set({
+            kind: next,
+            ...KIND_LOOK[next],
+            ...(BACKGROUND_BY_KIND[next].includes(value.background) ? {} : { background: "1" }),
+          })
+        }
       />
 
       <View
@@ -382,12 +436,14 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
           <Swatches
             label="Color de la ropa"
             palette={TOP}
+            keys={TOP_BY_KIND[kind]}
             value={value.top}
             onSelect={(top) => set({ top })}
           />
           <Swatches
             label="Fondo"
             palette={BACKGROUND}
+            keys={BACKGROUND_BY_KIND[kind]}
             value={value.background}
             onSelect={(background) => set({ background })}
           />

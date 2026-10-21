@@ -82,6 +82,7 @@ function Outfit({ outfit, color }: { outfit: AvatarConfig["outfit"]; color: stri
             key={i}
             d={layer.d}
             fill={layer.fill === "main" ? color : layer.fill === "shade" ? shade(color) : layer.fill}
+            {...(layer.cover ? { stroke: layer.fill, strokeWidth: 1, strokeLinejoin: "round" as const } : {})}
           />
         ),
       )}

@@ -55,6 +55,17 @@ export const TOP: Record<TopColor, string> = {
   "8": "#027E7E",
   "9": "#FD4D6B",
   "10": "#9B3D35",
+  "11": "#5EB2CA",
+  "12": "#438EAF",
+  "13": "#8FAF7E",
+  "14": "#E0A93B",
+  "15": "#9AA3AD",
+};
+
+// Ocho colores por grupo. Los de chico parten de los dibujos de la autora (azul marino, celeste, azul acero, verde azulado y guindo) y evitan rosas y lilas sin quedarse solo en tonos oscuros.
+export const TOP_BY_KIND: Record<AvatarKind, TopColor[]> = {
+  girl: ["1", "9", "4", "5", "2", "3", "8", "6"],
+  boy: ["7", "12", "11", "8", "13", "14", "10", "15"],
 };
 
 export const BACKGROUND: Record<Swatch, string> = {
@@ -67,6 +78,11 @@ export const BACKGROUND: Record<Swatch, string> = {
 };
 
 export const SWATCHES: Swatch[] = ["1", "2", "3", "4", "5", "6"];
+
+export const BACKGROUND_BY_KIND: Record<AvatarKind, Swatch[]> = {
+  girl: SWATCHES,
+  boy: ["1", "2", "3", "4", "5"],
+};
 
 export const KINDS: { id: AvatarKind; label: string }[] = [
   { id: "girl", label: "Chica" },
@@ -92,8 +108,8 @@ export const HAIR_STYLES: (Option<HairStyle> & { bangs: Bangs })[] = [
   { id: "sidePart", label: "Raya al costado", bangs: "parted", kind: "boy" },
   { id: "fringe", label: "Con flequillo", bangs: "messyFringe", kind: "boy" },
   { id: "shortWaves", label: "Ondas", bangs: "waves", kind: "boy" },
-  { id: "spiky", label: "Despeinado", bangs: "spiky", kind: "boy" },
-  { id: "shaggy", label: "Alborotado", bangs: "shaggy", kind: "boy" },
+  { id: "spiky", label: "Con puntas", bangs: "spiky", kind: "boy" },
+  { id: "shaggy", label: "Revuelto", bangs: "shaggy", kind: "boy" },
   { id: "curtains", label: "Cortina", bangs: "curtains", kind: "boy" },
   { id: "quiff", label: "Tupé", bangs: "quiff", kind: "boy" },
   { id: "afro", label: "Afro", bangs: "curls", kind: "boy" },
@@ -116,7 +132,7 @@ export const BANGS: Option<Bangs>[] = [
   { id: "sideFringe", label: "Flequillo de lado", kind: "boy" },
   { id: "waves", label: "Ondas", kind: "boy" },
   { id: "spiky", label: "Puntas", kind: "boy" },
-  { id: "shaggy", label: "Alborotado", kind: "boy" },
+  { id: "shaggy", label: "Revuelto", kind: "boy" },
   { id: "curtains", label: "Cortina", kind: "boy" },
   { id: "quiff", label: "Tupé", kind: "boy" },
   { id: "curls", label: "Rizos", kind: "boy" },

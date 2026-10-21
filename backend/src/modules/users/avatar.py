@@ -5,7 +5,7 @@ from pydantic import model_validator
 from src.core.schemas import CamelModel
 
 Swatch = Literal["1", "2", "3", "4", "5", "6"]
-TopColor = Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+TopColor = Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"]
 HairStyle = Literal[
     "flip", "bob", "long", "wavy", "halfBun", "bun",
     "pixie", "curly", "layered", "blunt", "straight", "volume",

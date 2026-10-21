@@ -62,7 +62,17 @@ export type Outfit =
   | "hoodie"
   | "crew";
 export type AvatarKind = "girl" | "boy";
-export type TopColor = Swatch | "7" | "8" | "9" | "10";
+export type TopColor =
+  | Swatch
+  | "7"
+  | "8"
+  | "9"
+  | "10"
+  | "11"
+  | "12"
+  | "13"
+  | "14"
+  | "15";
 
 export interface AvatarConfig {
   kind: AvatarKind;

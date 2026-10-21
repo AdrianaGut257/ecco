@@ -64,7 +64,7 @@ async def test_avatar_accepts_new_styles(client, make_user):
 
 async def test_avatar_accepts_boy_styles(client, make_user):
     leo = await make_user("Leo")
-    look = {"kind": "boy", "hair": "quiff", "bangs": "quiff", "facialHair": "goatee", "outfit": "hoodie", "top": "10"}
+    look = {"kind": "boy", "hair": "quiff", "bangs": "quiff", "facialHair": "goatee", "outfit": "hoodie", "top": "13"}
     res = await client.put("/users/me", json={"avatar": look}, headers=leo["headers"])
     assert res.status_code == 200
     assert {k: res.json()["avatar"][k] for k in look} == look
