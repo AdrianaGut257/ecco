@@ -75,6 +75,8 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 | Avatar en vez de foto | ¿Cómo podríamos permitir que el avatar refleje la identidad real? | Avatar ilustrado por la autora y armado por capas. Primero se elige Chica (12 peinados, 9 flequillos, aretes, diadema y 7 prendas) o Chico (9 peinados más "Sin cabello", 10 flequillos, 4 barbas y 7 prendas). Para ambos: 6 tonos de piel, 6 colores de cabello, 3 lentes, pecas, lunar, 8 colores de ropa por grupo (los de chico, sin rosas ni lilas) y fondo. En el editor, los colores y las miniaturas van en una cuadrícula de 4 columnas para que se vean y se toquen con facilidad (Ley de Fitts). | Usuario 4 ("lentes, pelo largo, lunares, piercings"); Mapa de Motivaciones (12/15). |
 | ídem | ¿Cómo podríamos hacer el avatar entretenido? | Botón "Sorpréndeme" y animación de respuesta en cada cambio. | Faceta "deseable" de Morville (2005); Efecto de Usabilidad Estética. |
 | ídem (y comunicación "plana") | ¿Cómo podríamos compensar la falta de expresiones? | **El avatar muestra el ánimo del día** (ojos y boca). La otra persona lo ve, salvo que se desactive. | Causa raíz del Usuario 1: "no puedo ver expresiones, es muy plano"; Picard (1997). |
+| ídem | ¿Cómo podríamos hacer que los mensajes no se sientan como texto plano? | **Tono del mensaje (opcional):** *con cariño, en broma, para animarte, con curiosidad, con gratitud* o *en serio*. La burbuja toma un tinte suave, una etiqueta con ícono y un gesto al llegar. | Causa raíz del Usuario 1; Picard (1997); Kruger et al. (2005): el tono escrito se entiende mucho peor de lo que cree quien escribe, sobre todo las bromas. |
+| ídem | ¿Cómo podríamos responder a un mensaje sin gastar palabras? | **Reacciones con las cinco caras de la app** (*Me alegra, Me gusta, Entiendo, Lo siento, Te abrazo*), al mantener presionado un mensaje recibido. No descuentan de los 5 mensajes del día. | Deseo del Usuario 1 ("reacciones más variadas"); Derks et al. (2008); Ley de Hick (las opciones aparecen solo al pedirlas). |
 | Temor a la hostilidad | ¿Cómo podríamos dar reporte y bloqueo sin interrumpir? | Ícono de escudo en la conversación → "Tu bienestar es primero": salir o reportar con motivo. La otra persona no ve el motivo y no vuelven a coincidir. | Mapa de Motivaciones (6/15); Usuarios 4 y 5; Shneiderman (manejo amable de errores). |
 | ídem | ¿Cómo podríamos reducir el hate o la toxicidad dentro de la app? | **Moderación antes de enviar en dos niveles:** pausa amable "¿Lo reformulamos?" para lo leve y bloqueo para lo grave. | Katsaros et al. (2022); Gross (1998); Shneiderman. Garantiza que las micro interacciones sean *positivas*, como dice el objetivo general. |
 | ídem | ¿Cómo podríamos transmitir confianza antes de la primera conversación? | Pantalla "Un lugar seguro" con acuerdos breves y recordatorio de que se puede salir cuando se quiera. | Síntesis de Empatizar (4.4), necesidad (d). |
@@ -92,7 +94,6 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 |---|---|---|
 | "Mundo de conexiones" con estadísticas globales | Descartada | Introducía métricas públicas y comparación social (factor 4). |
 | Notificaciones push y rachas diarias | Descartada | Pueden fomentar el uso compulsivo, asociado a la soledad (Feng et al., 2026). |
-| Reacciones variadas a los mensajes (Usuario 1) | Pospuesta | Suma opciones en cada mensaje (Ley de Hick). Candidata tras la prueba piloto. |
 | Mensajes largos tipo "story time" (Usuario 4) | Atendida parcialmente | 500 caracteres por mensaje, sin un formato especial que rompa la micro-interacción. |
 | Debates de opinión (Usuario 4) | Descartada | Fuera del alcance (sin comunicación grupal). |
 | Avatar 3D | Reemplazada | Avatar 2D en SVG (ver sección 2). |
@@ -121,6 +122,8 @@ La app consulta al servidor cada pocos segundos para recibir mensajes nuevos y s
 | Días de gracia para decidir | 3 (del día 7 al 10) |
 | Mensajes por persona y por día | 5 |
 | Largo máximo de un mensaje | 500 caracteres |
+| Tonos de mensaje | 6, opcionales |
+| Reacciones | 5 caras, una por mensaje recibido; no cuentan como mensaje |
 | Etapas de la planta | 6: semilla, brote, plantita, capullo, primera flor y flor completa. Avanza una por cada día en que ambos escriben. |
 | Ánimo visible para la pareja | Solo el de las últimas 24 h, y se puede desactivar |
 | Duración de una búsqueda | Hasta 24 h; se puede salir y la búsqueda sigue |
@@ -194,6 +197,7 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - Las caras de ánimo expresan su emoción todo el tiempo, animadas por partes: feliz da saltitos, bien se mece y sonríe, normal mira a los lados y tuerce la boca, mal suspira y mira hacia abajo, y a fatal le cae una lágrima. Todas parpadean y, al elegir una, reacciona. Luego la tarjeta se recoge en un resumen ("Hoy te sientes bien · Cambiar").
 - Nueva barra de navegación con una muesca central para el botón de "Conversar"; el ícono de la pestaña elegida da un saltito.
 - Botones y chips se hunden un poco al tocarlos y vuelven con un rebote suave.
+- Los mensajes con tono entran con un gesto propio (el corazón late, la carita se ríe, el sol gira) y las reacciones aparecen con un pequeño rebote.
 - Pantalla de cierre de la semana, que cuida el final de la experiencia (Regla del Pico-Final).
 - Bienvenida animada: la semilla llega con sus hojas, saluda con ellas, parpadea y flota, y después aparece el texto "Te damos la bienvenida". Es el primer momento de cada sesión (Regla del Pico-Final). Con "Reducir movimiento" activado, se muestra quieta.
 
@@ -263,6 +267,8 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 
 ## 8. Referencias nuevas para agregar (APA 7)
 
+- Kruger, N., Epley, N., Parker, J., & Ng, Z.-W. (2005). Egocentrism over e-mail: Can we communicate as well as we think? *Journal of Personality and Social Psychology, 89*(6), 925–936. https://doi.org/10.1037/0022-3514.89.6.925
+- Derks, D., Fischer, A. H., & Bos, A. E. R. (2008). The role of emotion in computer-mediated communication: A review. *Computers in Human Behavior, 24*(3), 766–785. https://doi.org/10.1016/j.chb.2007.04.004
 - Gross, J. J. (1998). The emerging field of emotion regulation: An integrative review. *Review of General Psychology, 2*(3), 271–299. https://doi.org/10.1037/1089-2680.2.3.271
 - Lehrer, P. M., & Gevirtz, R. (2014). Heart rate variability biofeedback: How and why does it work? *Frontiers in Psychology, 5*, 756. https://doi.org/10.3389/fpsyg.2014.00756
 - Lieberman, M. D., Eisenberger, N. I., Crockett, M. J., Tom, S. M., Pfeifer, J. H., & Way, B. M. (2007). Putting feelings into words: Affect labeling disrupts amygdala activity in response to affective stimuli. *Psychological Science, 18*(5), 421–428. https://doi.org/10.1111/j.1467-9280.2007.01916.x

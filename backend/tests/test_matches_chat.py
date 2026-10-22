@@ -267,3 +267,53 @@ async def test_simultaneous_searches_end_up_paired(client, make_user, db):
     assert [s["status"] for s in states] == ["matched", "matched"]
     total = (await db.execute(select(func.count()).select_from(Match))).scalar()
     assert total == 1
+
+
+async def test_messages_keep_their_tone(client, make_user):
+    ana, luis, match = await paired(client, make_user)
+    url = f"/matches/{match['id']}/messages"
+    sent = await client.post(url, json={"text": "jaja", "tone": "joke"}, headers=ana["headers"])
+    assert sent.json()["tone"] == "joke"
+    plain = await say(client, ana, match["id"])
+    assert plain.json()["tone"] is None
+    assert (await client.post(url, json={"text": "hola", "tone": "angry"}, headers=ana["headers"])).status_code == 422
+    seen = await client.get(url, headers=luis["headers"])
+    assert [m["tone"] for m in seen.json()] == ["joke", None]
+
+
+async def test_only_the_partner_can_react(client, make_user):
+    ana, luis, match = await paired(client, make_user)
+    mid = match["id"]
+    msg = (await say(client, ana, mid, "me fue mal hoy")).json()
+    url = f"/matches/{mid}/messages/{msg['id']}/reaction"
+
+    assert (await client.put(url, json={"reaction": "mal"}, headers=ana["headers"])).status_code == 400
+    assert (await client.put(url, json={"reaction": "enojo"}, headers=luis["headers"])).status_code == 422
+    outsider = await make_user("Eva", "eva@ejemplo.com")
+    assert (await client.put(url, json={"reaction": "mal"}, headers=outsider["headers"])).status_code == 404
+
+    res = await client.put(url, json={"reaction": "mal"}, headers=luis["headers"])
+    assert res.status_code == 200
+    assert res.json()["reaction"] == "mal"
+    assert res.json()["fromMe"] is False
+
+    left = (await client.get(f"/matches/{mid}", headers=luis["headers"])).json()["messagesLeft"]
+    assert left == 5
+
+
+async def test_polling_returns_messages_whose_reaction_changed(client, make_user):
+    ana, luis, match = await paired(client, make_user)
+    mid = match["id"]
+    msg = (await say(client, ana, mid)).json()
+    url = f"/matches/{mid}/messages"
+
+    nothing = await client.get(url, params={"after": msg["createdAt"]}, headers=ana["headers"])
+    assert nothing.json() == []
+
+    await client.put(f"{url}/{msg['id']}/reaction", json={"reaction": "feliz"}, headers=luis["headers"])
+    changed = (await client.get(url, params={"after": msg["createdAt"]}, headers=ana["headers"])).json()
+    assert [(m["id"], m["reaction"]) for m in changed] == [(msg["id"], "feliz")]
+
+    await client.put(f"{url}/{msg['id']}/reaction", json={"reaction": None}, headers=luis["headers"])
+    removed = (await client.get(url, params={"after": changed[0]["reactedAt"]}, headers=ana["headers"])).json()
+    assert removed[0]["reaction"] is None

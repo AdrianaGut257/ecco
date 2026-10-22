@@ -27,7 +27,7 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 | `users` | `GET/PUT /users/me`: username, avatar (config), intereses, `interestDetails`, `termsAccepted`, `shareMood`. `UserOut` devuelve `interestDetails` y `onboarded` (si completó el onboarding). |
 | `moods` | `POST /moods`, `GET /moods/me?days=7` |
 | `matches` | `GET /matches/current`, `POST /matches`, `GET/DELETE /matches/search`, `GET /matches/{id}`, `POST /matches/{id}/decision`, `POST /matches/{id}/end` (salir o reportar) |
-| `chat` | `GET /matches/{id}/messages?after=`, `POST /matches/{id}/messages` |
+| `chat` | `GET /matches/{id}/messages?after=` (también trae los mensajes cuya reacción cambió después de `after`), `POST /matches/{id}/messages` (con `tone` opcional), `PUT /matches/{id}/messages/{messageId}/reaction` |
 | `garden` | `GET /garden` |
 | `suggestions` | `GET /suggestions?q=&interest=`: autocompletado con Google Knowledge Graph Search |
 | `health` | `GET /health`, `/health/db` |
@@ -43,6 +43,7 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 - La planta (`stage`, de 0 a 5) = días en que ambos escribieron. Con `bloomed` queda en 5.
 - Moderación (`core/moderation.py`): `classify(text)` devuelve `ok`, `mild` o `severe` usando listas de expresiones en español. Normaliza minúsculas, tildes, leet (1→i, 3→e…), signos, letras separadas y repeticiones de 3 o más. Al enviar un mensaje, `severe` responde 400 con `code: "blocked"` y `mild` sin `confirmed: true` responde 409 con `code: "gentle_check"`; ninguno descuenta del límite. `AppError` acepta `code`, y el frontend lo lee en `ApiError.code`. Los nombres y usernames con `classify != ok` se rechazan.
 - Se puede escribir en `active` y `deciding` hasta el día 7; en `bloomed`, siempre. Tope de `MESSAGES_PER_DAY = 5` por persona y día.
+- Tono y reacciones (migración `c5e8a1d3f7b2`): cada mensaje puede llevar `tone` (warm/joke/cheer/curious/thanks/serious). Solo quien recibe un mensaje puede reaccionar, con un `MoodValue` (o `null` para quitarla); se guarda `reacted_at` y no descuenta del límite. No se puede reaccionar en una conversación cerrada.
 - La pareja ve tu ánimo de las últimas 24 h en tu avatar si `share_mood` está activo.
 - `GET /garden` oculta los matches que tú cerraste.
 
@@ -62,6 +63,7 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
     - `safetySheet` maneja salir y reportar.
     - `conversationScreen` muestra la hoja "¿Lo reformulamos?" (Editar / Enviar igual) ante `gentle_check` y un aviso ante `blocked`; en ambos casos devuelve el texto al campo. `useConversation.send` devuelve un `SendOutcome`.
     - `decisionCard` y `outcomeScreen` cubren el cierre de la semana.
+    - Tono y reacciones: `constants/tones.ts` define los 6 tonos (tinte, borde, tinta AA e ícono) y las 5 reacciones (las caras de ánimo con sentido empático: Me alegra, Me gusta, Entiendo, Lo siento, Te abrazo). `messageBubble` dibuja la burbuja con su `toneTag` (el ícono hace un gesto solo en los mensajes que llegan con la pantalla abierta), la insignia de reacción y la `reactionBar` (se abre al mantener presionado un mensaje recibido o con el botón de carita junto al último). `useConversation.react` es optimista; el sondeo reemplaza los mensajes que ya estaban y `lastSeen` toma la última fecha entre `createdAt` y `reactedAt`. Los borradores guardan `localKey` para que la burbuja no se vuelva a montar al recibir su id real. La lista solo baja sola si llegó un mensaje o ya estabas abajo.
   - `garden`: grupos "Siguen floreciendo", "Creciendo ahora" y "Recuerdos".
   - `home`: check-in de ánimo y tarjetas de estado. `emotionSelector` anima las caras (entrada escalonada, flotan mientras no hay elección y cada emoción reacciona distinto al elegirla; respeta `useReducedMotion`). Tras elegir, la tarjeta se recoge en un resumen ("Hoy te sientes… · Cambiar") a los 2,2 s. Con `mal`/`fatal`, a los 1,1 s abre `app/breathe.tsx` (`breatheScreen`): fondo degradado y un círculo en el color de la emoción que crece al inhalar y se encoge al exhalar, con un halo detrás de mayor amplitud (sin aro guía), 4 ciclos de 4 s inhalar / 6 s exhalar, botón Saltar, "Respirar otra vez" y un "¿Cómo te sientes ahora?" opcional que guarda un nuevo registro de ánimo. El resumen del ánimo bajo tiene "Respirar" para repetirla.
   - `profile`: avatar, "Tu semana" y `avatarCustomizer`.

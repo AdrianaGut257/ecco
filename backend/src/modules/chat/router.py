@@ -2,14 +2,14 @@ from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Query
-from sqlalchemy import select
+from sqlalchemy import func, or_, select
 
 from src.core.deps import CurrentUser, DbSession
-from src.core.errors import BadRequest, Conflict
+from src.core.errors import BadRequest, Conflict, NotFound
 from src.core.moderation import BLOCKED_MESSAGE, GENTLE_MESSAGE, classify
 from src.core.time import utcnow
 from src.modules.chat.models import Message
-from src.modules.chat.schemas import MessageIn, MessageOut
+from src.modules.chat.schemas import MessageIn, MessageOut, ReactionIn
 from src.modules.matches import service
 from src.modules.matches.constants import MATCH_DAYS, MESSAGES_PER_DAY
 
@@ -32,6 +32,9 @@ def _out(message: Message, user_id: UUID) -> MessageOut:
         from_me=message.sender_id == user_id,
         day=message.day,
         created_at=message.created_at,
+        tone=message.tone,
+        reaction=message.reaction,
+        reacted_at=message.reacted_at,
     )
 
 
@@ -45,7 +48,8 @@ async def list_messages(
     await service.get_participant_match(db, user.id, match_id)
     stmt = select(Message).where(Message.match_id == match_id)
     if after is not None:
-        stmt = stmt.where(Message.created_at > after)
+        # También devuelve los mensajes viejos que recibieron (o perdieron) una reacción.
+        stmt = stmt.where(or_(Message.created_at > after, Message.reacted_at > after))
     stmt = stmt.order_by(Message.created_at).limit(PAGE_SIZE)
     messages = (await db.execute(stmt)).scalars().all()
     return [_out(m, user.id) for m in messages]
@@ -71,8 +75,28 @@ async def send_message(match_id: UUID, data: MessageIn, user: CurrentUser, db: D
     if level == "mild" and not data.confirmed:
         raise Conflict(GENTLE_MESSAGE, code="gentle_check")
 
-    message = Message(match_id=match_id, sender_id=user.id, text=data.text, day=day)
+    message = Message(match_id=match_id, sender_id=user.id, text=data.text, day=day, tone=data.tone)
     db.add(message)
+    await db.commit()
+    await db.refresh(message)
+    return _out(message, user.id)
+
+
+@router.put("/{match_id}/messages/{message_id}/reaction", response_model=MessageOut)
+async def react(match_id: UUID, message_id: UUID, data: ReactionIn, user: CurrentUser, db: DbSession):
+    match = await service.get_participant_match(db, user.id, match_id)
+    status = service.status_for(match, user.id, utcnow())
+    if status in CLOSED_REASONS:
+        raise Conflict(CLOSED_REASONS[status])
+
+    message = await db.get(Message, message_id)
+    if message is None or message.match_id != match_id:
+        raise NotFound("No encontramos ese mensaje.")
+    if message.sender_id == user.id:
+        raise BadRequest("Solo puedes reaccionar a los mensajes de la otra persona.")
+
+    message.reaction = data.reaction
+    message.reacted_at = func.now()
     await db.commit()
     await db.refresh(message)
     return _out(message, user.id)
