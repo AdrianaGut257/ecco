@@ -84,4 +84,5 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 
 - Texto sobre fondos de la paleta: usar los tonos `dark-hover` / `dark-active` / `darker`. Nunca `text-white` sobre `*-normal`, ni `text-primary-normal(-active)` como color de texto (no pasan WCAG AA).
 - Objetivos táctiles de al menos 40–48 px; el texto, de al menos 12 px.
+- Tipografía: usa siempre una variante de `Text` (no `body2` + `font-heading-*` para hacer títulos). `h1` momentos especiales, `h2` pantallas con formularios o pasos, `h3` título de pantallas y pestañas, `h4` saludos, `subtitle1` nombres en primer plano y `subtitle2` títulos de tarjetas, secciones y diálogos. Los títulos (`h*`, `subtitle*`) usan `primary-darker` si no se indica otro color.
 - Sin métricas públicas, rachas ni notificaciones de enganche.

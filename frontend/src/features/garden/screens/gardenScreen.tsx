@@ -138,7 +138,7 @@ export default function GardenScreen() {
             if (items.length === 0) return null;
             return (
               <View key={group.title} className="mb-6">
-                <Text variant="body2" className="font-heading-semibold text-primary-dark-active">
+                <Text variant="subtitle2">
                   {group.title}
                 </Text>
                 <Text variant="caption1" className="mb-3 text-primary-dark-hover">

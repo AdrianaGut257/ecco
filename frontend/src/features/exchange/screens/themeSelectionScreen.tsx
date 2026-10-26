@@ -65,8 +65,7 @@ export default function ThemeSelectionScreen({ onBack, onSelect }: Props) {
 
         <Card className="p-5">
           <Text
-            variant="body2"
-            className="font-heading-semibold text-primary-dark-active"
+            variant="subtitle2"
           >
             Temas de esta semana
           </Text>

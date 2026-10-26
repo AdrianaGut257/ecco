@@ -443,7 +443,7 @@ export default function ConversationScreen({
           label={`Avatar de ${match.partner.username}`}
         />
         <View className="flex-1">
-          <Text variant="body2" className="font-heading-semibold text-primary-dark-active">
+          <Text variant="subtitle2" numberOfLines={1}>
             {match.partner.username}
           </Text>
           <Text variant="caption1" className="text-primary-dark-hover">

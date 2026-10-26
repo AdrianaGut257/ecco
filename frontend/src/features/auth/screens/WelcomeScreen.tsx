@@ -34,10 +34,10 @@ export default function WelcomeScreen() {
           entering={FadeInDown.delay(1100).duration(500)}
           className="items-center"
         >
-          <Text variant="h3" className="text-center text-primary-dark-hover">
+          <Text variant="subtitle1" className="text-center text-primary-dark-hover">
             Te damos la bienvenida
           </Text>
-          <Text variant="h3" className="text-primary-dark-hover">
+          <Text variant="h1" className="mt-1 text-center">
             {user.username}
           </Text>
         </Animated.View>

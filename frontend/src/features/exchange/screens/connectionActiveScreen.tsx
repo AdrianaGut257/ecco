@@ -40,7 +40,7 @@ export default function ConnectionActiveScreen({ match, onContinue }: Props) {
                 <Plant stage={match.stage} size={64} />
               </View>
             </View>
-            <Text variant="subtitle2" className="mt-3 text-primary-dark-active">
+            <Text variant="subtitle2" className="mt-3">
               {`Tu conversación con ${match.partner.username}`}
             </Text>
             <Text

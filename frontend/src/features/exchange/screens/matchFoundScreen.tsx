@@ -46,14 +46,14 @@ export default function MatchFoundScreen({ match, onContinue }: Props) {
             size={128}
             label={`Avatar de ${match.partner.username}`}
           />
-          <Text variant="subtitle1" className="mt-2 text-primary-dark-active">
+          <Text variant="subtitle1" className="mt-2">
             {match.partner.username}
           </Text>
         </Animated.View>
 
         <Animated.View entering={FadeInDown.delay(250)}>
           <Card className="mb-4 p-5">
-            <Text variant="body2" className="mb-3 font-heading-semibold text-primary-dark-active">
+            <Text variant="subtitle2" className="mb-3">
               Lo que tienen en común
             </Text>
             {nothingShared ? (

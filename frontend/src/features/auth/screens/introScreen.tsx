@@ -19,7 +19,7 @@ export default function IntroScreen() {
         <View className="my-6">
           <Plant stage={1} size={200} />
         </View>
-        <Text variant="h3" className="text-primary-dark-hover">
+        <Text variant="h1">
           ¡Llegaste!
         </Text>
         <Text variant="body3" className="mt-1 text-primary-dark-hover">

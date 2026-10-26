@@ -105,7 +105,7 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 
 ### 4.1. Arquitectura
 
-Arquitectura cliente-servidor:
+Arquitectura cliente-servidor (figura en `docs/figures/architecture.png`; su fuente editable es `architecture.html`):
 
 - **Cliente:** aplicación React Native (Expo) organizada por funcionalidades: autenticación, onboarding, inicio, conversación, jardín, perfil y ajustes.
 - **Servidor:** API REST en FastAPI, organizada en módulos: autenticación, usuarios, ánimo, emparejamiento, chat, jardín y sugerencias.
@@ -169,7 +169,7 @@ Cuando alguien busca, el sistema compara a esa persona con quienes están buscan
 
 **Paleta:** cálida y natural, con durazno (principal), verde (crecimiento, acciones positivas) y celeste (calma, ayuda), más 5 colores para los estados de ánimo.
 
-**Tipografía:** Poppins para títulos y Quicksand para textos. El tamaño mínimo es de 12 px.
+**Tipografía:** Poppins para títulos y Quicksand para textos, con una escala Major Second (1,125). El tamaño mínimo es de 12 px. Heading 1 (36 px) marca los momentos de llegada (tu nombre en la bienvenida); los títulos de pestañas usan Heading 3 (28 px), y los de tarjetas y secciones, Subtitle 2 (20 px). Los títulos usan el café más oscuro de la paleta para que el bold se lea con firmeza.
 
 **Accesibilidad:** se midió el contraste con WCAG 2.2 y se corrigió sin abandonar la paleta:
 

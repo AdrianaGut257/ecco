@@ -81,8 +81,7 @@ export default function InterestDetailsEditor({ interests, value, onChange }: Pr
                 color={colors.primary["dark-hover"]}
               />
               <Text
-                variant="body2"
-                className="font-heading-semibold text-primary-dark-active"
+                variant="subtitle2"
               >
                 {interest}
               </Text>
