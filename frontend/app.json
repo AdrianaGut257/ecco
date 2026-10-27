@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ecco",
+    "name": "ECCO",
     "slug": "ecco",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,6 +11,7 @@
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.adrianagut257.ecco",
       "adaptiveIcon": {
         "backgroundColor": "#FEF7F1",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -20,7 +21,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "bundler": "metro",
       "favicon": "./assets/images/favicon.png"
     },

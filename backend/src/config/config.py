@@ -1,3 +1,5 @@
+import re
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,13 +22,14 @@ class Settings(BaseSettings):
     jwt_algorithm: str
     access_token_expire_minutes: int = 60 * 24 * 7
 
-    # SMTP
-    smtp_host: str
-    smtp_port: int
+    # Correo: con BREVO_API_KEY se envía por la API de Brevo (Render gratis bloquea SMTP); si no, por SMTP.
+    smtp_host: str = "localhost"
+    smtp_port: int = 1025
     smtp_username: str | None = None
     smtp_password: str | None = None
-    smtp_from: str
-    smtp_from_name: str
+    smtp_from: str = "noreply@ecco.local"
+    smtp_from_name: str = "ECCO"
+    brevo_api_key: str | None = None
 
     # CORS
     cors_origins: str
@@ -52,7 +55,8 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         if self.database_url_env:
-            return self.database_url_env
+            # Neon y Render la entregan como postgres:// o postgresql://; SQLAlchemy necesita el driver.
+            return re.sub(r"^postgres(ql)?://", "postgresql+psycopg://", self.database_url_env)
         return (
             f"postgresql+psycopg://"
             f"{self.postgres_user}:{self.postgres_password}"

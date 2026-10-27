@@ -13,6 +13,17 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 3. Frontend (abrir una sola instancia de backend y de Expo; si hay dos, las peticiones se reparten entre ellas): `cd frontend`, `npx expo start` (web: `--web`, puerto 8081). En un teléfono con Expo Go, la app usa automáticamente la IP de la PC en lugar de `localhost`.
 4. Pruebas: `cd backend` y `.venv\Scripts\python -m pytest -q` (usa la base `postgres_app_test`).
 
+## Publicación (`docs/despliegue.md`)
+
+- Todo en planes gratuitos, sin tarjeta.
+- `render.yaml` crea en Render dos servicios:
+  - `ecco-api`: al arrancar corre `alembic upgrade head`; salud en `/api/health`.
+  - `ecco-web`: estático; `expo export --platform web` con `web.output: "single"` y todas las rutas reescritas a `index.html`.
+- Base de datos en Neon. `DATABASE_URL` puede venir como `postgres://` o `postgresql://`, porque `config.py` le agrega `+psycopg`.
+- Render gratis bloquea SMTP: con `BREVO_API_KEY`, `core/mail.py` envía por la API de Brevo. `SMTP_FROM` debe ser un remitente verificado en Brevo.
+- Android: `eas.json`, perfil `preview` (APK con `EXPO_PUBLIC_API_URL` del backend publicado); paquete `com.adrianagut257.ecco`.
+- En producción, CORS solo acepta `CORS_ORIGINS`.
+
 ## Backend (`backend/`)
 
 - `src/main.py`: crea la app, configura CORS y los manejadores de errores, y monta las rutas bajo `/api`. Con `ENVIRONMENT=development`, CORS acepta además cualquier puerto de `localhost`/`127.0.0.1` y las IP de red local (si Expo abre en 8082 porque 8081 está ocupado, o si se abre la web desde otro dispositivo). En web, `api.ts` usa el mismo host desde el que se abrió la página.

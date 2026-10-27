@@ -114,6 +114,14 @@ Arquitectura cliente-servidor (figura en `docs/figures/architecture.png`; su fue
 
 La app consulta al servidor cada pocos segundos para recibir mensajes nuevos y saber si ya se encontró pareja (cada 4 s en la conversación y cada 3–5 s durante la búsqueda), y solo mientras la pantalla está visible.
 
+**Despliegue (para la evaluación con participantes):** todo en planes gratuitos y sin tarjeta de crédito. Detalles en `docs/despliegue.md`.
+- La API y la versión web se publican en Render, que las vuelve a publicar con cada cambio en GitHub.
+- La base de datos está en Neon (PostgreSQL administrado).
+- Los correos con códigos se envían con la API de Brevo, porque el plan gratuito de Render bloquea SMTP.
+- En Android, la app se instala como APK generado con EAS Build de Expo.
+- En iPhone se usa la versión web, ya que publicar en iOS requiere la cuenta de pago de Apple.
+- **Limitación:** el servidor gratuito se suspende tras 15 minutos sin uso, y la primera petición después tarda entre 30 y 50 segundos. Antes de cada sesión de prueba conviene abrir la app para despertarlo.
+
 ### 4.2. Reglas de la interacción
 
 | Regla | Valor |
