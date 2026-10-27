@@ -3,13 +3,40 @@ from email.message import EmailMessage
 from html import escape
 
 import aiosmtplib
+import httpx
 
 from src.config.config import settings
 
 logger = logging.getLogger(__name__)
 
 
+BREVO_URL = "https://api.brevo.com/v3/smtp/email"
+
+
+async def _send_brevo(to: str, subject: str, text: str, html: str | None) -> None:
+    payload = {
+        "sender": {"name": settings.smtp_from_name, "email": settings.smtp_from},
+        "to": [{"email": to}],
+        "subject": subject,
+        "textContent": text,
+    }
+    if html:
+        payload["htmlContent"] = html
+    async with httpx.AsyncClient(timeout=20) as client:
+        response = await client.post(
+            BREVO_URL, json=payload, headers={"api-key": settings.brevo_api_key}
+        )
+        response.raise_for_status()
+
+
 async def send_email(to: str, subject: str, text: str, html: str | None = None) -> None:
+    if settings.brevo_api_key:
+        try:
+            await _send_brevo(to, subject, text, html)
+        except Exception:
+            logger.exception("No se pudo enviar el correo a %s con Brevo", to)
+        return
+
     message = EmailMessage()
     message["From"] = f"{settings.smtp_from_name} <{settings.smtp_from}>"
     message["To"] = to
