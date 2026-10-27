@@ -8,7 +8,7 @@ interface Seen {
 }
 
 const web = Platform.OS === "web";
-const keyFor = (matchId: string) => `ecco.growth.${matchId}`;
+const keyFor = (matchId: string) => `echoom.growth.${matchId}`;
 
 export const today = () => {
   const d = new Date();

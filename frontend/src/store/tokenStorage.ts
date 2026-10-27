@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-const KEY = "ecco.accessToken";
+const KEY = "echoom.accessToken";
 const web = Platform.OS === "web";
 
 export const tokenStorage = {

@@ -10,7 +10,7 @@ from src.config.config import settings
 from src.core.time import utcnow
 
 _hasher = PasswordHash.recommended()
-_DUMMY_HASH = _hasher.hash("ecco-timing-protection")
+_DUMMY_HASH = _hasher.hash("echoom-timing-protection")
 
 
 def hash_password(password: str) -> str:

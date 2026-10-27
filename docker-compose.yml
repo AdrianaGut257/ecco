@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:18
-    container_name: ecco-posgres
+    container_name: echoom-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres

@@ -28,8 +28,8 @@ class Settings(BaseSettings):
     smtp_port: int = 1025
     smtp_username: str | None = None
     smtp_password: str | None = None
-    smtp_from: str = "noreply@ecco.local"
-    smtp_from_name: str = "ECCO"
+    smtp_from: str = "noreply@echoom.local"
+    smtp_from_name: str = "ECHOOM"
     brevo_api_key: str | None = None
 
     # CORS

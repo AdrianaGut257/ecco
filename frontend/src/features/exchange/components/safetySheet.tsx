@@ -150,7 +150,7 @@ export default function SafetySheet({
           Reportar algo que pasó
         </Button>
         <Text variant="caption1" className="mt-1 text-center text-primary-dark-hover">
-          ECCO no reemplaza la ayuda profesional. Si lo necesitas, busca a
+          ECHOOM no reemplaza la ayuda profesional. Si lo necesitas, busca a
           alguien de confianza.
         </Text>
       </View>

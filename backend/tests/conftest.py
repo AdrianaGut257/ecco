@@ -7,7 +7,7 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 for key, value in {
-    "APP_NAME": "ECCO",
+    "APP_NAME": "ECHOOM",
     "ENVIRONMENT": "test",
     "DEBUG": "false",
     "POSTGRES_HOST": "localhost",
@@ -20,8 +20,8 @@ for key, value in {
     "ACCESS_TOKEN_EXPIRE_MINUTES": "60",
     "SMTP_HOST": "localhost",
     "SMTP_PORT": "1025",
-    "SMTP_FROM": "noreply@ecco.local",
-    "SMTP_FROM_NAME": "ECCO",
+    "SMTP_FROM": "noreply@echoom.local",
+    "SMTP_FROM_NAME": "ECHOOM",
     "CORS_ORIGINS": "http://localhost:8081",
 }.items():
     os.environ.setdefault(key, value)

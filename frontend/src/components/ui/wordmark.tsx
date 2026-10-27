@@ -19,7 +19,7 @@ export default function Wordmark({ className = "", size = "md" }: Props) {
       variant={VARIANTS[size]}
       className={`tracking-[3px] ${className || "text-primary-dark-hover"}`}
     >
-      ECCO
+      ECHOOM
     </Text>
   );
 }

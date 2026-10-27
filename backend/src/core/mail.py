@@ -64,7 +64,7 @@ def _code_html(name: str, intro: str, code: str, minutes: int, outro: str) -> st
     return f"""\
 <div style="background:#FEF7F1;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;color:#553B29">
   <div style="max-width:440px;margin:0 auto;background:#ffffff;border-radius:20px;padding:32px 28px;border:1px solid #FBE5D4">
-    <p style="margin:0 0 4px;font-size:22px;font-weight:bold;letter-spacing:4px;color:#916646">ECCO</p>
+    <p style="margin:0 0 4px;font-size:22px;font-weight:bold;letter-spacing:4px;color:#916646">ECHOOM</p>
     <p style="margin:20px 0 8px;font-size:16px">Hola {escape(name)},</p>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.5">{intro}</p>
     <p style="margin:0 auto 20px;padding:14px 0;text-align:center;font-size:34px;font-weight:bold;letter-spacing:10px;background:#F6FAEF;border:1px solid #E4EFCE;border-radius:14px;color:#3B4822">{code}</p>
@@ -77,30 +77,30 @@ def _code_html(name: str, intro: str, code: str, minutes: int, outro: str) -> st
 async def send_verification_code(to: str, name: str, code: str, minutes: int) -> None:
     text = (
         f"Hola {name},\n\n"
-        "Te damos la bienvenida a ECCO. Para confirmar que este correo es tuyo, escribe este código en la app:\n\n"
+        "Te damos la bienvenida a ECHOOM. Para confirmar que este correo es tuyo, escribe este código en la app:\n\n"
         f"{code}\n\n"
         f"Vence en {minutes} minutos. Si no creaste una cuenta, puedes ignorar este correo."
     )
     html = _code_html(
         name,
-        "Te damos la bienvenida a ECCO. Para confirmar que este correo es tuyo, escribe este código en la app:",
+        "Te damos la bienvenida a ECHOOM. Para confirmar que este correo es tuyo, escribe este código en la app:",
         code,
         minutes,
         "Si no creaste una cuenta, puedes ignorar este correo.",
     )
-    await send_email(to, f"{code} es tu código de ECCO", text, html)
+    await send_email(to, f"{code} es tu código de ECHOOM", text, html)
 
 
 async def send_password_reset_code(to: str, name: str, code: str, minutes: int) -> None:
     text = (
         f"Hola {name},\n\n"
-        "Recibimos una solicitud para crear una nueva contraseña en ECCO. Escribe este código en la app:\n\n"
+        "Recibimos una solicitud para crear una nueva contraseña en ECHOOM. Escribe este código en la app:\n\n"
         f"{code}\n\n"
         f"Vence en {minutes} minutos. Si no fuiste tú, puedes ignorar este correo: tu cuenta sigue segura."
     )
     html = _code_html(
         name,
-        "Recibimos una solicitud para crear una nueva contraseña en ECCO. Escribe este código en la app:",
+        "Recibimos una solicitud para crear una nueva contraseña en ECHOOM. Escribe este código en la app:",
         code,
         minutes,
         "Si no fuiste tú, puedes ignorar este correo: tu cuenta sigue segura.",

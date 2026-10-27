@@ -1,6 +1,6 @@
 export const TERMS_SECTIONS = [
   {
-    title: "Cómo funciona ECCO",
+    title: "Cómo funciona ECHOOM",
     points: [
       "Cuando quieras, te presentamos a una persona con quien compartes gustos.",
       "Tienen 7 días para conocerse con calma, con pocos mensajes al día para que cada uno cuente.",
@@ -27,7 +27,7 @@ export const TERMS_SECTIONS = [
   {
     title: "Un espacio que acompaña",
     points: [
-      "ECCO no reemplaza la ayuda profesional. Si estás pasando por un momento difícil, habla con alguien de confianza o con un servicio de ayuda.",
+      "ECHOOM no reemplaza la ayuda profesional. Si estás pasando por un momento difícil, habla con alguien de confianza o con un servicio de ayuda.",
     ],
   },
 ];

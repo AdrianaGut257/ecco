@@ -1,7 +1,7 @@
 # Receta de Render: el backend (FastAPI) y la versión web de la app. Ver docs/despliegue.md.
 services:
   - type: web
-    name: ecco-api
+    name: echoom-api
     runtime: python
     plan: free
     region: virginia
@@ -13,7 +13,7 @@ services:
       - key: PYTHON_VERSION
         value: 3.13.1
       - key: APP_NAME
-        value: ECCO
+        value: ECHOOM
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
@@ -23,7 +23,7 @@ services:
       - key: JWT_ALGORITHM
         value: HS256
       - key: SMTP_FROM_NAME
-        value: ECCO
+        value: ECHOOM
       - key: DATABASE_URL
         sync: false
       - key: CORS_ORIGINS
@@ -36,7 +36,7 @@ services:
         sync: false
 
   - type: web
-    name: ecco-web
+    name: echoom-web
     runtime: static
     rootDir: frontend
     buildCommand: npm ci && npx expo export --platform web

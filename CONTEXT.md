@@ -1,4 +1,4 @@
-# Contexto del proyecto ECCO
+# Contexto del proyecto ECHOOM
 
 Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interacciones sociales positivas entre jóvenes de 16 a 28 años. Se empareja a dos personas con intereses en común; tienen 7 días para conversar, con 5 mensajes al día cada una. Una planta crece los días en que ambas se escriben, y al final cada una decide en privado si quiere seguir. La documentación está en `trabajo_de_grado_micro_interacciones.md`. Las decisiones de diseño y su sustento académico están en `docs/decisiones_de_diseno.md`: **todo cambio de diseño debe justificarse ahí**. `docs/actualizacion_documento_tesis.md` resume todos los cambios para que la autora actualice la tesis en Claude web: hay que mantenerlo al día cuando cambie algo relevante.
 
@@ -17,11 +17,11 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 
 - Todo en planes gratuitos, sin tarjeta.
 - `render.yaml` crea en Render dos servicios:
-  - `ecco-api`: al arrancar corre `alembic upgrade head`; salud en `/api/health`.
-  - `ecco-web`: estático; `expo export --platform web` con `web.output: "single"` y todas las rutas reescritas a `index.html`.
+  - `echoom-api`: al arrancar corre `alembic upgrade head`; salud en `/api/health`.
+  - `echoom-web`: estático; `expo export --platform web` con `web.output: "single"` y todas las rutas reescritas a `index.html`.
 - Base de datos en Neon. `DATABASE_URL` puede venir como `postgres://` o `postgresql://`, porque `config.py` le agrega `+psycopg`.
 - Render gratis bloquea SMTP: con `BREVO_API_KEY`, `core/mail.py` envía por la API de Brevo. `SMTP_FROM` debe ser un remitente verificado en Brevo.
-- Android: `eas.json`, perfil `preview` (APK con `EXPO_PUBLIC_API_URL` del backend publicado); paquete `com.adrianagut257.ecco`.
+- Android: `eas.json`, perfil `preview` (APK con `EXPO_PUBLIC_API_URL` del backend publicado); paquete `com.adrianagut257.echoom`.
 - En producción, CORS solo acepta `CORS_ORIGINS`.
 - Render usa Linux, que distingue mayúsculas en los nombres de archivo y Windows no. Para renombrar un archivo cambiando solo mayúsculas, usar `git mv -f Viejo.tsx viejo.tsx`; si no, git conserva el nombre anterior y el build falla en Render.
 

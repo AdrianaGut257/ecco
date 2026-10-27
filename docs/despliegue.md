@@ -1,12 +1,12 @@
-# Publicar ECCO
+# Publicar ECHOOM
 
 Todo funciona con planes gratuitos y sin tarjeta.
 
 | Parte | Servicio | Dirección |
 |---|---|---|
 | Base de datos (PostgreSQL) | [Neon](https://neon.tech) | — |
-| Backend (FastAPI) | [Render](https://render.com), servicio `ecco-api` | `https://ecco-api.onrender.com/api` |
-| App web | Render, servicio `ecco-web` | `https://ecco-web.onrender.com` |
+| Backend (FastAPI) | [Render](https://render.com), servicio `echoom-api` | `https://echoom-api.onrender.com/api` |
+| App web | Render, servicio `echoom-web` | `https://echoom-web.onrender.com` |
 | Correos con códigos | [Brevo](https://www.brevo.com) (300 al día) | — |
 | App Android (APK) | [EAS Build de Expo](https://expo.dev) | Enlace de descarga |
 
@@ -18,7 +18,7 @@ Render publica desde GitHub. Sube los cambios a la rama que vayas a usar (por ej
 
 ## 2. Base de datos en Neon
 
-1. Entra con GitHub y crea un proyecto `ecco`. En la región elige **AWS US East 1 (N. Virginia)**, la misma que el backend.
+1. Entra con GitHub y crea un proyecto `echoom`. En la región elige **AWS US East 1 (N. Virginia)**, la misma que el backend.
 2. En **Connect**, desactiva **Connection pooling**.
 3. Copia la cadena de conexión, que empieza con `postgresql://…`. Es secreta.
 
@@ -39,22 +39,22 @@ Render publica desde GitHub. Sube los cambios a la rama que vayas a usar (por ej
 | Variable | Valor |
 |---|---|
 | `DATABASE_URL` | La cadena de Neon |
-| `CORS_ORIGINS` | `https://ecco-web.onrender.com` |
+| `CORS_ORIGINS` | `https://echoom-web.onrender.com` |
 | `SMTP_FROM` | El Gmail que confirmaste en Brevo |
 | `BREVO_API_KEY` | La clave de Brevo |
 | `GOOGLE_KG_API_KEY` | La misma de `backend/.env` |
-| `EXPO_PUBLIC_API_URL` | `https://ecco-api.onrender.com/api` |
+| `EXPO_PUBLIC_API_URL` | `https://echoom-api.onrender.com/api` |
 
 4. Pulsa **Apply** y espera a que los dos servicios queden en verde (unos minutos).
 5. Revisa que funcione:
-   - `https://ecco-api.onrender.com/api/health` debe responder `{"status":"ok"}`.
-   - Luego abre `https://ecco-web.onrender.com`.
+   - `https://echoom-api.onrender.com/api/health` debe responder `{"status":"ok"}`.
+   - Luego abre `https://echoom-web.onrender.com`.
 
 `JWT_SECRET_KEY` la genera Render solo. Al arrancar, el backend crea las tablas con las migraciones.
 
-**Si Render le pone otro nombre a un servicio** (por ejemplo `ecco-api-x1y2`, porque el nombre ya estaba usado), hay que cambiar la dirección en tres lugares:
+**Si Render le pone otro nombre a un servicio** (por ejemplo `echoom-api-x1y2`, porque el nombre ya estaba usado), hay que cambiar la dirección en tres lugares:
 - `CORS_ORIGINS` del backend;
-- `EXPO_PUBLIC_API_URL` de la web, y después elegir **Manual Deploy** en `ecco-web`, porque la dirección se fija al construir;
+- `EXPO_PUBLIC_API_URL` de la web, y después elegir **Manual Deploy** en `echoom-web`, porque la dirección se fija al construir;
 - `frontend/eas.json`.
 
 ## 5. APK para Android

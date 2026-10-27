@@ -1,4 +1,4 @@
-# ECCO: cambios del prototipo para actualizar el documento de tesis
+# ECHOOM: cambios del prototipo para actualizar el documento de tesis
 
 > **Para el asistente que lea este archivo.** Este documento acompaña al trabajo de grado *"Desarrollo de una aplicación móvil orientada a fomentar micro interacciones sociales positivas a través de mensajes breves"* (UMSS, 2026). Resume lo que se diseñó e implementó en el prototipo después de las fases Empatizar y Definir (capítulos 4 y 5), con el sustento de cada decisión. Úsalo para:
 >
@@ -12,7 +12,7 @@
 
 ## 1. Resumen del prototipo
 
-ECCO es una aplicación móvil que empareja a dos jóvenes con gustos en común para conversar durante **siete días**, con **cinco mensajes por persona al día**. Cada pareja cuida una **planta** que crece solo los días en que ambas personas se escriben. Al final de la semana, cada una decide en privado si quiere seguir en contacto; si ambas dicen que sí, la planta florece y la conversación continúa.
+ECHOOM es una aplicación móvil que empareja a dos jóvenes con gustos en común para conversar durante **siete días**, con **cinco mensajes por persona al día**. Cada pareja cuida una **planta** que crece solo los días en que ambas personas se escriben. Al final de la semana, cada una decide en privado si quiere seguir en contacto; si ambas dicen que sí, la planta florece y la conversación continúa.
 
 La aplicación no tiene likes, seguidores, contadores públicos ni rankings. Cada persona se representa con un **avatar ilustrado y personalizable** (nunca con una foto), que además refleja su estado de ánimo del día.
 
@@ -173,7 +173,7 @@ Cuando alguien busca, el sistema compara a esa persona con quienes están buscan
   - El detector reconoce disfraces comunes: letras separadas ("p u t a"), números por letras ("h1j0"), signos entre letras, tildes y letras alargadas ("tooonto"). Además evita falsos positivos con palabras inocentes, como "zorra" o "perra" referidas a animales.
   - También se rechazan nombres de usuario ofensivos.
   - **Limitación:** es una lista de expresiones, no un modelo que entienda el contexto. Puede no detectar ofensas nuevas o muy sutiles; un clasificador automático queda como trabajo futuro.
-- Los acuerdos aclaran que **ECCO no reemplaza la ayuda profesional**.
+- Los acuerdos aclaran que **ECHOOM no reemplaza la ayuda profesional**.
 
 ### 4.6. Sistema de diseño (IHC Afectiva y UX/UI emocional)
 
@@ -273,6 +273,7 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 3. **Sección 2.2 (Computación afectiva e IHC Afectiva):** hoy repite el contenido de la sección 2.1. Conviene reescribirla con Picard (1997), que ya está en las referencias.
 4. **Fuentes secundarias (1.6.2):** cambiar "Documentación técnica de Unity, MongoDB, Blender y APIs de moderación" por la documentación de React Native/Expo, FastAPI, PostgreSQL y Google Knowledge Graph Search API.
 5. **Referencias:** completar las fichas marcadas como pendientes en la sección B del documento.
+6. **Nombre de la app:** ahora se llama **ECHOOM** (antes ECCO). Hay que cambiarlo en todo el documento, en las figuras y en las capturas de pantalla.
 
 ---
 
