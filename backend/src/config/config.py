@@ -11,11 +11,12 @@ class Settings(BaseSettings):
     debug: bool
 
     # PostgreSQL
-    postgres_host: str
-    postgres_port: int
-    postgres_db: str
-    postgres_user: str
-    postgres_password: str
+    # En producción basta con DATABASE_URL.
+    postgres_host: str = "localhost"
+    postgres_port: int = 5432
+    postgres_db: str = "postgres_app"
+    postgres_user: str = "postgres"
+    postgres_password: str = ""
 
     # JWT
     jwt_secret_key: str

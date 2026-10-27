@@ -23,6 +23,7 @@ Trabajo de grado (UMSS): app móvil de IHC Afectiva que fomenta micro interaccio
 - Render gratis bloquea SMTP: con `BREVO_API_KEY`, `core/mail.py` envía por la API de Brevo. `SMTP_FROM` debe ser un remitente verificado en Brevo.
 - Android: `eas.json`, perfil `preview` (APK con `EXPO_PUBLIC_API_URL` del backend publicado); paquete `com.adrianagut257.ecco`.
 - En producción, CORS solo acepta `CORS_ORIGINS`.
+- Render usa Linux, que distingue mayúsculas en los nombres de archivo y Windows no. Para renombrar un archivo cambiando solo mayúsculas, usar `git mv -f Viejo.tsx viejo.tsx`; si no, git conserva el nombre anterior y el build falla en Render.
 
 ## Backend (`backend/`)
 
