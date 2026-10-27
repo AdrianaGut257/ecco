@@ -19,8 +19,16 @@ export const authService = {
   requestPasswordReset: (email: string) =>
     api.post<void>("/auth/forgot-password", { email }),
 
-  resetPassword: (token: string, password: string) =>
-    api.post<void>("/auth/reset-password", { token, password }),
+  resetPassword: (email: string, code: string, password: string) =>
+    api.post<void>("/auth/reset-password", { email, code, password }),
+
+  resendVerification: () => api.post<void>("/auth/resend-verification"),
+
+  async verifyEmail(code: string): Promise<User> {
+    const user = await api.post<User>("/auth/verify-email", { code });
+    sessionStore.setUser(user);
+    return user;
+  },
 
   async updateProfile(patch: ProfilePatch): Promise<User> {
     const user = await api.put<User>("/users/me", patch);

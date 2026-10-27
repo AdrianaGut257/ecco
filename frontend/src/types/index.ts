@@ -103,6 +103,7 @@ export interface User {
   interestDetails: InterestDetails;
   shareMood: boolean;
   onboarded: boolean;
+  emailVerified: boolean;
 }
 
 export type InterestDetails = Record<string, Record<string, string[]>>;

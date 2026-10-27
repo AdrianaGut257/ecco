@@ -124,7 +124,7 @@ La app consulta al servidor cada pocos segundos para recibir mensajes nuevos y s
 | Largo máximo de un mensaje | 500 caracteres |
 | Tonos de mensaje | 6, opcionales |
 | Reacciones | 5 caras, una por mensaje recibido; no cuentan como mensaje |
-| Etapas de la planta | 6: semilla, brote, plantita, capullo, primera flor y flor completa. Avanza una por cada día en que ambos escriben. |
+| Etapas de la planta | 7, una por día de la semana: semilla, brote, tallito, primeras hojas, capullo, capullo creciendo y flor completa. Avanza una por cada día en que ambos escriben; si ambos deciden seguir, queda en flor. |
 | Ánimo visible para la pareja | Solo el de las últimas 24 h, y se puede desactivar |
 | Duración de una búsqueda | Hasta 24 h; se puede salir y la búsqueda sigue |
 | Temas por búsqueda | Hasta 3, entre los propios intereses |
@@ -154,7 +154,9 @@ Cuando alguien busca, el sistema compara a esa persona con quienes están buscan
 
 - Contraseñas guardadas con hash Argon2. Se exigen 8 caracteres, una mayúscula, un número y un símbolo.
 - Sesión con token JWT válido 7 días, guardado en el almacenamiento seguro del teléfono.
-- Límite de intentos de inicio de sesión y de recuperación de contraseña. La recuperación se hace con un enlace por correo que vence en 30 minutos.
+- **Correo confirmado.** Al registrarse, llega al correo un código de 6 números que se escribe en la app ("Confirma tu correo"). Sin confirmarlo no se puede buscar pareja: así se reducen las cuentas falsas en un espacio donde se conversa con desconocidos.
+- **Recuperar la contraseña con un código** de 6 números enviado por correo (no con un enlace, que en el teléfono abriría el navegador). Los códigos vencen en 15 minutos, solo vale el último pedido y se anulan tras 5 intentos fallidos. Se pueden pedir de nuevo cada 60 segundos.
+- Límite de intentos de inicio de sesión, de recuperación de contraseña y de códigos.
 - No se piden fotos. El ánimo compartido es opcional. La decisión final es privada, y un "no" de la otra persona no se revela mientras uno espera.
 - Reporte con motivo (me hizo sentir incómodo/a, contenido ofensivo, acoso o presión, spam, otro) y comentario opcional. La conversación se cierra y la pareja no vuelve a formarse.
 - **Moderación antes de enviar.** Cada mensaje se analiza en el servidor antes de guardarse, así que la regla no se puede saltar desde la app:
@@ -189,7 +191,8 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - Avatares: cuatro tonos de piel base y, para chicas y chicos, peinados, flequillos, barbas, lentes, aretes, diadema y prendas dibujados por separado para combinarlos. En las prendas de varias piezas (camisa con cuello, corbata, capucha), el color elegido se aplica a la parte principal y los detalles conservan el color del diseño. La app suma dos tonos de piel más profundos. Al personalizar, cada opción se muestra como una miniatura del propio avatar (reconocer antes que recordar).
 
 **Micro-interacciones:**
-- La planta crece con una animación y el aviso "¡Su planta creció!".
+- La primera vez del día que se abre la conversación aparece una pantalla breve con la planta: si creció desde la última visita, se la ve crecer con destellos ("¡Su planta creció!"); si no, recorre sus etapas y recuerda que hoy pueden hacerla crecer. Luego, "Ir a la conversación".
+- La planta (ilustración propia en 7 etapas) crece desde la tierra con un pequeño rebote cada vez que sube de etapa, con el aviso "¡Su planta creció!". Al abrir el jardín o la conversación, recorre sus etapas desde la semilla como un time-lapse.
 - Animación de búsqueda con mensajes que cambian.
 - El avatar "salta" al personalizarlo.
 - La cara elegida se agranda al registrar el ánimo.

@@ -30,7 +30,9 @@ import DecisionCard from "../components/decisionCard";
 import MessageBubble from "../components/messageBubble";
 import SafetySheet from "../components/safetySheet";
 import { MAX_MESSAGE_LENGTH, useConversation } from "../hooks/useConversation";
+import { dailyGrowth, today } from "../../../store/dailyGrowth";
 import { sparksFor } from "../sparks";
+import DailyGrowthScreen from "./dailyGrowthScreen";
 import OutcomeScreen from "./outcomeScreen";
 
 interface Props {
@@ -86,6 +88,42 @@ export default function ConversationScreen({
   const [grew, setGrew] = useState(false);
   const [outcome, setOutcome] = useState<Match | null>(null);
   const listRef = useRef<FlatList<ChatMessage>>(null);
+  // undefined: revisando; null: ya se vio hoy; objeto: hay que mostrar la planta antes del chat.
+  const [daily, setDaily] = useState<
+    { from: number; firstTime: boolean } | null | undefined
+  >(undefined);
+
+  const matchKey = match?.id;
+  const ready = !loading && !!match;
+  const showable =
+    !!match && ["active", "deciding", "bloomed"].includes(match.status);
+  useEffect(() => {
+    if (!ready || daily !== undefined || !matchKey) return;
+    if (!showable) {
+      setDaily(null);
+      return;
+    }
+    let alive = true;
+    dailyGrowth.get(matchKey).then((seen) => {
+      if (!alive) return;
+      setDaily(
+        seen?.date === today()
+          ? null
+          : { from: seen?.stage ?? 0, firstTime: !seen },
+      );
+    });
+    return () => {
+      alive = false;
+    };
+  }, [ready, daily, matchKey, showable]);
+
+  // Lo que la persona ve crecer en el chat ya no se repite mañana.
+  const stage = match?.stage;
+  useEffect(() => {
+    if (daily === null && matchKey && stage !== undefined) {
+      dailyGrowth.set(matchKey, stage);
+    }
+  }, [daily, matchKey, stage]);
 
   const onGrow = useCallback(() => {
     setGrew(true);
@@ -122,7 +160,18 @@ export default function ConversationScreen({
     );
   }
 
-  if (!match) {
+  if (match && daily) {
+    return (
+      <DailyGrowthScreen
+        match={match}
+        from={daily.from}
+        firstTime={daily.firstTime}
+        onContinue={() => setDaily(null)}
+      />
+    );
+  }
+
+  if (!match || daily === undefined) {
     return (
       <Container center>
         {error ? (

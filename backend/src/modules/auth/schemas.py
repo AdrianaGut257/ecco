@@ -71,13 +71,40 @@ class ForgotPasswordIn(CamelModel):
 
 
 class ResetPasswordIn(CamelModel):
-    token: str
+    email: EmailStr
+    code: str
     password: str
+
+    @field_validator("email")
+    @classmethod
+    def lower_email(cls, value: str) -> str:
+        return value.strip().lower()
+
+    @field_validator("code")
+    @classmethod
+    def six_digits(cls, value: str) -> str:
+        return _code(value)
 
     @field_validator("password")
     @classmethod
     def strong_password(cls, value: str) -> str:
         return _strong(value)
+
+
+def _code(value: str) -> str:
+    value = "".join(value.split())
+    if len(value) != 6 or not value.isdigit():
+        raise ValueError("El código tiene 6 números.")
+    return value
+
+
+class VerifyEmailIn(CamelModel):
+    code: str
+
+    @field_validator("code")
+    @classmethod
+    def six_digits(cls, value: str) -> str:
+        return _code(value)
 
 
 class AuthOut(CamelModel):

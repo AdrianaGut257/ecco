@@ -185,7 +185,7 @@ async def test_both_continue_blooms_and_keeps_chat_open(client, make_user, db):
     await client.post(f"/matches/{mid}/decision", json={"decision": "continue"}, headers=ana["headers"])
     res = await client.post(f"/matches/{mid}/decision", json={"decision": "continue"}, headers=luis["headers"])
     assert res.json()["status"] == "bloomed"
-    assert res.json()["stage"] == 5
+    assert res.json()["stage"] == 6
 
     await travel(db, mid, 12)
     assert (await say(client, ana, mid, "¡Seguimos!")).status_code == 201

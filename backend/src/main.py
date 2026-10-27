@@ -30,9 +30,13 @@ origins = [
 ]
 
 
+# En desarrollo también se acepta la app web abierta desde 127.0.0.1 o desde la IP de la PC en la red local (otro teléfono).
+LOCAL_NETWORK = r"http://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=LOCAL_NETWORK if settings.environment == "development" else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

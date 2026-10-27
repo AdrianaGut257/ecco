@@ -4,6 +4,7 @@ import { friendlyError } from "../../../services/api";
 import { authService } from "../../../services/authService";
 import { sessionStore } from "../../../store/session";
 import { isValidEmail } from "../../../utils/validation";
+import { homeFor } from "../homeFor";
 
 export function useLogin() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export function useLogin() {
         password,
       });
       sessionStore.setSession(session.accessToken, session.user);
-      router.replace(session.user.onboarded ? "/welcome" : "/onboarding");
+      router.replace(homeFor(session.user));
     } catch (e) {
       setError(friendlyError(e));
     } finally {

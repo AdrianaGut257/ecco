@@ -59,7 +59,7 @@ function PlantCard({
           bloomed ? "bg-secondary-light-active" : "border border-primary-light-active bg-white"
         }`}
       >
-        <Plant stage={entry.stage} size={92} />
+        <Plant stage={entry.stage} size={120} growIn />
         <View className="mt-1 flex-row items-center gap-1.5">
           <Avatar config={entry.partnerAvatar} size={22} />
           <Text variant="body3" className="text-primary-dark-active">

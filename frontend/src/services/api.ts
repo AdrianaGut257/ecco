@@ -5,7 +5,11 @@ import { sessionStore } from "../store/session";
 const resolveBaseUrl = () => {
   const configured =
     process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8000/api";
-  if (Platform.OS === "web") return configured;
+  // En web se usa el mismo host desde el que se abrió la app (127.0.0.1 o la IP de la PC desde otro dispositivo).
+  if (Platform.OS === "web") {
+    const host = typeof window !== "undefined" ? window.location.hostname : "";
+    return host ? configured.replace(/localhost|127\.0\.0\.1/, host) : configured;
+  }
   const devHost = Constants.expoConfig?.hostUri?.split(":")[0];
   return devHost
     ? configured.replace(/localhost|127\.0\.0\.1/, devHost)
