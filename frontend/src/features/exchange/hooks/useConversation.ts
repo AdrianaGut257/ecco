@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError, friendlyError } from "../../../services/api";
 import { chatService } from "../../../services/chatService";
 import { matchService } from "../../../services/matchService";
+import type { MoodId } from "../../../constants/emotions";
+import type { ToneId } from "../../../constants/tones";
 import type { ChatMessage, Match } from "../../../types";
 
 export const MAX_MESSAGE_LENGTH = 500;
@@ -14,12 +16,26 @@ export type SendOutcome =
   | { kind: "blocked"; message: string };
 const POLL_MS = 4000;
 
-const merge = (current: ChatMessage[], incoming: ChatMessage[]) => {
+// Los mensajes que ya están se reemplazan (pudo cambiar su reacción) y los nuevos se agregan al final.
+const merge = (
+  current: ChatMessage[],
+  incoming: ChatMessage[],
+  pending: Set<string>,
+) => {
   if (incoming.length === 0) return current;
+  const byId = new Map(incoming.map((m) => [m.id, m]));
   const known = new Set(current.map((m) => m.id));
-  const fresh = incoming.filter((m) => !known.has(m.id));
-  return fresh.length ? [...current, ...fresh] : current;
+  const updated = current.map((m) => {
+    const next = byId.get(m.id);
+    return next && !pending.has(m.id) ? { ...next, localKey: m.localKey } : m;
+  });
+  return [...updated, ...incoming.filter((m) => !known.has(m.id))];
 };
+
+const lastChange = (m: ChatMessage) =>
+  m.reactedAt && Date.parse(m.reactedAt) > Date.parse(m.createdAt)
+    ? m.reactedAt
+    : m.createdAt;
 
 export function useConversation(matchId: string, initial?: Match | null) {
   const focused = useIsFocused();
@@ -29,10 +45,16 @@ export function useConversation(matchId: string, initial?: Match | null) {
   const [error, setError] = useState<string | null>(null);
   const [sendError, setSendError] = useState<string | null>(null);
   const lastSeen = useRef<string | undefined>(undefined);
+  const pendingReactions = useRef(new Set<string>());
 
   const track = (list: ChatMessage[]) => {
-    const sent = list.filter((m) => m.status === "sent");
-    if (sent.length) lastSeen.current = sent[sent.length - 1].createdAt;
+    for (const m of list) {
+      if (m.status !== "sent") continue;
+      const at = lastChange(m);
+      if (!lastSeen.current || Date.parse(at) > Date.parse(lastSeen.current)) {
+        lastSeen.current = at;
+      }
+    }
   };
 
   const refreshMatch = useCallback(async () => {
@@ -71,7 +93,7 @@ export function useConversation(matchId: string, initial?: Match | null) {
         ]);
         setMatch(m);
         setMessages((prev) => {
-          const next = merge(prev, incoming);
+          const next = merge(prev, incoming, pendingReactions.current);
           track(next);
           return next;
         });
@@ -84,11 +106,18 @@ export function useConversation(matchId: string, initial?: Match | null) {
     async (draft: ChatMessage, confirmed = false): Promise<SendOutcome> => {
       setSendError(null);
       try {
-        const saved = await chatService.send(matchId, draft.text, confirmed);
+        const saved = await chatService.send(
+          matchId,
+          draft.text,
+          confirmed,
+          draft.tone,
+        );
         setMessages((prev) => {
           const next = prev.some((m) => m.id === saved.id)
             ? prev.filter((m) => m.id !== draft.id)
-            : prev.map((m) => (m.id === draft.id ? saved : m));
+            : prev.map((m) =>
+                m.id === draft.id ? { ...saved, localKey: draft.localKey } : m,
+              );
           track(next);
           return next;
         });
@@ -120,16 +149,23 @@ export function useConversation(matchId: string, initial?: Match | null) {
   );
 
   const send = useCallback(
-    async (raw: string, confirmed = false): Promise<SendOutcome | null> => {
+    async (
+      raw: string,
+      confirmed = false,
+      tone: ToneId | null = null,
+    ): Promise<SendOutcome | null> => {
       const text = raw.trim().slice(0, MAX_MESSAGE_LENGTH);
       if (!text || !match) return null;
+      const id = `tmp-${Date.now()}`;
       const draft: ChatMessage = {
-        id: `tmp-${Date.now()}`,
+        id,
+        localKey: id,
         matchId,
         text,
         fromMe: true,
         day: match.day,
         createdAt: new Date().toISOString(),
+        tone,
         status: "sending",
       };
       setMessages((prev) => [...prev, draft]);
@@ -159,6 +195,27 @@ export function useConversation(matchId: string, initial?: Match | null) {
     [messages, deliver],
   );
 
+  const react = useCallback(
+    async (id: string, reaction: MoodId | null) => {
+      const before = messages.find((m) => m.id === id)?.reaction ?? null;
+      const set = (value: MoodId | null) =>
+        setMessages((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, reaction: value } : m)),
+        );
+      set(reaction);
+      pendingReactions.current.add(id);
+      try {
+        await chatService.react(matchId, id, reaction);
+      } catch (e) {
+        set(before);
+        setSendError(friendlyError(e));
+      } finally {
+        pendingReactions.current.delete(id);
+      }
+    },
+    [matchId, messages],
+  );
+
   return {
     match,
     setMatch,
@@ -169,5 +226,6 @@ export function useConversation(matchId: string, initial?: Match | null) {
     reload: load,
     send,
     retry,
+    react,
   };
 }

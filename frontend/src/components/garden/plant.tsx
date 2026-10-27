@@ -1,98 +1,134 @@
-import Svg, { Ellipse, G, Path } from "react-native-svg";
-import { colors } from "../../constants/colors";
+import { useEffect, useRef, useState } from "react";
+import { View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { SvgXml } from "react-native-svg";
 import { PLANT_STAGES } from "../../constants/plant";
+import {
+  FLOWER_ROOT,
+  FLOWER_SOIL,
+  FLOWER_STAGES,
+  FLOWER_VIEWBOX,
+} from "./flowerParts";
 
 interface Props {
   stage: number;
   size?: number;
+  // Al aparecer, recorre las etapas desde `from` (la semilla, si no se indica) hasta la actual, como un time-lapse.
+  growIn?: boolean;
+  from?: number;
 }
 
-const SOIL = colors.primary["dark-hover"];
-const STEM = colors.secondary["dark-hover"];
-const LEAF = colors.secondary.normal;
-const PETAL = colors.error["light-active"];
-const PETAL_EDGE = colors.error.normal;
-const CENTER = colors.mood.bien;
+export const STEP_MS = 520;
+const { x: VX, y: VY, w: VW, h: VH } = FLOWER_VIEWBOX;
+const xml = (inner: string) =>
+  `<svg viewBox="${VX} ${VY} ${VW} ${VH}" fill="none" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+const SOIL_XML = xml(FLOWER_SOIL);
+const STAGE_XML = FLOWER_STAGES.map((s) => ({
+  back: s.back ? xml(s.back) : null,
+  front: s.front ? xml(s.front) : null,
+}));
 
-const petals = (count: number, radius: number, cx: number, cy: number) =>
-  Array.from({ length: count }, (_, i) => {
-    const angle = (360 / count) * i;
-    return (
-      <Ellipse
-        key={i}
-        cx={cx}
-        cy={cy - radius}
-        rx={radius * 0.62}
-        ry={radius}
-        fill={PETAL}
-        stroke={PETAL_EDGE}
-        strokeWidth={0.8}
-        transform={`rotate(${angle} ${cx} ${cy})`}
-      />
+const clamp = (stage: number) =>
+  Math.min(Math.max(Math.round(stage), 0), PLANT_STAGES - 1);
+
+export default function Plant({
+  stage,
+  size = 120,
+  growIn = false,
+  from = 0,
+}: Props) {
+  const reduced = useReducedMotion();
+  const target = clamp(stage);
+  const [current, setCurrent] = useState(
+    growIn && !reduced ? Math.min(clamp(from), target) : target,
+  );
+  const [previous, setPrevious] = useState<number | null>(null);
+  const progress = useSharedValue(1);
+  const first = useRef(true);
+
+  // Avanza de a una etapa: si sube varias de golpe, se ve crecer paso a paso.
+  useEffect(() => {
+    if (current === target) return;
+    if (reduced || target < current) {
+      setPrevious(null);
+      setCurrent(target);
+      return;
+    }
+    const id = setTimeout(
+      () => {
+        setPrevious(current);
+        setCurrent(current + 1);
+        progress.value = 0;
+        progress.value = withTiming(1, {
+          duration: STEP_MS,
+          easing: Easing.out(Easing.back(1.8)),
+        });
+      },
+      first.current ? 250 : STEP_MS * 0.75,
     );
-  });
+    first.current = false;
+    return () => clearTimeout(id);
+  }, [current, target, reduced, progress]);
 
-export default function Plant({ stage, size = 120 }: Props) {
-  const level = Math.min(Math.max(Math.round(stage), 0), PLANT_STAGES - 1);
-  const top = [86, 70, 56, 44, 40, 34][level];
+  const height = size;
+  const width = (size * VW) / VH;
+  const pivotX = ((FLOWER_ROOT.x - VX) / VW) * width - width / 2;
+  const pivotY = ((FLOWER_ROOT.y - VY) / VH) * height - height / 2;
+
+  // La etapa nueva crece desde donde el tallo sale de la tierra.
+  const entering = useAnimatedStyle(() => {
+    const p = progress.value;
+    return {
+      opacity: Math.min(1, p * 3),
+      transform: [
+        { translateX: pivotX },
+        { translateY: pivotY },
+        { scaleX: 0.82 + 0.18 * p },
+        { scaleY: 0.55 + 0.45 * p },
+        { translateX: -pivotX },
+        { translateY: -pivotY },
+      ],
+    };
+  });
+  const leaving = useAnimatedStyle(() => ({
+    opacity: Math.max(0, 1 - progress.value * 2.5),
+  }));
+
+  const layer = {
+    position: "absolute" as const,
+    left: 0,
+    top: 0,
+    width,
+    height,
+  };
+  const draw = (source: string | null, key: string, style?: object) =>
+    source ? (
+      <Animated.View key={key} style={[layer, style]} pointerEvents="none">
+        <SvgXml xml={source} width={width} height={height} />
+      </Animated.View>
+    ) : null;
+
+  const now = STAGE_XML[current];
+  const before = previous !== null ? STAGE_XML[previous] : null;
 
   return (
-    <Svg width={size} height={size} viewBox="0 0 100 100">
-      <Ellipse cx={50} cy={88} rx={22} ry={6} fill={SOIL} opacity={0.35} />
-      {level === 0 && (
-        <Ellipse
-          cx={50}
-          cy={83}
-          rx={6}
-          ry={4.5}
-          fill={SOIL}
-          transform="rotate(-18 50 83)"
-        />
-      )}
-      {level >= 1 && (
-        <Path
-          d={`M50 86 C49 ${(86 + top) / 2} 51 ${(86 + top) / 2} 50 ${top}`}
-          stroke={STEM}
-          strokeWidth={3}
-          strokeLinecap="round"
-          fill="none"
-        />
-      )}
-      {level >= 1 && (
-        <G>
-          <Ellipse
-            cx={42}
-            cy={top + 8}
-            rx={8}
-            ry={4.5}
-            fill={LEAF}
-            transform={`rotate(-30 42 ${top + 8})`}
-          />
-          <Ellipse
-            cx={58}
-            cy={top + 14}
-            rx={8}
-            ry={4.5}
-            fill={LEAF}
-            transform={`rotate(30 58 ${top + 14})`}
-          />
-        </G>
-      )}
-      {level === 3 && (
-        <Ellipse cx={50} cy={top - 2} rx={6} ry={8} fill={PETAL_EDGE} />
-      )}
-      {level === 4 && (
-        <G>
-          {petals(5, 8, 50, top)}
-          <Ellipse cx={50} cy={top} rx={4} ry={4} fill={CENTER} />
-        </G>
-      )}
-      {level === 5 && (
-        <G>
-          {petals(8, 10, 50, top)}
-          <Ellipse cx={50} cy={top} rx={5.5} ry={5.5} fill={CENTER} />
-        </G>
-      )}
-    </Svg>
+    <View
+      style={{ width: size, height: size }}
+      className="items-center justify-center"
+    >
+      <View style={{ width, height }}>
+        {before && draw(before.back, `out-back-${previous}`, leaving)}
+        {draw(now.back, `in-back-${current}`, entering)}
+        {draw(SOIL_XML, "soil")}
+        {before && draw(before.front, `out-front-${previous}`, leaving)}
+        {draw(now.front, `in-front-${current}`, entering)}
+      </View>
+    </View>
   );
 }

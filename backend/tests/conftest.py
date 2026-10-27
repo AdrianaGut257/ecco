@@ -1,5 +1,6 @@
 import asyncio
 import os
+import re
 import sys
 
 if sys.platform == "win32":
@@ -34,7 +35,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from src.config.config import settings
 from src.core import mail
-from src.core.rate_limit import login_limiter, reset_limiter
+from src.core.rate_limit import code_limiter, login_limiter, reset_limiter
 from src.database.postgres import models  # noqa: F401
 from src.database.postgres.base import Base
 from src.database.postgres.database import get_db
@@ -84,6 +85,7 @@ async def clean_db(engine):
         await conn.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
     login_limiter.reset()
     reset_limiter.reset()
+    code_limiter.reset()
 
 
 @pytest_asyncio.fixture
@@ -119,9 +121,13 @@ def outbox(monkeypatch):
 STRONG = "Clave#2026"
 
 
+def code_sent_to(outbox, email):
+    return re.search(r"\b(\d{6})\b", [m for m in outbox if m["to"] == email][-1]["text"]).group(1)
+
+
 @pytest.fixture
-def make_user(client):
-    async def _make(name="Ana", email=None, interests=None, avatar=None):
+def make_user(client, outbox):
+    async def _make(name="Ana", email=None, interests=None, avatar=None, verified=True):
         email = email or f"{name.lower()}@ejemplo.com"
         res = await client.post(
             "/auth/register", json={"name": name, "email": email, "password": STRONG}
@@ -129,6 +135,10 @@ def make_user(client):
         assert res.status_code == 201, res.text
         data = res.json()
         headers = {"Authorization": f"Bearer {data['accessToken']}"}
+        if verified:
+            code = code_sent_to(outbox, email)
+            res = await client.post("/auth/verify-email", json={"code": code}, headers=headers)
+            assert res.status_code == 200, res.text
         payload = {
             "avatar": avatar or {"hair": "long", "glasses": "round"},
             "interests": interests or ["Películas", "Series", "Pop"],

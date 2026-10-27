@@ -33,7 +33,7 @@ class Settings(BaseSettings):
 
     # App links
     frontend_url: str = "http://localhost:8081"
-    password_reset_expire_minutes: int = 30
+    email_code_expire_minutes: int = 15
 
     # Google Knowledge Graph Search (autocompletado de intereses)
     google_kg_api_key: str | None = None

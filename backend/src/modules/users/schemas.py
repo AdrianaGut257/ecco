@@ -22,6 +22,7 @@ class UserOut(CamelModel):
     interest_details: InterestDetails
     share_mood: bool
     onboarded: bool
+    email_verified: bool
 
 
 def is_onboarded(user: User) -> bool:
@@ -38,6 +39,7 @@ def to_user_out(user: User) -> UserOut:
         interest_details={i.name: i.details for i in user.interests if i.details},
         share_mood=user.share_mood,
         onboarded=is_onboarded(user),
+        email_verified=user.email_verified_at is not None,
     )
 
 

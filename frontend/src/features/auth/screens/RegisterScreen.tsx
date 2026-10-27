@@ -57,7 +57,7 @@ export default function RegisterScreen() {
         password,
       });
       sessionStore.setSession(session.accessToken, session.user);
-      router.replace("/onboarding");
+      router.replace("/verifyEmail");
     } catch (e) {
       setError(friendlyError(e));
     } finally {

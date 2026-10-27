@@ -111,8 +111,8 @@ export default function OnboardingSlidesScreen({
       >
         <View className="mb-8 h-40 w-40 items-center justify-center rounded-full bg-white/25">
           {slide.art === "avatar" && <Avatar config={avatar} mood="feliz" size={128} />}
-          {slide.art === "plant" && <Plant stage={2} size={130} />}
-          {slide.art === "bloom" && <Plant stage={5} size={130} />}
+          {slide.art === "plant" && <Plant stage={3} size={130} growIn />}
+          {slide.art === "bloom" && <Plant stage={6} size={130} growIn />}
         </View>
         <Text variant="h3" className="mb-3 text-center text-white">
           {slide.title}

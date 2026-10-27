@@ -42,7 +42,7 @@ export default function MoodWeek() {
 
   return (
     <Card tone="white" className="mb-6">
-      <Text variant="body2" className="font-heading-semibold text-primary-dark-active">
+      <Text variant="subtitle2">
         Tu semana
       </Text>
       <Text variant="caption1" className="mb-3 text-primary-dark-hover">

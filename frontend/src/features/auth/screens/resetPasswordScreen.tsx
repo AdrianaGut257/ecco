@@ -1,35 +1,55 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import Container from "../../../components/layout/container";
+import BackButton from "../../../components/ui/backButton";
 import Banner from "../../../components/ui/banner";
 import Button from "../../../components/ui/button";
+import CodeInput from "../../../components/ui/codeInput";
 import Input from "../../../components/ui/input";
 import Text from "../../../components/ui/text";
 import { colors } from "../../../constants/colors";
 import { friendlyError } from "../../../services/api";
 import { authService } from "../../../services/authService";
 import { PASSWORD_RULES, isStrongPassword } from "../../../utils/validation";
+import { RESEND_SECONDS, useCooldown } from "./verifyEmailScreen";
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
-  const { token } = useLocalSearchParams<{ token?: string }>();
+  const { email = "" } = useLocalSearchParams<{ email?: string }>();
+  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const cooldown = useCooldown(RESEND_SECONDS);
 
   const matches = password.length > 0 && password === confirm;
-  const canSubmit = !!token && isStrongPassword(password) && matches && !loading;
+  const canSubmit =
+    !!email && code.length === 6 && isStrongPassword(password) && matches && !loading;
 
-  const submit = async () => {
-    if (!canSubmit || !token) return;
-    setLoading(true);
+  const resend = async () => {
+    if (cooldown.left > 0 || !email) return;
     setError(null);
     try {
-      await authService.resetPassword(token, password);
+      await authService.requestPasswordReset(email);
+      cooldown.restart();
+      setNotice("Te enviamos un código nuevo. El anterior ya no sirve.");
+    } catch (e) {
+      setError(friendlyError(e));
+    }
+  };
+
+  const submit = async () => {
+    if (!canSubmit) return;
+    setLoading(true);
+    setError(null);
+    setNotice(null);
+    try {
+      await authService.resetPassword(email, code, password);
       setDone(true);
     } catch (e) {
       setError(friendlyError(e));
@@ -67,21 +87,47 @@ export default function ResetPasswordScreen() {
   }
 
   return (
-    <Container scroll center>
+    <Container scroll>
+      <BackButton className="mb-8" fallbackRoute="/forgotPassword" />
       <Text variant="h2" className="mb-1">
         Crea una nueva contraseña
       </Text>
-      <Text variant="body3" className="mb-8 text-primary-dark-hover">
-        Elige una que recuerdes con facilidad.
+      <Text variant="body3" className="mb-6 text-primary-dark-hover">
+        {email
+          ? `Escribe el código de 6 números que enviamos a ${email} y elige una contraseña que recuerdes con facilidad.`
+          : "Vuelve a «¿Olvidaste tu contraseña?» y escribe tu correo para recibir un código."}
       </Text>
 
-      {!token && (
-        <Banner
-          tone="error"
-          message="Este enlace no es válido. Pide uno nuevo desde «¿Olvidaste tu contraseña?»."
-          className="mb-4"
-        />
-      )}
+      <Text variant="caption1" className="mb-1.5 ml-1 text-primary-dark-hover">
+        Código
+      </Text>
+      <CodeInput
+        value={code}
+        onChange={(value) => {
+          setCode(value);
+          setError(null);
+        }}
+        error={!!error}
+      />
+      <Pressable
+        onPress={resend}
+        disabled={cooldown.left > 0}
+        hitSlop={8}
+        accessibilityRole="button"
+        className="mb-6 mt-3 self-start"
+      >
+        <Text
+          variant="caption1"
+          className={
+            cooldown.left > 0 ? "text-primary-dark-hover" : "text-primary-darker underline"
+          }
+        >
+          {cooldown.left > 0
+            ? `Puedes pedir otro código en ${cooldown.left} s`
+            : "Enviar un código nuevo"}
+        </Text>
+      </Pressable>
+      {notice && <Banner tone="info" message={notice} className="mb-4" />}
 
       <Input
         label="Nueva contraseña"

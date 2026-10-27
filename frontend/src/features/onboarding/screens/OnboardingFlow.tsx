@@ -29,6 +29,7 @@ export default function OnboardingFlow() {
   const [error, setError] = useState<string | null>(null);
 
   if (!user) return <Redirect href="/login" />;
+  if (!user.emailVerified) return <Redirect href="/verifyEmail" />;
 
   const finish = async () => {
     setSaving(true);

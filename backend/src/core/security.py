@@ -54,6 +54,10 @@ def hash_token(raw: str) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
-def new_reset_token() -> tuple[str, str]:
-    raw = secrets.token_urlsafe(32)
-    return raw, hash_token(raw)
+def new_email_code() -> str:
+    return f"{secrets.randbelow(1_000_000):06d}"
+
+
+def hash_email_code(user_id: uuid.UUID, code: str) -> str:
+    # Se mezcla con el id de la persona: el mismo código de dos cuentas da hashes distintos.
+    return hash_token(f"{user_id}:{code}")

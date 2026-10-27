@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
 import { View } from "react-native";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import WelcomeSeed from "../../../components/illustrations/welcomeSeed";
 import Container from "../../../components/layout/container";
-import Plant from "../../../components/garden/plant";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
 import Wordmark from "../../../components/ui/wordmark";
@@ -12,19 +13,27 @@ export default function IntroScreen() {
   return (
     <Container
       center
-      footer={<Button onPress={() => router.push("/login")}>Continuar</Button>}
+      footer={
+        <Animated.View entering={FadeIn.delay(1600).duration(400)}>
+          <Button onPress={() => router.push("/login")}>Continuar</Button>
+        </Animated.View>
+      }
     >
       <View className="items-center">
         <Wordmark size="lg" />
         <View className="my-6">
-          <Plant stage={1} size={200} />
+          <WelcomeSeed height={220} />
         </View>
-        <Text variant="h3" className="text-primary-dark-hover">
-          ¡Llegaste!
-        </Text>
-        <Text variant="body3" className="mt-1 text-primary-dark-hover">
-          Aquí empieza algo nuevo
-        </Text>
+        <Animated.View entering={FadeInDown.delay(1100).duration(500)}>
+          <Text variant="h1" className="text-center">
+            ¡Llegaste!
+          </Text>
+        </Animated.View>
+        <Animated.View entering={FadeIn.delay(1400).duration(500)}>
+          <Text variant="body3" className="mt-2 text-primary-dark-hover">
+            Aquí empieza algo nuevo
+          </Text>
+        </Animated.View>
       </View>
     </Container>
   );

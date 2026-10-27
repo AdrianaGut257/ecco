@@ -1,3 +1,4 @@
+import type { ToneId } from "../constants/tones";
 import type { MoodId } from "../constants/emotions";
 
 export type Swatch = "1" | "2" | "3" | "4" | "5" | "6";
@@ -102,6 +103,7 @@ export interface User {
   interestDetails: InterestDetails;
   shareMood: boolean;
   onboarded: boolean;
+  emailVerified: boolean;
 }
 
 export type InterestDetails = Record<string, Record<string, string[]>>;
@@ -176,6 +178,11 @@ export interface ChatMessage {
   fromMe: boolean;
   day: number;
   createdAt: string;
+  tone?: ToneId | null;
+  reaction?: MoodId | null;
+  reactedAt?: string | null;
+  // Clave estable en la lista: el borrador conserva la suya cuando el servidor le da su id real.
+  localKey?: string;
   status: "sent" | "sending" | "failed";
 }
 

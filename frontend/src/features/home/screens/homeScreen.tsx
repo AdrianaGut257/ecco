@@ -35,7 +35,7 @@ function ActionCard({ title, caption, action, icon, onPress }: ActionProps) {
   return (
     <Card tone="green" className="flex-row items-center justify-between">
       <View className="flex-1 pr-3">
-        <Text variant="body2" className="font-heading-semibold text-secondary-darker">
+        <Text variant="subtitle2" className="text-secondary-darker">
           {title}
         </Text>
         <Text variant="caption1" className="mb-3 text-secondary-dark-active">
@@ -222,7 +222,7 @@ export default function HomeScreen() {
       <View className="flex-row items-center gap-3">
         <LivingMoodFace mood={mood} size={44} />
         <View className="flex-1">
-          <Text variant="body2" className="font-heading-semibold text-primary-dark-active">
+          <Text variant="subtitle2">
             {`Hoy te sientes ${moodLabel}`}
           </Text>
           <Text variant="caption1" className="text-primary-dark-hover">
@@ -264,7 +264,7 @@ export default function HomeScreen() {
             exiting={FadeOut.duration(150)}
             className="gap-3 rounded-card bg-white/90 p-4"
           >
-            <Text variant="body2" className="text-center font-heading-semibold text-primary-dark-active">
+            <Text variant="subtitle2" className="text-center">
               ¿Cómo te sientes hoy?
             </Text>
             <EmotionSelector value={mood} onSelect={selectMood} disabled={saving} />

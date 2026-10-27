@@ -19,7 +19,6 @@ export interface SkinTone {
   mouth: string;
 }
 
-// 1–4 son los tonos de assets/svg/avatars/base/skinTones.svg; 5 y 6 amplían la gama hacia tonos más profundos.
 export const SKIN: Record<Swatch, SkinTone> = {
   "1": { base: "#FFD5CD", blush: "#FA9983", line: "#FFC2B7", mouth: "#E0786A" },
   "2": { base: "#FECD9C", blush: "#FD9979", line: "#FFB770", mouth: "#D9734F" },
@@ -42,7 +41,6 @@ export const HAIR: Record<Swatch, string> = {
   "6": "#8E7CC3",
 };
 
-// En el diseño la barba es más cálida que el cabello negro; con los demás colores, toma el mismo del cabello.
 export const BEARD: Record<Swatch, string> = { ...HAIR, "1": "#411B10" };
 
 export const TOP: Record<TopColor, string> = {
@@ -63,7 +61,6 @@ export const TOP: Record<TopColor, string> = {
   "15": "#9AA3AD",
 };
 
-// Ocho colores por grupo. Los de chico parten de los dibujos de la autora (azul marino, celeste, azul acero, verde azulado y guindo) y evitan rosas y lilas sin quedarse solo en tonos oscuros.
 export const TOP_BY_KIND: Record<AvatarKind, TopColor[]> = {
   girl: ["1", "9", "4", "5", "2", "3", "8", "6"],
   boy: ["7", "12", "11", "8", "13", "14", "10", "15"],
@@ -81,7 +78,6 @@ export const BACKGROUND: Record<BackgroundColor, string> = {
 
 export const SWATCHES: Swatch[] = ["1", "2", "3", "4", "5", "6"];
 
-// El rosado (6) es solo de chica; los chicos tienen en su lugar un verde menta (7).
 export const BACKGROUND_BY_KIND: Record<AvatarKind, BackgroundColor[]> = {
   girl: SWATCHES,
   boy: ["1", "2", "3", "4", "5", "7"],
@@ -164,8 +160,10 @@ export const OUTFITS: Option<Outfit>[] = [
   { id: "hoodie", label: "Con capucha", kind: "boy" },
 ];
 
-export const forKind = <T extends { kind?: AvatarKind }>(items: T[], kind: AvatarKind) =>
-  items.filter((item) => !item.kind || item.kind === kind);
+export const forKind = <T extends { kind?: AvatarKind }>(
+  items: T[],
+  kind: AvatarKind,
+) => items.filter((item) => !item.kind || item.kind === kind);
 
 export const GLASSES: Option<Glasses>[] = [
   { id: "none", label: "Sin lentes" },
@@ -188,10 +186,29 @@ export const DETAILS: { id: "freckles" | "mole"; label: string }[] = [
 
 export const KIND_LOOK: Record<
   AvatarKind,
-  Pick<AvatarConfig, "hair" | "bangs" | "outfit" | "top" | "facialHair" | "headband" | "earrings">
+  Pick<
+    AvatarConfig,
+    "hair" | "bangs" | "outfit" | "top" | "facialHair" | "headband" | "earrings"
+  >
 > = {
-  girl: { hair: "bob", bangs: "swept", outfit: "tee", top: "1", facialHair: "none", headband: false, earrings: "none" },
-  boy: { hair: "classic", bangs: "tuft", outfit: "shirt", top: "7", facialHair: "none", headband: false, earrings: "none" },
+  girl: {
+    hair: "bob",
+    bangs: "swept",
+    outfit: "tee",
+    top: "1",
+    facialHair: "none",
+    headband: false,
+    earrings: "none",
+  },
+  boy: {
+    hair: "classic",
+    bangs: "tuft",
+    outfit: "shirt",
+    top: "7",
+    facialHair: "none",
+    headband: false,
+    earrings: "none",
+  },
 };
 
 export const DEFAULT_AVATAR: AvatarConfig = {
