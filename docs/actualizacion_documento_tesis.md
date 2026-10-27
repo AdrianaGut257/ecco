@@ -191,7 +191,7 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - Avatares: cuatro tonos de piel base y, para chicas y chicos, peinados, flequillos, barbas, lentes, aretes, diadema y prendas dibujados por separado para combinarlos. En las prendas de varias piezas (camisa con cuello, corbata, capucha), el color elegido se aplica a la parte principal y los detalles conservan el color del diseño. La app suma dos tonos de piel más profundos. Al personalizar, cada opción se muestra como una miniatura del propio avatar (reconocer antes que recordar).
 
 **Micro-interacciones:**
-- La primera vez del día que se abre la conversación aparece una pantalla breve con la planta: si creció desde la última visita, se la ve crecer con destellos ("¡Su planta creció!"); si no, recorre sus etapas y recuerda que hoy pueden hacerla crecer. Luego, "Ir a la conversación".
+- La primera vez del día que se abre la conversación aparece una pantalla breve con la planta sobre un paisaje animado (nubes, sol y colinas que se mecen con la brisa): si creció desde la última visita, se la ve crecer con destellos ("¡Su planta creció!"); si no, recorre sus etapas y recuerda que hoy pueden hacerla crecer. Luego, "Ir a la conversación".
 - La planta (ilustración propia en 7 etapas) crece desde la tierra con un pequeño rebote cada vez que sube de etapa, con el aviso "¡Su planta creció!". Al abrir el jardín o la conversación, recorre sus etapas desde la semilla como un time-lapse.
 - Animación de búsqueda con mensajes que cambian.
 - El avatar "salta" al personalizarlo.
