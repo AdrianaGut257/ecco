@@ -14,6 +14,7 @@ import Animated, {
 import { SvgXml } from "react-native-svg";
 import {
   MEADOW_BOTTOM,
+  GARDEN_HILLS,
   MEADOW_BUSH_ROOTS,
   MEADOW_PARTS,
   MEADOW_SKY,
@@ -23,6 +24,7 @@ import {
 } from "./meadowParts";
 
 const LOOP_MS = 12000;
+const FRONT_HILL = "#73A15C";
 const TAU = Math.PI * 2;
 
 // Cada capa se dibuja con margen a los lados: al moverse no deja ver su borde.
@@ -42,6 +44,8 @@ const XML = {
   hillBack: bottom(MEADOW_PARTS.hillBack),
   hillMid: bottom(MEADOW_PARTS.hillMid),
   hillFront: bottom(MEADOW_PARTS.hillFront),
+  gardenMid: bottom(GARDEN_HILLS.hillMid),
+  gardenFront: bottom(GARDEN_HILLS.hillFront),
 };
 
 type Motion = (t: number, unit: number) => object[];
@@ -85,14 +89,16 @@ function Layer({
   );
 }
 
-const pivot = (
-  px: number,
-  py: number,
-  inner: object[],
-): object[] => [{ translateX: px }, { translateY: py }, ...inner, { translateX: -px }, { translateY: -py }];
+const pivot = (px: number, py: number, inner: object[]): object[] => {
+  "worklet";
+  return [{ translateX: px }, { translateY: py }, ...inner, { translateX: -px }, { translateY: -py }];
+};
 
 // Paisaje de fondo: las nubes van y vienen, el sol brilla y las colinas y arbustos se mecen con la brisa.
-export default function MeadowScene() {
+// Los arbustos se inclinan desde la base (skew): la raíz queda fija y no se abren huecos.
+// `variant="garden"` usa background2.svg: sin arbustos y con las colinas de adelante más planas.
+export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow" | "garden" }) {
+  const garden = variant === "garden";
   const reduced = useReducedMotion();
   const [width, setWidth] = useState(0);
   const t = useSharedValue(0);
@@ -116,6 +122,14 @@ export default function MeadowScene() {
   const leftRoot = root(MEADOW_BUSH_ROOTS.left);
   const rightRoot = root(MEADOW_BUSH_ROOTS.right);
   const ground = bottomH / 2;
+  // Los arbustos están apoyados en la colina de atrás: se mueven con ella y además se mecen desde la base.
+  const backHill = (p: number, u: number) => {
+    "worklet";
+    return pivot(0, ground, [
+      { translateX: 5 * u * Math.sin(TAU * p + 0.5) },
+      { scaleY: 1 + 0.03 * Math.sin(TAU * 2 * p) },
+    ]);
+  };
 
   return (
     <View
@@ -164,44 +178,48 @@ export default function MeadowScene() {
           </View>
 
           <View style={{ position: "absolute", bottom: 0, left: 0, width, height: bottomH }}>
+            {!garden && (
             <Layer
               xml={XML.bushLeft}
               width={width}
               height={bottomH}
               t={t}
               unit={unit}
-              motion={(p) => {
+              motion={(p, u) => {
                 "worklet";
-                return pivot(leftRoot.x, leftRoot.y, [{ rotate: `${4 * Math.sin(TAU * 3 * p)}deg` }]);
+                return [
+                  ...backHill(p, u),
+                  ...pivot(leftRoot.x, leftRoot.y, [{ skewX: `${5 * Math.sin(TAU * 3 * p)}deg` }]),
+                ];
               }}
             />
+            )}
+            {!garden && (
             <Layer
               xml={XML.bushRight}
               width={width}
               height={bottomH}
               t={t}
               unit={unit}
-              motion={(p) => {
+              motion={(p, u) => {
                 "worklet";
-                return pivot(rightRoot.x, rightRoot.y, [{ rotate: `${-4 * Math.sin(TAU * 3 * p + 1)}deg` }]);
+                return [
+                  ...backHill(p, u),
+                  ...pivot(rightRoot.x, rightRoot.y, [{ skewX: `${-5 * Math.sin(TAU * 3 * p + 1)}deg` }]),
+                ];
               }}
             />
+            )}
             <Layer
               xml={XML.hillBack}
               width={width}
               height={bottomH}
               t={t}
               unit={unit}
-              motion={(p, u) => {
-                "worklet";
-                return pivot(0, ground, [
-                  { translateX: 5 * u * Math.sin(TAU * p + 0.5) },
-                  { scaleY: 1 + 0.03 * Math.sin(TAU * 2 * p) },
-                ]);
-              }}
+              motion={backHill}
             />
             <Layer
-              xml={XML.hillMid}
+              xml={garden ? XML.gardenMid : XML.hillMid}
               width={width}
               height={bottomH}
               t={t}
@@ -215,7 +233,7 @@ export default function MeadowScene() {
               }}
             />
             <Layer
-              xml={XML.hillFront}
+              xml={garden ? XML.gardenFront : XML.hillFront}
               width={width}
               height={bottomH}
               t={t}
@@ -224,6 +242,11 @@ export default function MeadowScene() {
                 "worklet";
                 return [{ translateX: 4 * u * Math.sin(TAU * p + 2.4) }];
               }}
+            />
+            {/* Al escalar, el borde de abajo de la colina queda a medio píxel y deja ver el cielo:
+                esta franja lo cubre para que no aparezca una línea clara sobre la barra de pestañas. */}
+            <View
+              style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 3, backgroundColor: FRONT_HILL }}
             />
           </View>
         </>

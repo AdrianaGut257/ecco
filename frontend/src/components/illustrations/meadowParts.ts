@@ -1,7 +1,8 @@
 // Generado desde assets/svg/background/background1.svg (412 × 917). Si cambia el dibujo, hay que regenerarlo.
 export const MEADOW_WIDTH = 412;
 // Franja de arriba (nubes y sol) y franja de abajo (colinas y arbustos), en coordenadas del dibujo.
-export const MEADOW_TOP = { y: -10, h: 170 };
+// Llega hasta y = 190 para que el halo del sol, que crece hasta ~176, no se corte.
+export const MEADOW_TOP = { y: -10, h: 200 };
 export const MEADOW_BOTTOM = { y: 785, h: 132 };
 // Cielo: degradado del dibujo (#F0F2DB arriba; #B7D264 al 63 % sobre #FEF7F1 abajo).
 export const MEADOW_SKY = ["#F0F2DB", "#F0F2DB", "#D1E098"] as const;
@@ -17,4 +18,11 @@ export const MEADOW_PARTS = {
   "hillBack": "<path d=\"M168.533 833.073C109.059 838.688 -27 811 -27 811V903H476L484.131 828.032C484.131 828.032 399.76 827.157 370.324 821.982C343.113 817.197 323.729 804.315 296.207 802.319C245.183 798.618 219.474 828.264 168.533 833.073Z\" fill=\"#B7D264\"/>",
   "hillMid": "<path d=\"M240.939 841.472C299.941 843.907 425 832.292 425 832.292V890H-75L-72.1537 839.287C-72.1537 839.287 11.548 838.907 40.7495 836.663C67.7455 834.589 86.9748 829.004 114.279 828.138C164.898 826.534 190.403 839.387 240.939 841.472Z\" fill=\"#8DB85E\"/>",
   "hillFront": "<path d=\"M154 872.472C91.8122 874.907 -40 863.292 -40 863.292L-46 917H487L484 870.287C484 870.287 395.778 869.907 365 867.663C336.546 865.589 316.279 860.004 287.5 859.138C234.148 857.534 207.265 870.387 154 872.472Z\" fill=\"#73A15C\"/>"
+};
+
+// Variante del jardín (assets/svg/background/background2.svg): el mismo cielo y la misma colina de atrás,
+// sin arbustos y con las colinas de adelante más planas para plantar.
+export const GARDEN_HILLS = {
+  hillMid: "<path d=\"M240.939 853.213C299.941 855.058 425 846.253 425 846.253V890H-75L-72.1537 851.556C-72.1537 851.556 11.548 851.268 40.7495 849.567C67.7455 847.995 86.9748 843.761 114.279 843.105C164.898 841.888 190.403 851.632 240.939 853.213Z\" fill=\"#8DB85E\"/>",
+  hillFront: "<path d=\"M154 880.917C91.8122 882.89 -40 873.478 -40 873.478L-46 917H487L484 879.146C484 879.146 395.778 878.839 365 877.02C336.546 875.339 316.279 870.813 287.5 870.112C234.148 868.812 207.265 879.228 154 880.917Z\" fill=\"#73A15C\"/>",
 };

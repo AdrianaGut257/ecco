@@ -330,3 +330,27 @@ async def test_polling_returns_messages_whose_reaction_changed(client, make_user
     await client.put(f"{url}/{msg['id']}/reaction", json={"reaction": None}, headers=luis["headers"])
     removed = (await client.get(url, params={"after": changed[0]["reactedAt"]}, headers=ana["headers"])).json()
     assert removed[0]["reaction"] is None
+
+
+async def test_garden_memory_keeps_what_they_shared(client, make_user):
+    ana, luis, match = await paired(client, make_user)
+    mid = match["id"]
+    url = f"/matches/{mid}/messages"
+    first = await client.post(url, json={"text": "¡Hola Luis!", "tone": "warm"}, headers=ana["headers"])
+    await client.post(url, json={"text": "Hola Ana", "tone": "warm"}, headers=luis["headers"])
+    await client.post(url, json={"text": "jajaja", "tone": "joke"}, headers=ana["headers"])
+    react = f"/matches/{mid}/messages/{first.json()['id']}/reaction"
+    await client.put(react, json={"reaction": "feliz"}, headers=luis["headers"])
+
+    memory = await client.get(f"/garden/{mid}", headers=luis["headers"])
+    assert memory.status_code == 200
+    body = memory.json()
+    assert body["partnerName"] == ana["user"]["username"]
+    assert body["hobbies"] == ["Películas"]
+    assert body["commonInterests"] == [{"category": "Entretenimiento", "items": ["Películas"]}]
+    assert body["reactions"] == ["feliz"]
+    assert body["tone"] == "warm"
+    assert body["firstMessage"] == {"text": "¡Hola Luis!", "fromMe": False}
+
+    outsider = await make_user("Eva", "eva@ejemplo.com")
+    assert (await client.get(f"/garden/{mid}", headers=outsider["headers"])).status_code == 404

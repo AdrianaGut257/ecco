@@ -214,6 +214,8 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - Pantalla de cierre de la semana, que cuida el final de la experiencia (Regla del Pico-Final).
 - Bienvenida animada: la semilla llega con sus hojas, saluda con ellas, parpadea y flota, y después aparece el texto "Te damos la bienvenida". Es el primer momento de cada sesión (Regla del Pico-Final). Con "Reducir movimiento" activado, se muestra quieta.
 
+**Jardín:** es un lugar, no una lista. Sobre un paisaje animado propio, las plantas quedan plantadas en las colinas, de izquierda a derecha y cada una un poco más arriba, como si el jardín subiera la colina; si hay muchas, se desliza hacia la derecha. Sobre cada planta hay una etiqueta con la foto, el nombre y la fecha; se mecen con la brisa y por todo el jardín vuelan mariposas. Al tocar una planta se abre una **postal de esa semana**: lo que descubrieron en común, las reacciones que se regalaron, el tono con que más se escribieron y el primer mensaje. Todo sin números ni rachas, y sin plantas que se marchiten (Norman, 2004; Regla del Pico-Final).
+
 **Sonidos (propios, sintetizados para la app):** suaves, de menos de 4 segundos, y solo en momentos con significado (Gaver, 1986; Blattner, Sumikawa y Greenberg, 1989; tecnología calmada de Weiser y Brown, 1996):
 - Cada ánimo suena distinto al elegirlo: un arpegio alegre para "feliz" y un tono grave y cálido para "fatal". Ninguno suena a error.
 - En la respiración guiada, un cuenco marca el inicio de inhalar y otro el de exhalar, así se puede seguir con los ojos cerrados. Una campanita marca el final.

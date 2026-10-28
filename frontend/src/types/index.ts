@@ -204,6 +204,16 @@ export interface GardenEntry {
   startedAt: string;
 }
 
+// Recuerdo de una conversación: lo que compartieron, sin cantidades.
+export interface GardenMemory extends GardenEntry {
+  hobbies: string[];
+  sharedFavorites: SharedFavorite[];
+  commonInterests: { category: string; items: string[] }[];
+  reactions: MoodId[];
+  tone: ToneId | null;
+  firstMessage: { text: string; fromMe: boolean } | null;
+}
+
 export interface Suggestion {
   name: string;
   description: string | null;
