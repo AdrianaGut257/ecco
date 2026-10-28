@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
-import Avatar from "../../../components/avatar/avatar";
+import LivingAvatar from "../../../components/avatar/livingAvatar";
 import AppHeader from "../../../components/layout/appHeader";
 import Container from "../../../components/layout/container";
 import Card from "../../../components/ui/card";
@@ -29,7 +29,7 @@ export default function ProfileScreen() {
       <AppHeader />
       <View className="px-7 pb-8 pt-4">
         <View className="mb-6 items-center">
-          <Avatar config={user?.avatar} size={120} label="Tu avatar" />
+          <LivingAvatar config={user?.avatar} size={120} label="Tu avatar" greet interactive spontaneous />
           <Text variant="subtitle1" className="mt-3">
             {user?.username ?? "Tu perfil"}
           </Text>

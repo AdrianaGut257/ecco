@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
-import Avatar from "../../../components/avatar/avatar";
+import LivingAvatar from "../../../components/avatar/livingAvatar";
 import AppHeader from "../../../components/layout/appHeader";
 import Container from "../../../components/layout/container";
 import Button from "../../../components/ui/button";
@@ -46,11 +46,14 @@ export default function MatchFoundScreen({ match, onContinue }: Props) {
           Esta semana conversarás con
         </Text>
         <Animated.View entering={ZoomIn.springify().damping(12)} className="mb-6 items-center">
-          <Avatar
+          <LivingAvatar
             config={match.partner.avatar}
             mood={match.partner.mood}
             size={128}
             label={`Avatar de ${match.partner.username}`}
+            greet
+            greetDelay={750}
+            interactive
           />
           <Text variant="subtitle1" className="mt-2">
             {match.partner.username}

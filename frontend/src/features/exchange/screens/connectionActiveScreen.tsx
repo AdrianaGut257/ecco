@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Avatar from "../../../components/avatar/avatar";
+import LivingAvatar from "../../../components/avatar/livingAvatar";
 import Plant from "../../../components/garden/plant";
 import AppHeader from "../../../components/layout/appHeader";
 import Scenery from "../../../components/layout/scenery";
@@ -30,11 +30,13 @@ export default function ConnectionActiveScreen({ match, onContinue }: Props) {
         <View className="w-full max-w-[560px] flex-1 justify-center self-center px-7">
           <View className="items-center rounded-card bg-white/90 p-6">
             <View className="flex-row items-end">
-              <Avatar
+              <LivingAvatar
                 config={match.partner.avatar}
                 mood={match.partner.mood}
                 size={104}
                 label={`Avatar de ${match.partner.username}`}
+                greet
+                interactive
               />
               <View className="-ml-4">
                 <Plant stage={match.stage} size={64} />

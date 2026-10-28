@@ -29,7 +29,7 @@ const HEAD =
   "M91.5 41.5C91.5 64.42 76.05 83 57 83C37.95 83 22.5 64.42 22.5 41.5C22.5 18.58 37.95 0 57 0C76.05 0 91.5 18.58 91.5 41.5Z";
 const TORSO = "M86.5 131H27.5C27.5 131 37.5 92 57 92C76.5 92 86.5 131 86.5 131Z";
 
-type EyeShape = "open" | "happy" | "closed";
+export type EyeShape = "open" | "happy" | "closed";
 
 const FACES: Record<MoodId, { eyes: EyeShape; mouth: string; filled?: boolean }> = {
   fatal: { eyes: "closed", mouth: "M50.5 58.5C50.5 58.5 52.9 53.5 57 53.5C61.1 53.5 63.5 58.5 63.5 58.5" },
@@ -111,79 +111,127 @@ function Earrings({ style }: { style: AvatarConfig["earrings"] }) {
   );
 }
 
-export default function Avatar({ config, mood = null, size = 96, label }: Props) {
+// Datos de dibujo comunes a la versión fija y a la animada.
+export function avatarLook(config?: Partial<AvatarConfig> | null, mood?: MoodId | null) {
   const look = { ...DEFAULT_AVATAR, ...(config ?? {}) };
-  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const tone = SKIN[look.skin] ?? SKIN[DEFAULT_AVATAR.skin];
-  const hair = HAIR[look.hairColor];
-  const back = BACK_HAIR[look.hair] ?? BACK_HAIR[DEFAULT_AVATAR.hair];
-  const front = look.hair === "bald" || look.bangs === "none" ? null : FRONT_HAIR[look.bangs] ?? FRONT_HAIR.swept;
-  const face = FACES[mood ?? "bien"];
-  const eyeInk = look.skin === "5" || look.skin === "6" ? DEEP_EYE : EYE;
+  return {
+    look,
+    tone,
+    hair: HAIR[look.hairColor],
+    back: BACK_HAIR[look.hair] ?? BACK_HAIR[DEFAULT_AVATAR.hair],
+    front:
+      look.hair === "bald" || look.bangs === "none" ? null : FRONT_HAIR[look.bangs] ?? FRONT_HAIR.swept,
+    face: FACES[mood ?? "bien"],
+    eyeInk: look.skin === "5" || look.skin === "6" ? DEEP_EYE : EYE,
+    background: BACKGROUND[look.background],
+  };
+}
+export type AvatarLook = ReturnType<typeof avatarLook>;
+
+export const AVATAR_VIEWBOX = "-24 -24 162 162";
+// Centro de cada mano (las bolitas de abajo) y de los ojos, en coordenadas del dibujo.
+export const HANDS = { left: { x: 28, y: 129 }, right: { x: 86, y: 129 } };
+export const EYES_Y = 38.5;
+
+// Debajo de los ojos: pelo de atrás, cuello, orejas, cabeza, pecas y rubor.
+export function UnderArt({ a, id }: { a: AvatarLook; id: string }) {
+  return (
+    <>
+      <Defs>
+        <ClipPath id={`hair${id}`}>
+          <Rect x={-24} y={-24} width={162} height={155} />
+        </ClipPath>
+      </Defs>
+      {a.back ? (
+        <G clipPath={`url(#hair${id})`}>
+          <Path d={a.back} fill={a.hair} />
+        </G>
+      ) : null}
+      <Rect x={47.5} y={80} width={19} height={23} fill={a.tone.base} />
+      <Path d={EARS.right} fill={a.tone.base} />
+      <Path d={EARS.rightInner} fill={a.tone.blush} />
+      <Path d={EARS.left} fill={a.tone.base} />
+      <Path d={EARS.leftInner} fill={a.tone.blush} />
+      <Path d={HEAD} fill={a.tone.base} />
+      <Ellipse cx={57} cy={41.5} rx={34} ry={41} stroke={a.tone.line} strokeWidth={1} fill="none" />
+      {a.look.freckles && (
+        <G fill={a.tone.mouth} opacity={0.45}>
+          {FRECKLES.map(([cx, cy]) => (
+            <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={0.9} />
+          ))}
+        </G>
+      )}
+      <Ellipse cx={42.64} cy={46.25} rx={4.5} ry={2.23} transform="rotate(11.92 42.64 46.25)" fill={a.tone.blush} />
+      <Ellipse cx={71.36} cy={46.25} rx={4.5} ry={2.23} transform="rotate(-11.92 71.36 46.25)" fill={a.tone.blush} />
+    </>
+  );
+}
+
+export function EyesArt({ a, shape }: { a: AvatarLook; shape?: EyeShape }) {
+  return <Eyes shape={shape ?? a.face.eyes} ink={a.eyeInk} />;
+}
+
+// Encima de los ojos: boca, lunar, barba, cuerpo, ropa, lentes, flequillo, diadema y aretes.
+export function OverArt({ a, mouth }: { a: AvatarLook; mouth?: { mouth: string; filled?: boolean } }) {
+  const m = mouth ?? a.face;
+  return (
+    <>
+      <Path
+        d={m.mouth}
+        stroke={a.tone.mouth}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill={m.filled ? a.tone.mouth : "none"}
+      />
+      {a.look.mole && <Circle cx={66.5} cy={56} r={1.1} fill={a.eyeInk} opacity={0.75} />}
+      {a.look.facialHair !== "none" && BEARD_PATHS[a.look.facialHair] && (
+        <Path d={BEARD_PATHS[a.look.facialHair]} fill={BEARD[a.look.hairColor]} />
+      )}
+      <Path d={TORSO} fill={a.tone.base} />
+      <Outfit outfit={a.look.outfit} color={TOP[a.look.top] ?? TOP["1"]} />
+      {a.look.glasses !== "none" && (
+        <Path d={GLASSES_PATHS[a.look.glasses]} stroke={EYE} strokeWidth={1} strokeLinecap="square" fill="none" />
+      )}
+      {a.front && <Path d={a.front} fill={a.hair} stroke={a.hair} strokeWidth={1.2} strokeLinejoin="round" />}
+      {a.look.headband && <Path d={HEADBAND} fill={HEADBAND_COLOR} />}
+      {a.look.kind !== "boy" && <Earrings style={a.look.earrings} />}
+    </>
+  );
+}
+
+// Las manos son las bolitas redondas de abajo: no hay brazos.
+export function HandArt({ a, side }: { a: AvatarLook; side: "left" | "right" }) {
+  const { x, y } = HANDS[side];
+  return <Ellipse cx={x} cy={y} rx={9.5} ry={10} fill={a.tone.base} />;
+}
+
+export const SMILE = FACES.feliz;
+
+export default function Avatar({ config, mood = null, size = 96, label }: Props) {
+  const a = avatarLook(config, mood);
+  const id = useId().replace(/[^a-zA-Z0-9]/g, "");
 
   return (
     <Svg
       width={size}
       height={size}
-      viewBox="-24 -24 162 162"
+      viewBox={AVATAR_VIEWBOX}
       {...(label ? { accessibilityLabel: label, role: "img" as const } : {})}
     >
       <Defs>
         <ClipPath id={`frame${id}`}>
           <Circle cx={57} cy={57} r={81} />
         </ClipPath>
-        <ClipPath id={`hair${id}`}>
-          <Rect x={-24} y={-24} width={162} height={155} />
-        </ClipPath>
       </Defs>
-      <Circle cx={57} cy={57} r={81} fill={BACKGROUND[look.background]} />
+      <Circle cx={57} cy={57} r={81} fill={a.background} />
       <G clipPath={`url(#frame${id})`}>
-        {back ? (
-          <G clipPath={`url(#hair${id})`}>
-            <Path d={back} fill={hair} />
-          </G>
-        ) : null}
-        <Rect x={47.5} y={80} width={19} height={23} fill={tone.base} />
-        <Path d={EARS.right} fill={tone.base} />
-        <Path d={EARS.rightInner} fill={tone.blush} />
-        <Path d={EARS.left} fill={tone.base} />
-        <Path d={EARS.leftInner} fill={tone.blush} />
-        <Path d={HEAD} fill={tone.base} />
-        <Ellipse cx={57} cy={41.5} rx={34} ry={41} stroke={tone.line} strokeWidth={1} fill="none" />
-        {look.freckles && (
-          <G fill={tone.mouth} opacity={0.45}>
-            {FRECKLES.map(([cx, cy]) => (
-              <Circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={0.9} />
-            ))}
-          </G>
-        )}
-        <Ellipse cx={42.64} cy={46.25} rx={4.5} ry={2.23} transform="rotate(11.92 42.64 46.25)" fill={tone.blush} />
-        <Ellipse cx={71.36} cy={46.25} rx={4.5} ry={2.23} transform="rotate(-11.92 71.36 46.25)" fill={tone.blush} />
-        <Eyes shape={face.eyes} ink={eyeInk} />
-        <Path
-          d={face.mouth}
-          stroke={tone.mouth}
-          strokeWidth={2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill={face.filled ? tone.mouth : "none"}
-        />
-        {look.mole && <Circle cx={66.5} cy={56} r={1.1} fill={eyeInk} opacity={0.75} />}
-        {look.facialHair !== "none" && BEARD_PATHS[look.facialHair] && (
-          <Path d={BEARD_PATHS[look.facialHair]} fill={BEARD[look.hairColor]} />
-        )}
-        <Path d={TORSO} fill={tone.base} />
-        <Outfit outfit={look.outfit} color={TOP[look.top] ?? TOP["1"]} />
-        <Ellipse cx={28} cy={129} rx={9.5} ry={10} fill={tone.base} />
-        <Ellipse cx={86} cy={129} rx={9.5} ry={10} fill={tone.base} />
-        {look.glasses !== "none" && (
-          <Path d={GLASSES_PATHS[look.glasses]} stroke={EYE} strokeWidth={1} strokeLinecap="square" fill="none" />
-        )}
-        {front && (
-          <Path d={front} fill={hair} stroke={hair} strokeWidth={1.2} strokeLinejoin="round" />
-        )}
-        {look.headband && <Path d={HEADBAND} fill={HEADBAND_COLOR} />}
-        {look.kind !== "boy" && <Earrings style={look.earrings} />}
+        <UnderArt a={a} id={id} />
+        <EyesArt a={a} />
+        <OverArt a={a} />
+        <HandArt a={a} side="left" />
+        <HandArt a={a} side="right" />
       </G>
     </Svg>
   );

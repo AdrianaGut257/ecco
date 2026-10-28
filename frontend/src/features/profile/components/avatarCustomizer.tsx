@@ -8,6 +8,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import Avatar from "../../../components/avatar/avatar";
+import LivingAvatar, { AvatarGesture } from "../../../components/avatar/livingAvatar";
 import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
 import {
@@ -224,6 +225,7 @@ function Looks<T extends string>({
 
 export default function AvatarCustomizer({ value, onChange }: Props) {
   const [tab, setTab] = useState<Tab>("face");
+  const [gesture, setGesture] = useState<{ type: AvatarGesture; key: number } | null>(null);
   const pop = useSharedValue(1);
   const set = (patch: Partial<AvatarConfig>) => onChange({ ...value, ...patch });
   const kind = value.kind;
@@ -243,6 +245,8 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
   }));
 
   const surprise = () => {
+    // El avatar nuevo celebra su look sorpresa.
+    setGesture({ type: "cheer", key: Date.now() });
     const style = pick(hairStyles);
     const girl = kind === "girl";
     onChange({
@@ -270,7 +274,13 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
     <View>
       <View className="mb-4 items-center">
         <Animated.View style={popStyle}>
-          <Avatar config={value} size={150} label="Vista previa de tu avatar" />
+          <LivingAvatar
+            config={value}
+            size={150}
+            label="Vista previa de tu avatar"
+            interactive
+            gesture={gesture}
+          />
         </Animated.View>
         <Pressable
           onPress={surprise}

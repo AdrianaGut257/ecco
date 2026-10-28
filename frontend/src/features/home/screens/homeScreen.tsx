@@ -6,7 +6,7 @@ import { ScrollView, View } from "react-native";
 import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Avatar from "../../../components/avatar/avatar";
+import LivingAvatar, { AvatarGesture } from "../../../components/avatar/livingAvatar";
 import Plant from "../../../components/garden/plant";
 import AppHeader from "../../../components/layout/appHeader";
 import Scenery from "../../../components/layout/scenery";
@@ -61,6 +61,12 @@ function ActionCard({ title, caption, action, icon, onPress }: ActionProps) {
   );
 }
 
+const REACTION: Partial<Record<MoodId, AvatarGesture>> = {
+  feliz: "cheer",
+  bien: "wave",
+  normal: "nod",
+};
+
 const SEARCH_POLL_MS = 5000;
 const COLLAPSE_MS = 2200;
 const BREATHE_DELAY_MS = 1100;
@@ -74,6 +80,9 @@ export default function HomeScreen() {
   const focused = useIsFocused();
   const [mood, setMood] = useState<MoodId | null>(null);
   const [pending, setPending] = useState<MoodId | null>(null);
+  // El avatar saluda cuando ya se sabe el ánimo de hoy (así no sonríe en un día difícil).
+  const [moodLoaded, setMoodLoaded] = useState(false);
+  const [gesture, setGesture] = useState<{ type: AvatarGesture; key: number } | null>(null);
   const [todayMoods, setTodayMoods] = useState<MoodEntry[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,13 +107,16 @@ export default function HomeScreen() {
           const today = history.filter((m) => isToday(m.createdAt));
           setTodayMoods(today);
           if (today.length) setMood(today[today.length - 1].mood);
+          setMoodLoaded(true);
           if (!current) {
             const search = await matchService.searchState();
             if (active) setSearching(search.status === "searching");
           } else {
             setSearching(false);
           }
-        } catch {}
+        } catch {
+          if (active) setMoodLoaded(true);
+        }
       })();
       return () => {
         active = false;
@@ -142,6 +154,9 @@ export default function HomeScreen() {
     try {
       const entry = await moodService.save(id);
       setTodayMoods((prev) => [...prev, entry]);
+      // El avatar reacciona al ánimo: celebra, saluda o asiente (con ánimo bajo, va a la respiración).
+      const reaction = REACTION[id];
+      if (reaction) setGesture({ type: reaction, key: Date.now() });
       const isLow = id === "fatal" || id === "mal";
       collapseTimer.current = setTimeout(
         () => {
@@ -190,12 +205,16 @@ export default function HomeScreen() {
 
   const portrait = (
           <View className="flex-row items-end justify-center py-4">
-            <Animated.View key={mood ?? "none"} entering={FadeIn.duration(300)}>
-              <Avatar
+            <Animated.View entering={FadeIn.duration(300)}>
+              <LivingAvatar
                 config={user?.avatar}
                 mood={mood}
                 size={120}
                 label="Tu avatar"
+                greet={moodLoaded}
+                interactive
+                spontaneous
+                gesture={gesture}
               />
             </Animated.View>
             {match && (

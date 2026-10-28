@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
-import Avatar from "../../../components/avatar/avatar";
+import LivingAvatar from "../../../components/avatar/livingAvatar";
 import GrowthPlant from "../../../components/garden/growthPlant";
 import Container from "../../../components/layout/container";
 import Button from "../../../components/ui/button";
@@ -15,6 +15,9 @@ interface Props {
   onNewConnection: () => void;
   onGarden: () => void;
 }
+
+// Al florecer, la otra persona celebra con las dos manos arriba.
+const CHEER = { type: "cheer" as const, key: 1 };
 
 const COPY = {
   bloomed: {
@@ -79,7 +82,7 @@ export default function OutcomeScreen({
         </Animated.View>
         {key === "bloomed" && (
           <Animated.View entering={FadeInUp.delay(300)} className="-mt-8">
-            <Avatar config={match.partner.avatar} mood="feliz" size={64} />
+            <LivingAvatar config={match.partner.avatar} mood="feliz" size={64} gesture={CHEER} />
           </Animated.View>
         )}
         <Animated.View entering={FadeInUp.delay(200)} className="mt-5 items-center">

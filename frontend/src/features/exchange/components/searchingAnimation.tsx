@@ -11,7 +11,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import Avatar from "../../../components/avatar/avatar";
+import LivingAvatar from "../../../components/avatar/livingAvatar";
 import Text from "../../../components/ui/text";
 import { colors } from "../../../constants/colors";
 import type { AvatarConfig, Partner } from "../../../types";
@@ -97,7 +97,7 @@ export default function SearchingAnimation({ me, partner }: Props) {
       <View className="flex-row items-center justify-center gap-3">
         <View className="items-center">
           <Animated.View style={meStyle}>
-            <Avatar config={me.avatar} size={SIZE} />
+            <LivingAvatar config={me.avatar} size={SIZE} />
           </Animated.View>
           <Text variant="body3" className="mt-2 text-primary-dark-active">
             {me.username}
@@ -129,7 +129,7 @@ export default function SearchingAnimation({ me, partner }: Props) {
             </Animated.View>
             {partner && (
               <Animated.View style={partnerStyle} className="absolute">
-                <Avatar config={partner.avatar} mood={partner.mood} size={SIZE} />
+                <LivingAvatar config={partner.avatar} mood={partner.mood} size={SIZE} greet greetDelay={500} />
               </Animated.View>
             )}
           </View>

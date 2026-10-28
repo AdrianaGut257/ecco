@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
-import Avatar from "../../../components/avatar/avatar";
+import LivingAvatar from "../../../components/avatar/livingAvatar";
 import Plant from "../../../components/garden/plant";
 import Container from "../../../components/layout/container";
 import Button from "../../../components/ui/button";
@@ -110,7 +110,7 @@ export default function OnboardingSlidesScreen({
         className="flex-1 items-center justify-center"
       >
         <View className="mb-8 h-40 w-40 items-center justify-center rounded-full bg-white/25">
-          {slide.art === "avatar" && <Avatar config={avatar} mood="feliz" size={128} />}
+          {slide.art === "avatar" && <LivingAvatar config={avatar} mood="feliz" size={128} greet interactive />}
           {slide.art === "plant" && <Plant stage={3} size={130} growIn />}
           {slide.art === "bloom" && <Plant stage={6} size={130} growIn />}
         </View>
