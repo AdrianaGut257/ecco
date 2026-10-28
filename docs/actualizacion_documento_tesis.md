@@ -212,6 +212,13 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - Pantalla de cierre de la semana, que cuida el final de la experiencia (Regla del Pico-Final).
 - Bienvenida animada: la semilla llega con sus hojas, saluda con ellas, parpadea y flota, y después aparece el texto "Te damos la bienvenida". Es el primer momento de cada sesión (Regla del Pico-Final). Con "Reducir movimiento" activado, se muestra quieta.
 
+**Sonidos (propios, sintetizados para la app):** suaves, de menos de 4 segundos, y solo en momentos con significado (Gaver, 1986; Blattner, Sumikawa y Greenberg, 1989; tecnología calmada de Weiser y Brown, 1996):
+- Cada ánimo suena distinto al elegirlo: un arpegio alegre para "feliz" y un tono grave y cálido para "fatal". Ninguno suena a error.
+- En la respiración guiada, un cuenco marca el inicio de inhalar y otro el de exhalar, así se puede seguir con los ojos cerrados. Una campanita marca el final.
+- La planta suena al crecer, la flor al florecer y hay un aviso al encontrar pareja.
+- Al enviar, al recibir un mensaje con la conversación abierta y al reaccionar.
+- No suenan los botones ni las pestañas. Se apagan en Ajustes → Sonido, respetan el modo silencio del teléfono y no pausan la música de la persona. El sonido nunca es el único aviso: todo se ve también en pantalla.
+
 **Lenguaje:** mensajes en segunda persona, cálidos y sin culpa ("Ya compartiste tus mensajes de hoy. Mañana podrás escribir de nuevo"; "Cerrar aquí" en vez de "Mejor no").
 
 **Diseño adaptable:** la interfaz se adapta a teléfonos pequeños, grandes y tablets. En Inicio, el contenido ocupa todo el ancho y conserva el orden del teléfono.
@@ -280,6 +287,9 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 ## 8. Referencias nuevas para agregar (APA 7)
 
 - Kruger, N., Epley, N., Parker, J., & Ng, Z.-W. (2005). Egocentrism over e-mail: Can we communicate as well as we think? *Journal of Personality and Social Psychology, 89*(6), 925–936. https://doi.org/10.1037/0022-3514.89.6.925
+- Gaver, W. W. (1986). Auditory icons: Using sound in computer interfaces. *Human–Computer Interaction, 2*(2), 167–177. https://doi.org/10.1207/s15327051hci0202_3
+- Blattner, M. M., Sumikawa, D. A., & Greenberg, R. M. (1989). Earcons and icons: Their structure and common design principles. *Human–Computer Interaction, 4*(1), 11–44. https://doi.org/10.1207/s15327051hci0401_1
+- Weiser, M., & Brown, J. S. (1996). Designing calm technology. *PowerGrid Journal, 1*(1).
 - Derks, D., Fischer, A. H., & Bos, A. E. R. (2008). The role of emotion in computer-mediated communication: A review. *Computers in Human Behavior, 24*(3), 766–785. https://doi.org/10.1016/j.chb.2007.04.004
 - Gross, J. J. (1998). The emerging field of emotion regulation: An integrative review. *Review of General Psychology, 2*(3), 271–299. https://doi.org/10.1037/1089-2680.2.3.271
 - Lehrer, P. M., & Gevirtz, R. (2014). Heart rate variability biofeedback: How and why does it work? *Frontiers in Psychology, 5*, 756. https://doi.org/10.3389/fpsyg.2014.00756

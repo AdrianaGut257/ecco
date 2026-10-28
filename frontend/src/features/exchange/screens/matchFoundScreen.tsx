@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { FadeInDown, ZoomIn } from "react-native-reanimated";
 import Avatar from "../../../components/avatar/avatar";
@@ -10,6 +11,7 @@ import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
 import { colors } from "../../../constants/colors";
 import { CHAT_DAYS, MESSAGES_PER_DAY } from "../../../constants/plant";
+import { playSound } from "../../../lib/sound";
 import type { Match } from "../../../types";
 
 interface Props {
@@ -18,6 +20,10 @@ interface Props {
 }
 
 export default function MatchFoundScreen({ match, onContinue }: Props) {
+  useEffect(() => {
+    playSound("match");
+  }, []);
+
   const nothingShared =
     match.commonInterests.length === 0 && match.hobbies.length === 0;
 

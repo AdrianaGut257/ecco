@@ -12,6 +12,7 @@ import Plant, { STEP_MS } from "../../../components/garden/plant";
 import MeadowScene from "../../../components/illustrations/meadowScene";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
+import { playSound } from "../../../lib/sound";
 import { colors } from "../../../constants/colors";
 import { CHAT_DAYS, STAGE_NAMES } from "../../../constants/plant";
 import { tabBarBackdrop } from "../../../store/tabBarBackdrop";
@@ -90,6 +91,13 @@ export default function DailyGrowthScreen({
     tabBarBackdrop.set(GROUND);
     return tabBarBackdrop.reset;
   }, []);
+
+  // Suena cuando aparecen los destellos: al terminar de crecer lo nuevo.
+  useEffect(() => {
+    if (!grew) return;
+    const id = setTimeout(() => playSound("grow"), growMs);
+    return () => clearTimeout(id);
+  }, [grew, growMs]);
 
   return (
     <View className="flex-1">

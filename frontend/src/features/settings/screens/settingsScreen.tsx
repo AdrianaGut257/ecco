@@ -10,7 +10,9 @@ import ConfirmSheet from "../../../components/ui/confirmSheet";
 import Text from "../../../components/ui/text";
 import { colors } from "../../../constants/colors";
 import { friendlyError } from "../../../services/api";
+import { playSound } from "../../../lib/sound";
 import { authService } from "../../../services/authService";
+import { soundSettings } from "../../../store/soundSettings";
 import { useAuth } from "../../auth/hooks/useAuth";
 
 type Item = {
@@ -47,11 +49,51 @@ function Section({ title, items }: { title: string; items: Item[] }) {
   );
 }
 
+function ToggleRow({
+  icon,
+  label,
+  hint,
+  value,
+  onChange,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  hint: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <Card tone="white" className="gap-1 px-4 py-3">
+      <View className="flex-row items-center">
+        <Ionicons name={icon} size={20} color={colors.primary["dark-hover"]} />
+        <Text variant="body3" className="ml-3 flex-1">
+          {label}
+        </Text>
+        <Switch
+          value={value}
+          onValueChange={onChange}
+          accessibilityLabel={label}
+          trackColor={{
+            false: colors.primary["light-active"],
+            true: colors.secondary["dark-hover"],
+          }}
+          thumbColor={colors.white}
+          {...({ activeThumbColor: colors.white } as object)}
+        />
+      </View>
+      <Text variant="caption1" className="ml-8 text-primary-dark-hover">
+        {hint}
+      </Text>
+    </Card>
+  );
+}
+
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { enabled: sounds } = soundSettings.use();
 
   const toggleMood = async (value: boolean) => {
     setError(null);
@@ -90,30 +132,30 @@ export default function SettingsScreen() {
           <Text variant="caption1" className="mb-2 ml-1 text-primary-dark-hover">
             Privacidad
           </Text>
-          <Card tone="white" className="gap-1 px-4 py-3">
-            <View className="flex-row items-center">
-              <Ionicons name="happy-outline" size={20} color={colors.primary["dark-hover"]} />
-              <Text variant="body3" className="ml-3 flex-1">
-                Mostrar mi ánimo en mi avatar
-              </Text>
-              <Switch
-                value={user?.shareMood ?? true}
-                onValueChange={toggleMood}
-                accessibilityLabel="Mostrar mi ánimo en mi avatar"
-                trackColor={{
-                  false: colors.primary["light-active"],
-                  true: colors.secondary["dark-hover"],
-                }}
-                thumbColor={colors.white}
-                {...({ activeThumbColor: colors.white } as object)}
-              />
-            </View>
-            <Text variant="caption1" className="ml-8 text-primary-dark-hover">
-              Solo lo ve la persona con quien conversas, y solo el ánimo de las
-              últimas 24 horas.
-            </Text>
-          </Card>
+          <ToggleRow
+            icon="happy-outline"
+            label="Mostrar mi ánimo en mi avatar"
+            hint="Solo lo ve la persona con quien conversas, y solo el ánimo de las últimas 24 horas."
+            value={user?.shareMood ?? true}
+            onChange={toggleMood}
+          />
           {error && <Banner tone="error" message={error} className="mt-2" />}
+        </View>
+
+        <View className="mb-5">
+          <Text variant="caption1" className="mb-2 ml-1 text-primary-dark-hover">
+            Sonido
+          </Text>
+          <ToggleRow
+            icon={sounds ? "volume-medium-outline" : "volume-mute-outline"}
+            label="Sonidos de la app"
+            hint="Suaves y breves: al elegir tu ánimo, al respirar, cuando su planta crece y con los mensajes."
+            value={sounds}
+            onChange={async (value) => {
+              await soundSettings.set(value);
+              if (value) playSound("mood-good");
+            }}
+          />
         </View>
 
         <Section

@@ -1,5 +1,6 @@
 import { useIsFocused } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { playSound, preloadSounds } from "../../../lib/sound";
 import { ApiError, friendlyError } from "../../../services/api";
 import { chatService } from "../../../services/chatService";
 import { matchService } from "../../../services/matchService";
@@ -46,6 +47,8 @@ export function useConversation(matchId: string, initial?: Match | null) {
   const [sendError, setSendError] = useState<string | null>(null);
   const lastSeen = useRef<string | undefined>(undefined);
   const pendingReactions = useRef(new Set<string>());
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
 
   const track = (list: ChatMessage[]) => {
     for (const m of list) {
@@ -81,6 +84,7 @@ export function useConversation(matchId: string, initial?: Match | null) {
 
   useEffect(() => {
     load();
+    preloadSounds(["send", "receive", "react", "grow"]);
   }, [load]);
 
   useEffect(() => {
@@ -92,6 +96,10 @@ export function useConversation(matchId: string, initial?: Match | null) {
           chatService.list(matchId, lastSeen.current),
         ]);
         setMatch(m);
+        const known = new Set(messagesRef.current.map((msg) => msg.id));
+        if (incoming.some((msg) => !msg.fromMe && !known.has(msg.id))) {
+          playSound("receive");
+        }
         setMessages((prev) => {
           const next = merge(prev, incoming, pendingReactions.current);
           track(next);
@@ -169,6 +177,7 @@ export function useConversation(matchId: string, initial?: Match | null) {
         status: "sending",
       };
       setMessages((prev) => [...prev, draft]);
+      playSound("send");
       setMatch((m) =>
         m
           ? {
@@ -203,6 +212,7 @@ export function useConversation(matchId: string, initial?: Match | null) {
           prev.map((m) => (m.id === id ? { ...m, reaction: value } : m)),
         );
       set(reaction);
+      if (reaction) playSound("react");
       pendingReactions.current.add(id);
       try {
         await chatService.react(matchId, id, reaction);

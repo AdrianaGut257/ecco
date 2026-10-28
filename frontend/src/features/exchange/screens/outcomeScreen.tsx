@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { View } from "react-native";
 import Animated, { FadeInUp, ZoomIn } from "react-native-reanimated";
 import Avatar from "../../../components/avatar/avatar";
@@ -5,6 +6,7 @@ import GrowthPlant from "../../../components/garden/growthPlant";
 import Container from "../../../components/layout/container";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
+import { playSound } from "../../../lib/sound";
 import type { Match } from "../../../types";
 
 interface Props {
@@ -48,6 +50,10 @@ export default function OutcomeScreen({
       ? match.status
       : "rested";
   const copy = COPY[key];
+
+  useEffect(() => {
+    if (key === "bloomed") playSound("bloom");
+  }, [key]);
 
   return (
     <Container

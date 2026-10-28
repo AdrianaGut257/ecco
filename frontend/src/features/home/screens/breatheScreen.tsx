@@ -22,6 +22,7 @@ import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import MoodFace from "../../../components/avatar/moodFace";
 import Text from "../../../components/ui/text";
 import { MOODS, MoodId } from "../../../constants/emotions";
+import { MOOD_SOUND, playSound } from "../../../lib/sound";
 import { moodService } from "../../../services/moodService";
 
 type LowMood = "fatal" | "mal";
@@ -128,6 +129,7 @@ export default function BreatheScreen() {
     const run = (n: number) => {
       setCycle(n);
       setPhase("in");
+      playSound("breathe-in");
       blow.value = withTiming(0, { duration: 300 });
       open.value = reduced
         ? 0.6
@@ -135,6 +137,7 @@ export default function BreatheScreen() {
       timers.push(
         setTimeout(() => {
           setPhase("out");
+          playSound("breathe-out");
           blow.value = withSequence(
             withTiming(1, { duration: 500 }),
             withDelay(EXHALE_MS - 1300, withTiming(0, { duration: 800 })),
@@ -168,6 +171,10 @@ export default function BreatheScreen() {
     };
   }, [stage, open, blow, puff, reduced]);
 
+  useEffect(() => {
+    if (stage === "done") playSound("breathe-done");
+  }, [stage]);
+
   // El círculo crece al inhalar y se encoge al exhalar; el halo de atrás respira con más amplitud.
   const circle = useAnimatedStyle(() => ({
     transform: [{ scale: 0.45 + 0.45 * open.value }],
@@ -179,6 +186,7 @@ export default function BreatheScreen() {
 
   const chooseAfter = async (id: MoodId) => {
     setAfter(id);
+    playSound(MOOD_SOUND[id]);
     try {
       await moodService.save(id);
     } catch {}

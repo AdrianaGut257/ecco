@@ -20,6 +20,7 @@
     "babel-preset-expo": "^55.0.22",
     "expo": "~55.0.26",
     "expo-asset": "~55.0.20",
+    "expo-audio": "~55.0.18",
     "expo-constants": "~55.0.16",
     "expo-device": "~55.0.17",
     "expo-font": "~55.0.8",

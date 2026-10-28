@@ -10,6 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { colors } from "../../constants/colors";
 import { PLANT_STAGES, STAGE_NAMES } from "../../constants/plant";
+import { playSound } from "../../lib/sound";
 import Plant from "./plant";
 
 interface Props {
@@ -29,6 +30,7 @@ export default function GrowthPlant({ stage, size = 170, onGrow }: Props) {
         withTiming(1, { duration: 250 }),
         withDelay(900, withTiming(0, { duration: 500 })),
       );
+      playSound("grow");
       onGrow?.();
     }
     previous.current = stage;

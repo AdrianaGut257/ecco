@@ -14,6 +14,7 @@ import Animated, {
 import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import Text from "../../../components/ui/text";
 import { MOODS, MoodId } from "../../../constants/emotions";
+import { MOOD_SOUND, playSound } from "../../../lib/sound";
 
 interface Props {
   value: MoodId | null;
@@ -127,6 +128,7 @@ function MoodOption({
       disabled={disabled}
       onPress={() => {
         react();
+        playSound(MOOD_SOUND[id]);
         onSelect(id);
       }}
       accessibilityRole="radio"
