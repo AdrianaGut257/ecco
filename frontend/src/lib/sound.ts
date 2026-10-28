@@ -1,4 +1,5 @@
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from "expo-audio";
+import { Platform } from "react-native";
 import type { MoodId } from "../constants/emotions";
 import { soundSettings } from "../store/soundSettings";
 
@@ -44,8 +45,14 @@ const playerFor = (name: SoundName) => {
   return player;
 };
 
+// En web, el navegador no deja sonar nada hasta que la persona toca la página.
+const blockedOnWeb = () =>
+  Platform.OS === "web" &&
+  typeof navigator !== "undefined" &&
+  (navigator as { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive === false;
+
 export function playSound(name: SoundName) {
-  if (!soundSettings.enabled()) return;
+  if (!soundSettings.enabled() || blockedOnWeb()) return;
   try {
     if (!configured) {
       configured = true;

@@ -31,42 +31,42 @@ type Stage = "intro" | "breathing" | "done";
 // Respiración lenta (~6 por minuto): inhalar 4 s y exhalar 6 s.
 const INHALE_MS = 4000;
 const EXHALE_MS = 6000;
-const CYCLES = 4;
+const CYCLES = 3;
 const INTRO_MS = 3200;
 const CIRCLE = 240;
 const FACE = 92;
 
-// Bocanadas de aire que salen al exhalar: cada una recorre su camino desfasada de las otras.
-function Puff({
+// Al exhalar, ondas suaves se alejan del círculo y se desvanecen, como el aire que se suelta.
+function Ripple({
   index,
-  puff,
+  wave,
   blow,
+  color,
 }: {
   index: number;
-  puff: SharedValue<number>;
+  wave: SharedValue<number>;
   blow: SharedValue<number>;
+  color: string;
 }) {
   const style = useAnimatedStyle(() => {
-    const k = (puff.value + index / 3) % 1;
+    const k = (wave.value + index / 3) % 1;
     return {
-      opacity: blow.value * Math.sin(Math.PI * k) * 0.85,
-      transform: [
-        { translateX: 6 + 46 * k },
-        { translateY: 22 + 16 * k },
-        { scale: 0.5 + 0.7 * k },
-      ],
+      opacity: blow.value * (1 - k) * 0.55,
+      transform: [{ scale: 0.6 + 0.65 * k }],
     };
   });
   return (
     <Animated.View
+      pointerEvents="none"
       style={[
         style,
         {
           position: "absolute",
-          width: 12,
-          height: 12,
-          borderRadius: 6,
-          backgroundColor: "#FFFFFF",
+          width: CIRCLE,
+          height: CIRCLE,
+          borderRadius: CIRCLE / 2,
+          borderWidth: 2,
+          borderColor: color,
         },
       ]}
     />
@@ -112,7 +112,7 @@ export default function BreatheScreen() {
   const [after, setAfter] = useState<MoodId | null>(null);
   const open = useSharedValue(0);
   const blow = useSharedValue(0);
-  const puff = useSharedValue(0);
+  const wave = useSharedValue(0);
 
   const close = () =>
     router.canGoBack() ? router.back() : router.replace("/(tabs)/home");
@@ -156,9 +156,9 @@ export default function BreatheScreen() {
     };
     run(0);
     if (!reduced) {
-      puff.value = 0;
-      puff.value = withRepeat(
-        withTiming(1, { duration: 1500, easing: Easing.linear }),
+      wave.value = 0;
+      wave.value = withRepeat(
+        withTiming(1, { duration: 2400, easing: Easing.linear }),
         -1,
         false,
       );
@@ -166,10 +166,10 @@ export default function BreatheScreen() {
     return () => {
       timers.forEach(clearTimeout);
       cancelAnimation(open);
-      cancelAnimation(puff);
+      cancelAnimation(wave);
       blow.value = 0;
     };
-  }, [stage, open, blow, puff, reduced]);
+  }, [stage, open, blow, wave, reduced]);
 
   useEffect(() => {
     if (stage === "done") playSound("breathe-done");
@@ -263,9 +263,10 @@ export default function BreatheScreen() {
                   },
                 ]}
               />
-              {[0, 1, 2].map((i) => (
-                <Puff key={i} index={i} puff={puff} blow={blow} />
-              ))}
+              {!reduced &&
+                [0, 1, 2].map((i) => (
+                  <Ripple key={i} index={i} wave={wave} blow={blow} color={theme.circle} />
+                ))}
               <View className="absolute">
                 <LivingMoodFace
                   mood={after ?? mood}

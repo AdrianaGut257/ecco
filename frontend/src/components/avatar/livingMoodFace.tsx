@@ -11,7 +11,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
-import Svg, { Ellipse, Path, SvgXml } from "react-native-svg";
+import Svg, { Ellipse, SvgXml } from "react-native-svg";
 import type { MoodId } from "../../constants/emotions";
 import { FACE_PARTS } from "./faceParts";
 
@@ -232,15 +232,6 @@ export default function LivingMoodFace({
     };
   });
 
-  // Solo "fatal": una lágrima que baja desde el ojo izquierdo.
-  const tear = useAnimatedStyle(() => {
-    if (mood !== "fatal" || breathing) return { opacity: 0 };
-    const p = t.value;
-    const k = p < 0.15 || p > 0.75 ? 0 : (p - 0.15) / 0.6;
-    const opacity = Math.min(1, k * 5) * (k > 0.7 ? 1 - (k - 0.7) / 0.3 : 1);
-    return { opacity, transform: [{ translateY: k * 9 * unit }] };
-  });
-
   const layer = {
     position: "absolute" as const,
     top: 0,
@@ -248,7 +239,6 @@ export default function LivingMoodFace({
     width,
     height,
   };
-  const [ex, ey] = parts.leftEye;
 
   // Caja cuadrada fija: todas las caras miden lo mismo aunque su dibujo no tenga la misma proporción.
   return (
@@ -297,20 +287,6 @@ export default function LivingMoodFace({
                 rx={2.6}
                 ry={3.2}
                 fill="#282828"
-              />
-            </Svg>
-          </Animated.View>
-        )}
-        {mood === "fatal" && (
-          <Animated.View style={[layer, tear]}>
-            <Svg
-              width={width}
-              height={height}
-              viewBox={`0 0 ${parts.w} ${parts.h}`}
-            >
-              <Path
-                d={`M${ex} ${ey + 4}C${ex - 2.2} ${ey + 7} ${ex - 2.2} ${ey + 9.5} ${ex} ${ey + 9.5}C${ex + 2.2} ${ey + 9.5} ${ex + 2.2} ${ey + 7} ${ex} ${ey + 4}Z`}
-                fill="#DDEFFB"
               />
             </Svg>
           </Animated.View>

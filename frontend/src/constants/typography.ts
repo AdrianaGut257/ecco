@@ -2,7 +2,7 @@ export const typography = {
   h1: "font-heading-bold text-h1",
   h2: "font-heading-bold text-h2",
   h3: "font-heading-bold text-h3",
-  h4: "font-heading-semibold text-h4",
+  h4: "font-heading-bold text-h4",
   subtitle1: "font-heading-bold text-subtitle1",
   subtitle2: "font-heading-bold text-subtitle2",
   body1: "font-body text-body1",

@@ -25,7 +25,7 @@ La aplicación no tiene likes, seguidores, contadores públicos ni rankings. Cad
    3. Elección de intereses (mínimo 3, de un catálogo de 77 en 11 categorías).
    4. "Cuéntanos más": subtemas y ejemplos concretos de cada interés (opcional).
    5. Tres diapositivas que explican cómo funciona la app.
-3. **Ánimo al entrar e Inicio:** la primera vez del día, antes de entrar, una pantalla sobre el paisaje con sol pregunta "¿Cómo te sientes hoy?" (se puede saltar con "Ahora no"). En Inicio, el ánimo se puede actualizar durante el día y la tarjeta "Tu día" muestra el historial de hoy con la hora de cada registro. También da acceso a la conversación y al jardín.
+3. **Ánimo al entrar e Inicio:** la primera vez del día, antes de entrar, una pantalla sobre el paisaje con sol pregunta "¿Cómo te sientes hoy?" (se puede saltar con "Ahora no"). En Inicio, el ánimo se puede actualizar durante el día y la tarjeta "Tu día" muestra el historial de hoy: una cinta con el color de cada registro y una línea de tiempo con la cara, el nombre y la hora (se ven 5 y el resto se desliza). También da acceso a la conversación y al jardín.
 4. **Buscar a alguien:** se eligen hasta 3 temas de la semana entre los propios intereses, y el sistema busca a la persona más afín.
 5. **Presentación:** "Esta semana conversarás con…" muestra el avatar de la otra persona y lo que tienen en común.
 6. **Conversación de 7 días** con ideas para romper el hielo, el contador de mensajes y la planta.
@@ -86,7 +86,7 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 | ídem | ¿Cómo podríamos medir el éxito en bienestar y no en uso? | Registro diario del ánimo y vista privada "Tu semana". Sin rachas ni notificaciones de enganche. | Feng et al. (2026); Gross (1998); insumo para la prueba piloto. |
 | Mensajes positivos sin métricas | ¿Cómo podríamos sugerir mensajes positivos cuando no se sabe qué decir? | Frases de validación mezcladas en las ideas ("Gracias por quedarte en la conversación"). | Pedido explícito del Usuario 1; Clark, Algoe y Green (2018). |
 | ídem | ¿Cómo podríamos evitar métricas de comparación? | Ningún contador público: el jardín muestra plantas, no números. | Factor 4 del Capítulo 3; límites del alcance. |
-| ídem | ¿Cómo podríamos hacer que la app acompañe en un mal día? | Respuestas empáticas al ánimo y, si es bajo, una **pantalla de respiración guiada** (4 respiraciones lentas, unos 40 s, en el color de la emoción) que se abre antes de seguir y se puede saltar. | Baudon y Jachens (2021): regulación emocional instantánea. |
+| ídem | ¿Cómo podríamos hacer que la app acompañe en un mal día? | Respuestas empáticas al ánimo y, si es bajo, una **pantalla de respiración guiada** (3 respiraciones lentas, unos 30 s, en el color de la emoción) que se abre antes de seguir y se puede saltar. | Baudon y Jachens (2021): regulación emocional instantánea. |
 
 ### 3.3. Ideas descartadas o pospuestas
 
@@ -181,7 +181,7 @@ Cuando alguien busca, el sistema compara a esa persona con quienes están buscan
 
 **Paleta:** cálida y natural, con durazno (principal), verde (crecimiento, acciones positivas) y celeste (calma, ayuda), más 5 colores para los estados de ánimo.
 
-**Tipografía:** Poppins para títulos y Quicksand para textos, con una escala Major Second (1,125). El tamaño mínimo es de 12 px. Heading 1 (36 px) marca los momentos de llegada (tu nombre en la bienvenida); los títulos de pestañas usan Heading 3 (28 px), y los de tarjetas y secciones, Subtitle 2 (20 px). Los títulos y subtítulos usan un café cálido de la paleta (#916646, el mismo del logo), y el texto, un café más profundo (#6D4D34). Los subtítulos van en negrita. Se eligió el tono más claro que sigue cumpliendo WCAG 2.2: los títulos, y los subtítulos en negrita, cuentan como texto grande y piden 3:1; el café cálido da 4,1:1 o más en todos los fondos. El tono #DA9968 que se consideró solo llegaba a 2,3:1.
+**Tipografía:** Poppins para títulos y Quicksand para textos, con una escala Major Second (1,125). El tamaño mínimo es de 12 px. Heading 1 (36 px) marca los momentos de llegada (tu nombre en la bienvenida); los títulos de pestañas usan Heading 3 (28 px), y los de tarjetas y secciones, Subtitle 2 (20 px). Los títulos y subtítulos usan un café cálido de la paleta (#916646, el mismo del logo), y el texto, un café más profundo (#6D4D34). Los subtítulos y los saludos van en negrita. El saludo de Inicio, que queda sobre la ilustración de la colina, usa el café siguiente de la escala (#6D4D34) para mantener el contraste. Se eligió el tono más claro que sigue cumpliendo WCAG 2.2: los títulos, y los subtítulos en negrita, cuentan como texto grande y piden 3:1; el café cálido da 4,1:1 o más en todos los fondos. El tono #DA9968 que se consideró solo llegaba a 2,3:1.
 
 **Accesibilidad:** se midió el contraste con WCAG 2.2 y se corrigió sin abandonar la paleta:
 
@@ -206,8 +206,8 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - Animación de búsqueda con mensajes que cambian.
 - El avatar "salta" al personalizarlo.
 - La cara elegida se agranda al registrar el ánimo.
-- Respiración guiada a pantalla completa cuando el ánimo es "Mal" o "Fatal": un círculo crece al inhalar (4 s) y se encoge al exhalar (6 s), con un halo translúcido detrás que se expande todavía más. En el centro, la cara de la emoción respira con la persona: cierra los ojos, se estira al inhalar y sopla con la boca en "o" al exhalar, durante 4 respiraciones, con fondo en el color de la emoción. Busca que la persona no entre a la conversación desde el malestar (regulación previa; Gross, 1998). Al final pregunta, opcionalmente, cómo se siente ahora: sirve como medición antes/después.
-- Las caras de ánimo expresan su emoción todo el tiempo, animadas por partes: feliz da saltitos, bien se mece y sonríe, normal mira a los lados y tuerce la boca, mal suspira y mira hacia abajo, y a fatal le cae una lágrima. Todas parpadean y, al elegir una, reacciona. Luego la tarjeta se recoge en un resumen ("Hoy te sientes bien · Cambiar").
+- Respiración guiada a pantalla completa cuando el ánimo es "Mal" o "Fatal": un círculo crece al inhalar (4 s) y se encoge al exhalar (6 s), con un halo translúcido detrás que se expande todavía más. En el centro, la cara de la emoción respira con la persona: cierra los ojos, se estira al inhalar y sopla con la boca en "o" al exhalar mientras ondas suaves se alejan del círculo y se desvanecen, durante 3 respiraciones, con fondo en el color de la emoción. Busca que la persona no entre a la conversación desde el malestar (regulación previa; Gross, 1998). Al final pregunta, opcionalmente, cómo se siente ahora: sirve como medición antes/después.
+- Las caras de ánimo expresan su emoción todo el tiempo, animadas por partes: feliz da saltitos, bien se mece y sonríe, normal mira a los lados y tuerce la boca, mal suspira y mira hacia abajo, y fatal se balancea despacio con los ojos bajos. Todas parpadean y, al elegir una, reacciona. Luego la tarjeta se recoge en un resumen ("Hoy te sientes bien · Cambiar").
 - Nueva barra de navegación con una muesca central para el botón de "Conversar"; el ícono de la pestaña elegida da un saltito.
 - Botones y chips se hunden un poco al tocarlos y vuelven con un rebote suave.
 - Los mensajes con tono entran con un gesto propio (el corazón late, la carita se ríe, el sol gira) y las reacciones aparecen con un pequeño rebote.

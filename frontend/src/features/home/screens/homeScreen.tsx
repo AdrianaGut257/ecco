@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import LivingMoodFace from "../../../components/avatar/livingMoodFace";
-import MoodFace from "../../../components/avatar/moodFace";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Avatar from "../../../components/avatar/avatar";
 import Plant from "../../../components/garden/plant";
@@ -24,6 +23,7 @@ import { sessionStore } from "../../../store/session";
 import type { Match, MoodEntry } from "../../../types";
 import { greeting, isToday } from "../../../utils/greeting";
 import EmotionSelector from "../components/emotionSelector";
+import TodayMoods from "../components/todayMoods";
 
 interface ActionProps {
   title: string;
@@ -63,38 +63,6 @@ function ActionCard({ title, caption, action, icon, onPress }: ActionProps) {
 const SEARCH_POLL_MS = 5000;
 const COLLAPSE_MS = 2200;
 const BREATHE_DELAY_MS = 1100;
-
-const timeOf = (iso: string) =>
-  new Date(iso).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
-
-// Historial del día: cada vez que la persona actualiza su ánimo queda un registro con la hora.
-function TodayMoods({ entries }: { entries: MoodEntry[] }) {
-  return (
-    <Card tone="white" className="gap-3">
-      <View>
-        <Text variant="subtitle2">Tu día</Text>
-        <Text variant="caption1" className="text-primary-dark-hover">
-          Así te has sentido hoy. Puedes actualizarlo cuando quieras.
-        </Text>
-      </View>
-      {[...entries].reverse().map((entry, i) => (
-        <Animated.View
-          key={entry.createdAt}
-          entering={i === 0 ? FadeIn.duration(300) : undefined}
-          className="flex-row items-center gap-3"
-        >
-          <Text variant="caption1" className="w-12 text-primary-dark-hover">
-            {timeOf(entry.createdAt)}
-          </Text>
-          <MoodFace mood={entry.mood} size={28} />
-          <Text variant="body3">
-            {MOODS.find((m) => m.id === entry.mood)?.label}
-          </Text>
-        </Animated.View>
-      ))}
-    </Card>
-  );
-}
 
 export default function HomeScreen() {
   const router = useRouter();
