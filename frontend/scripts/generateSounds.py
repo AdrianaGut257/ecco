@@ -168,3 +168,10 @@ x = buf(3.0)
 for i, note in enumerate(["C5", "G5", "C6"]):
     place(x, bell(hz(note), 2.8 - i * 0.2, 0.8, attack=0.02), i * 0.22, 0.7)
 save("breathe-done", x, 0.45)
+
+# Jardín: al abrir el recuerdo de una planta, una cajita de música que baja suave.
+x = buf(1.9)
+for i, note in enumerate(["E6", "C6", "G5", "E5"]):
+    place(x, pluck(hz(note), 1.3, 0.45, bright=0.2), i * 0.13, 0.75)
+place(x, bell(hz("C5"), 1.6, 0.7, attack=0.05), 0.5, 0.35)
+save("memory", x, 0.45)

@@ -19,6 +19,7 @@ const SOURCES = {
   "breathe-in": require("../../assets/sounds/breathe-in.wav"),
   "breathe-out": require("../../assets/sounds/breathe-out.wav"),
   "breathe-done": require("../../assets/sounds/breathe-done.wav"),
+  memory: require("../../assets/sounds/memory.wav"),
 } as const;
 
 export type SoundName = keyof typeof SOURCES;

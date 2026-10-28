@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FlyingButterfly } from "../../../components/garden/butterfly";
 import { MEADOW_WIDTH } from "../../../components/illustrations/meadowParts";
 import MeadowScene from "../../../components/illustrations/meadowScene";
+import { playSound, preloadSounds } from "../../../lib/sound";
 import AppHeader from "../../../components/layout/appHeader";
 import Banner from "../../../components/ui/banner";
 import EmptyState from "../../../components/ui/emptyState";
@@ -73,12 +74,14 @@ export default function GardenScreen() {
   useFocusEffect(
     useCallback(() => {
       load();
+      preloadSounds(["memory"]);
       tabBarBackdrop.set(GROUND);
       return tabBarBackdrop.reset;
     }, [load]),
   );
 
   const openMemory = async (entry: GardenEntry) => {
+    playSound("memory");
     setSelected(entry);
     setMemory(null);
     setMemoryError(null);

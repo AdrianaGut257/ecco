@@ -197,7 +197,7 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 **Ilustraciones propias de la autora:**
 - Semilla en la pantalla de bienvenida.
 - Cinco caras de ánimo (fatal, mal, normal, bien, feliz).
-- Fondo de colinas y arbustos en Inicio, que se adapta a cualquier ancho de pantalla sin deformarse.
+- Fondo de colinas y arbustos en Inicio, que se adapta a cualquier ancho de pantalla sin deformarse y se mueve con suavidad: la colina de adelante se mece con la brisa y la de atrás, con los arbustos, un poco menos.
 - Avatares: cuatro tonos de piel base y, para chicas y chicos, peinados, flequillos, barbas, lentes, aretes, diadema y prendas dibujados por separado para combinarlos. En las prendas de varias piezas (camisa con cuello, corbata, capucha), el color elegido se aplica a la parte principal y los detalles conservan el color del diseño. La app suma dos tonos de piel más profundos. Al personalizar, cada opción se muestra como una miniatura del propio avatar (reconocer antes que recordar).
 
 **Micro-interacciones:**
@@ -219,7 +219,7 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 **Sonidos (propios, sintetizados para la app):** suaves, de menos de 4 segundos, y solo en momentos con significado (Gaver, 1986; Blattner, Sumikawa y Greenberg, 1989; tecnología calmada de Weiser y Brown, 1996):
 - Cada ánimo suena distinto al elegirlo: un arpegio alegre para "feliz" y un tono grave y cálido para "fatal". Ninguno suena a error.
 - En la respiración guiada, un cuenco marca el inicio de inhalar y otro el de exhalar, así se puede seguir con los ojos cerrados. Una campanita marca el final.
-- La planta suena al crecer, la flor al florecer y hay un aviso al encontrar pareja.
+- La planta suena al crecer, la flor al florecer y hay un aviso al encontrar pareja. En el jardín, al abrir el recuerdo de una planta suena una cajita de música.
 - Al enviar, al recibir un mensaje con la conversación abierta y al reaccionar.
 - No suenan los botones ni las pestañas. Se apagan en Ajustes → Sonido, respetan el modo silencio del teléfono y no pausan la música de la persona. El sonido nunca es el único aviso: todo se ve también en pantalla.
 
