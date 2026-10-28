@@ -123,7 +123,7 @@ export default function SearchingAnimation({ me, partner }: Props) {
               style={[blobStyle, { width: SIZE * 0.9, height: SIZE * 0.9 }]}
               className="absolute items-center justify-center rounded-full bg-primary-normal"
             >
-              <Text variant="h2" className="text-primary-darker">
+              <Text variant="h2">
                 ?
               </Text>
             </Animated.View>

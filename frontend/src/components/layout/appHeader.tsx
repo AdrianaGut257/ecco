@@ -8,17 +8,15 @@ interface Props {
   onBack?: () => void;
   showBack?: boolean;
   showSettings?: boolean;
-  onScenery?: boolean;
 }
 
 export default function AppHeader({
   onBack,
   showBack = false,
   showSettings = true,
-  onScenery = false,
 }: Props) {
   const router = useRouter();
-  const tint = onScenery ? colors.primary.darker : colors.primary["dark-hover"];
+  const tint = colors.primary["dark-hover"];
 
   const goBack = () => {
     if (onBack) return onBack();
@@ -38,7 +36,7 @@ export default function AppHeader({
             <Ionicons name="arrow-back" size={22} color={tint} />
           </Pressable>
         )}
-        <Wordmark className={onScenery ? "text-primary-darker" : ""} />
+        <Wordmark />
       </View>
       {showSettings ? (
         <Pressable

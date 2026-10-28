@@ -31,6 +31,8 @@ import MessageBubble from "../components/messageBubble";
 import SafetySheet from "../components/safetySheet";
 import { MAX_MESSAGE_LENGTH, useConversation } from "../hooks/useConversation";
 import { dailyGrowth, today } from "../../../store/dailyGrowth";
+import DaySeparator from "../components/daySeparator";
+import { discoveryFor } from "../discoveries";
 import { sparksFor } from "../sparks";
 import DailyGrowthScreen from "./dailyGrowthScreen";
 import OutcomeScreen from "./outcomeScreen";
@@ -140,6 +142,11 @@ export default function ConversationScreen({
     () => [...messages].reverse().find((m) => !m.fromMe)?.id,
     [messages],
   );
+
+  // El día de hoy todavía sin mensajes: su separador (y su coincidencia) va al final de la lista.
+  const lastDay = messages[messages.length - 1]?.day;
+  const todayStarts =
+    !!match && messages.length > 0 && lastDay !== match.day && match.canWrite;
 
   const sparks = useMemo(
     () => (match ? sparksFor(match, messages.length > 0, round) : []),
@@ -540,6 +547,23 @@ export default function ConversationScreen({
               </Text>
             </Animated.View>
           )}
+          {match.hobbies.length > 0 && (
+            <View
+              className="mt-1.5 flex-row flex-wrap gap-1"
+              accessible
+              accessibilityLabel={`Sus temas: ${match.hobbies.join(", ")}`}
+            >
+              {match.hobbies.map((theme) => (
+                <Text
+                  key={theme}
+                  variant="caption2"
+                  className="rounded-chip bg-tertiary-light-active px-2 py-0.5 text-tertiary-darker"
+                >
+                  {theme}
+                </Text>
+              ))}
+            </View>
+          )}
         </View>
       </View>
 
@@ -583,10 +607,16 @@ export default function ConversationScreen({
           }}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center px-6 py-6">
-              <Text variant="body3" className="text-center text-primary-dark-hover">
+              <DaySeparator day={match.day} discovery={discoveryFor(match, match.day)} today />
+              <Text variant="body3" className="mt-2 text-center text-primary-dark-hover">
                 {`Saluda a ${match.partner.username}. Una pregunta abierta sobre algo que compartan es un buen comienzo.`}
               </Text>
             </View>
+          }
+          ListFooterComponent={
+            todayStarts ? (
+              <DaySeparator day={match.day} discovery={discoveryFor(match, match.day)} today />
+            ) : null
           }
           renderItem={({ item, index }) => {
             const prev = messages[index - 1];
@@ -594,12 +624,11 @@ export default function ConversationScreen({
             return (
               <>
                 {newDay && (
-                  <Text
-                    variant="caption2"
-                    className="my-2 self-center rounded-chip bg-primary-light-active px-3 py-1 text-primary-dark-hover"
-                  >
-                    {item.day > CHAT_DAYS ? "Seguimos conversando" : `Día ${item.day}`}
-                  </Text>
+                  <DaySeparator
+                    day={item.day}
+                    discovery={discoveryFor(match, item.day)}
+                    today={item.day === match.day}
+                  />
                 )}
                 <MessageBubble
                   message={item}

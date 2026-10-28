@@ -12,7 +12,7 @@
 
 ## 1. Resumen del prototipo
 
-ECHOOM es una aplicación móvil que empareja a dos jóvenes con gustos en común para conversar durante **siete días**, con **cinco mensajes por persona al día**. Cada pareja cuida una **planta** que crece solo los días en que ambas personas se escriben. Al final de la semana, cada una decide en privado si quiere seguir en contacto; si ambas dicen que sí, la planta florece y la conversación continúa.
+ECHOOM es una aplicación móvil que empareja a dos jóvenes con gustos en común para conversar durante **siete días**, con **diez mensajes por persona al día**. Cada pareja cuida una **planta** que crece solo los días en que ambas personas se escriben. Al final de la semana, cada una decide en privado si quiere seguir en contacto; si ambas dicen que sí, la planta florece y la conversación continúa.
 
 La aplicación no tiene likes, seguidores, contadores públicos ni rankings. Cada persona se representa con un **avatar ilustrado y personalizable** (nunca con una foto), que además refleja su estado de ánimo del día.
 
@@ -25,7 +25,7 @@ La aplicación no tiene likes, seguidores, contadores públicos ni rankings. Cad
    3. Elección de intereses (mínimo 3, de un catálogo de 77 en 11 categorías).
    4. "Cuéntanos más": subtemas y ejemplos concretos de cada interés (opcional).
    5. Tres diapositivas que explican cómo funciona la app.
-3. **Inicio:** registro del ánimo del día ("¿Cómo te sientes hoy?") y acceso a la conversación y al jardín.
+3. **Ánimo al entrar e Inicio:** la primera vez del día, antes de entrar, una pantalla sobre el paisaje con sol pregunta "¿Cómo te sientes hoy?" (se puede saltar con "Ahora no"). En Inicio, el ánimo se puede actualizar durante el día y la tarjeta "Tu día" muestra el historial de hoy con la hora de cada registro. También da acceso a la conversación y al jardín.
 4. **Buscar a alguien:** se eligen hasta 3 temas de la semana entre los propios intereses, y el sistema busca a la persona más afín.
 5. **Presentación:** "Esta semana conversarás con…" muestra el avatar de la otra persona y lo que tienen en común.
 6. **Conversación de 7 días** con ideas para romper el hielo, el contador de mensajes y la planta.
@@ -80,7 +80,7 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 | Temor a la hostilidad | ¿Cómo podríamos dar reporte y bloqueo sin interrumpir? | Ícono de escudo en la conversación → "Tu bienestar es primero": salir o reportar con motivo. La otra persona no ve el motivo y no vuelven a coincidir. | Mapa de Motivaciones (6/15); Usuarios 4 y 5; Shneiderman (manejo amable de errores). |
 | ídem | ¿Cómo podríamos reducir el hate o la toxicidad dentro de la app? | **Moderación antes de enviar en dos niveles:** pausa amable "¿Lo reformulamos?" para lo leve y bloqueo para lo grave. | Katsaros et al. (2022); Gross (1998); Shneiderman. Garantiza que las micro interacciones sean *positivas*, como dice el objetivo general. |
 | ídem | ¿Cómo podríamos transmitir confianza antes de la primera conversación? | Pantalla "Un lugar seguro" con acuerdos breves y recordatorio de que se puede salir cuando se quiera. | Síntesis de Empatizar (4.4), necesidad (d). |
-| Pocos vínculos pero significativos | ¿Cómo podríamos priorizar la calidad sobre la cantidad? | Una conversación a la vez, 7 días, 5 mensajes por día (hasta 500 caracteres). | Takano (2018); "número razonable de mensajes", 15 % (Vakili, 2024); Saffer (2013). Los 500 caracteres atienden la reserva del Usuario 4. |
+| Pocos vínculos pero significativos | ¿Cómo podríamos priorizar la calidad sobre la cantidad? | Una conversación a la vez, 7 días, 10 mensajes por día (hasta 500 caracteres). | Takano (2018); "número razonable de mensajes", 15 % (Vakili, 2024); Saffer (2013). Los 500 caracteres atienden la reserva del Usuario 4. |
 | ídem | ¿Cómo podríamos hacer que cada mensaje se sienta significativo? | **Planta que crece solo los días en que ambos escriben**, con una micro-interacción al crecer. Nunca se marchita. | Godard y Holtzman (2024): el uso activo y recíproco se asocia con bienestar (r = 0,15) y apoyo percibido (r = 0,34). |
 | ídem | ¿Cómo podríamos sostener un vínculo esporádico? | Decisión privada al final; si ambos siguen, la planta florece y la conversación queda abierta. | POV; Regla del Pico-Final (se cuida el cierre). |
 | ídem | ¿Cómo podríamos medir el éxito en bienestar y no en uso? | Registro diario del ánimo y vista privada "Tu semana". Sin rachas ni notificaciones de enganche. | Feng et al. (2026); Gross (1998); insumo para la prueba piloto. |
@@ -128,7 +128,7 @@ La app consulta al servidor cada pocos segundos para recibir mensajes nuevos y s
 |---|---|
 | Duración de una conversación | 7 días |
 | Días de gracia para decidir | 3 (del día 7 al 10) |
-| Mensajes por persona y por día | 5 |
+| Mensajes por persona y por día | 10 (se subió de 5: un "jajaja" gastaba un mensaje entero) |
 | Largo máximo de un mensaje | 500 caracteres |
 | Tonos de mensaje | 6, opcionales |
 | Reacciones | 5 caras, una por mensaje recibido; no cuentan como mensaje |
@@ -146,7 +146,9 @@ Cuando alguien busca, el sistema compara a esa persona con quienes están buscan
 
 > **Puntaje = 3 × temas en común + 1 × intereses en común + 2 × subtemas en común + 4 × ejemplos en común**
 
+- **Solo se empareja a quienes comparten al menos uno de los temas que eligieron al buscar.** Entre ellos, gana el mayor puntaje.
 - Lo más específico pesa más: compartir una película concreta vale más que compartir "Películas".
+- En el chat se ven los temas compartidos, y cada día se revela una coincidencia más ("Hoy descubrieron: a los dos les gusta *Interestelar*"), de la más específica a la más general (Byrne, 1971; Alves, 2018; Aron et al., 1997).
 - La comparación ignora mayúsculas, espacios y tildes ("Iron Man 2" = "iron man 2").
 - **Nunca se repite una pareja.**
 - Si dos personas buscan exactamente al mismo tiempo, un bloqueo en la base de datos evita que se formen parejas duplicadas.
@@ -179,7 +181,7 @@ Cuando alguien busca, el sistema compara a esa persona con quienes están buscan
 
 **Paleta:** cálida y natural, con durazno (principal), verde (crecimiento, acciones positivas) y celeste (calma, ayuda), más 5 colores para los estados de ánimo.
 
-**Tipografía:** Poppins para títulos y Quicksand para textos, con una escala Major Second (1,125). El tamaño mínimo es de 12 px. Heading 1 (36 px) marca los momentos de llegada (tu nombre en la bienvenida); los títulos de pestañas usan Heading 3 (28 px), y los de tarjetas y secciones, Subtitle 2 (20 px). Los títulos usan el café más oscuro de la paleta para que el bold se lea con firmeza.
+**Tipografía:** Poppins para títulos y Quicksand para textos, con una escala Major Second (1,125). El tamaño mínimo es de 12 px. Heading 1 (36 px) marca los momentos de llegada (tu nombre en la bienvenida); los títulos de pestañas usan Heading 3 (28 px), y los de tarjetas y secciones, Subtitle 2 (20 px). Los títulos y subtítulos usan un café cálido de la paleta (#916646, el mismo del logo), y el texto, un café más profundo (#6D4D34). Los subtítulos van en negrita. Se eligió el tono más claro que sigue cumpliendo WCAG 2.2: los títulos, y los subtítulos en negrita, cuentan como texto grande y piden 3:1; el café cálido da 4,1:1 o más en todos los fondos. El tono #DA9968 que se consideró solo llegaba a 2,3:1.
 
 **Accesibilidad:** se midió el contraste con WCAG 2.2 y se corrigió sin abandonar la paleta:
 
@@ -248,7 +250,9 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 - Reportes y conversaciones cerradas antes de tiempo.
 
 **Hipótesis de diseño a validar:**
-- ¿Cinco mensajes al día se sienten suficientes o limitantes?
+- ¿Diez mensajes al día se sienten suficientes, limitantes o demasiados?
+- ¿La pantalla de ánimo al entrar se siente como un ritual agradable o como una obligación?
+- ¿Las coincidencias que se revelan cada día ("Hoy descubrieron…") ayudan a seguir la conversación?
 - ¿Siete días es una duración adecuada?
 - ¿Las ideas para romper el hielo ayudan a iniciar la conversación?
 - ¿Ver el ánimo de la otra persona en su avatar aporta cercanía o incomoda?
@@ -287,6 +291,12 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 ## 8. Referencias nuevas para agregar (APA 7)
 
 - Kruger, N., Epley, N., Parker, J., & Ng, Z.-W. (2005). Egocentrism over e-mail: Can we communicate as well as we think? *Journal of Personality and Social Psychology, 89*(6), 925–936. https://doi.org/10.1037/0022-3514.89.6.925
+- Shiffman, S., Stone, A. A., & Hufford, M. R. (2008). Ecological momentary assessment. *Annual Review of Clinical Psychology, 4*, 1–32. https://doi.org/10.1146/annurev.clinpsy.3.022806.091415
+- Peters, D., Calvo, R. A., & Ryan, R. M. (2018). Designing for motivation, engagement and wellbeing in digital experience. *Frontiers in Psychology, 9*, 797. https://doi.org/10.3389/fpsyg.2018.00797
+- Byrne, D. (1971). *The attraction paradigm*. Academic Press.
+- Alves, H. (2018). Sharing rare attitudes attracts. *Personality and Social Psychology Bulletin, 44*(8), 1270–1283. https://doi.org/10.1177/0146167218766861
+- Aron, A., Melinat, E., Aron, E. N., Vallone, R. D., & Bator, R. J. (1997). The experimental generation of interpersonal closeness: A procedure and some preliminary findings. *Personality and Social Psychology Bulletin, 23*(4), 363–377. https://doi.org/10.1177/0146167297234003
+- Norman, D. A. (2004). *Emotional design: Why we love (or hate) everyday things*. Basic Books.
 - Gaver, W. W. (1986). Auditory icons: Using sound in computer interfaces. *Human–Computer Interaction, 2*(2), 167–177. https://doi.org/10.1207/s15327051hci0202_3
 - Blattner, M. M., Sumikawa, D. A., & Greenberg, R. M. (1989). Earcons and icons: Their structure and common design principles. *Human–Computer Interaction, 4*(1), 11–44. https://doi.org/10.1207/s15327051hci0401_1
 - Weiser, M., & Brown, J. S. (1996). Designing calm technology. *PowerGrid Journal, 1*(1).

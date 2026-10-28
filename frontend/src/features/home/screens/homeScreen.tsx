@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import LivingMoodFace from "../../../components/avatar/livingMoodFace";
+import MoodFace from "../../../components/avatar/moodFace";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Avatar from "../../../components/avatar/avatar";
 import Plant from "../../../components/garden/plant";
@@ -20,7 +21,8 @@ import { friendlyError } from "../../../services/api";
 import { matchService } from "../../../services/matchService";
 import { moodService } from "../../../services/moodService";
 import { sessionStore } from "../../../store/session";
-import type { Match } from "../../../types";
+import type { Match, MoodEntry } from "../../../types";
+import { greeting, isToday } from "../../../utils/greeting";
 import EmotionSelector from "../components/emotionSelector";
 
 interface ActionProps {
@@ -35,7 +37,7 @@ function ActionCard({ title, caption, action, icon, onPress }: ActionProps) {
   return (
     <Card tone="green" className="flex-row items-center justify-between">
       <View className="flex-1 pr-3">
-        <Text variant="subtitle2" className="text-secondary-darker">
+        <Text variant="subtitle2" className="text-secondary-dark-hover">
           {title}
         </Text>
         <Text variant="caption1" className="mb-3 text-secondary-dark-active">
@@ -58,20 +60,41 @@ function ActionCard({ title, caption, action, icon, onPress }: ActionProps) {
   );
 }
 
-const greeting = () => {
-  const hour = new Date().getHours();
-  if (hour < 6) return "Buenas noches";
-  if (hour < 12) return "Buenos días";
-  if (hour < 19) return "Buenas tardes";
-  return "Buenas noches";
-};
-
 const SEARCH_POLL_MS = 5000;
 const COLLAPSE_MS = 2200;
 const BREATHE_DELAY_MS = 1100;
 
-const isToday = (iso: string) =>
-  new Date(iso).toDateString() === new Date().toDateString();
+const timeOf = (iso: string) =>
+  new Date(iso).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
+
+// Historial del día: cada vez que la persona actualiza su ánimo queda un registro con la hora.
+function TodayMoods({ entries }: { entries: MoodEntry[] }) {
+  return (
+    <Card tone="white" className="gap-3">
+      <View>
+        <Text variant="subtitle2">Tu día</Text>
+        <Text variant="caption1" className="text-primary-dark-hover">
+          Así te has sentido hoy. Puedes actualizarlo cuando quieras.
+        </Text>
+      </View>
+      {[...entries].reverse().map((entry, i) => (
+        <Animated.View
+          key={entry.createdAt}
+          entering={i === 0 ? FadeIn.duration(300) : undefined}
+          className="flex-row items-center gap-3"
+        >
+          <Text variant="caption1" className="w-12 text-primary-dark-hover">
+            {timeOf(entry.createdAt)}
+          </Text>
+          <MoodFace mood={entry.mood} size={28} />
+          <Text variant="body3">
+            {MOODS.find((m) => m.id === entry.mood)?.label}
+          </Text>
+        </Animated.View>
+      ))}
+    </Card>
+  );
+}
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -81,6 +104,7 @@ export default function HomeScreen() {
   const [justFound, setJustFound] = useState(false);
   const focused = useIsFocused();
   const [mood, setMood] = useState<MoodId | null>(null);
+  const [todayMoods, setTodayMoods] = useState<MoodEntry[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -101,8 +125,9 @@ export default function HomeScreen() {
           ]);
           if (!active) return;
           setMatch(current);
-          const today = history.filter((m) => isToday(m.createdAt)).pop();
-          if (today) setMood(today.mood);
+          const today = history.filter((m) => isToday(m.createdAt));
+          setTodayMoods(today);
+          if (today.length) setMood(today[today.length - 1].mood);
           if (!current) {
             const search = await matchService.searchState();
             if (active) setSearching(search.status === "searching");
@@ -145,7 +170,8 @@ export default function HomeScreen() {
     setError(null);
     if (collapseTimer.current) clearTimeout(collapseTimer.current);
     try {
-      await moodService.save(id);
+      const entry = await moodService.save(id);
+      setTodayMoods((prev) => [...prev, entry]);
       const isLow = id === "fatal" || id === "mal";
       collapseTimer.current = setTimeout(
         () => {
@@ -248,10 +274,10 @@ export default function HomeScreen() {
           variant="outlined"
           size="small"
           fullWidth={false}
-          icon="create-outline"
+          icon="refresh"
           onPress={() => setEditing(true)}
         >
-          Cambiar
+          Actualizar
         </Button>
       </View>
     </Animated.View>
@@ -309,6 +335,7 @@ export default function HomeScreen() {
               icon="flower-outline"
               onPress={() => router.navigate("/(tabs)/garden")}
             />
+            {todayMoods.length > 0 && <TodayMoods entries={todayMoods} />}
           </View>
   );
 
@@ -320,9 +347,9 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="-mx-6">
-            <AppHeader showSettings={false} onScenery />
+            <AppHeader showSettings={false} />
           </View>
-          <Text variant="h4" className="mt-2 text-primary-darker">
+          <Text variant="h4" className="mt-2 text-primary-dark-active">
             {`${greeting()}, ${user?.username ?? ""}`}
           </Text>
           {portrait}

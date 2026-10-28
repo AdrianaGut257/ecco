@@ -4,6 +4,7 @@ from datetime import timedelta
 from sqlalchemy import update
 
 from src.core.time import utcnow
+from src.modules.matches.constants import MESSAGES_PER_DAY
 from src.modules.matches.models import Match, MatchRequest
 
 
@@ -21,11 +22,23 @@ async def travel(db, match_id, days):
 async def paired(client, make_user):
     ana = await make_user("Ana", "ana@ejemplo.com", ["Películas", "Series", "Pop"])
     luis = await make_user("Luis", "luis@ejemplo.com", ["Películas", "Rock", "Jazz"])
-    first = await search(client, ana, ["Pop", "Series"])
+    first = await search(client, ana, ["Películas", "Series"])
     assert first.json()["status"] == "searching"
     second = await search(client, luis, ["Películas"])
     assert second.json()["status"] == "matched"
     return ana, luis, second.json()["match"]
+
+
+async def test_no_match_without_a_shared_theme(client, make_user):
+    ana = await make_user("Ana", "ana@ejemplo.com", ["Películas", "Series", "Pop"])
+    luis = await make_user("Luis", "luis@ejemplo.com", ["Películas", "Rock", "Jazz"])
+    await search(client, ana, ["Series", "Pop"])
+    res = await search(client, luis, ["Rock"])
+    assert res.json()["status"] == "searching"
+    assert (await search(client, ana, ["Películas", "Pop"])).json()["status"] == "searching"
+    both = await search(client, luis, ["Películas", "Rock"])
+    assert both.json()["status"] == "matched"
+    assert both.json()["match"]["hobbies"] == ["Películas"]
 
 
 async def test_first_user_waits_second_user_gets_matched(client, make_user):
@@ -168,7 +181,7 @@ async def test_plant_grows_only_on_days_both_people_write(client, make_user, db)
 
 async def test_daily_message_limit(client, make_user):
     ana, _, match = await paired(client, make_user)
-    for i in range(5):
+    for i in range(MESSAGES_PER_DAY):
         assert (await say(client, ana, match["id"], f"mensaje {i}")).status_code == 201
     current = await client.get(f"/matches/{match['id']}", headers=ana["headers"])
     assert current.json()["messagesLeft"] == 0
@@ -298,7 +311,7 @@ async def test_only_the_partner_can_react(client, make_user):
     assert res.json()["fromMe"] is False
 
     left = (await client.get(f"/matches/{mid}", headers=luis["headers"])).json()["messagesLeft"]
-    assert left == 5
+    assert left == MESSAGES_PER_DAY
 
 
 async def test_polling_returns_messages_whose_reaction_changed(client, make_user):

@@ -122,7 +122,7 @@ export default function DailyGrowthScreen({
           >
             <Text
               variant="subtitle1"
-              className="uppercase tracking-widest text-secondary-darker"
+              className="uppercase tracking-widest text-secondary-dark-hover"
             >
               {dayLabel}
             </Text>

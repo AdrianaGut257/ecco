@@ -279,6 +279,9 @@ async def _try_pair(
         if candidate_user is None or not candidate_user.is_active:
             continue
         shared_hobbies = set(request.hobbies) & set(candidate.hobbies)
+        # Solo se empareja a quienes buscan al menos uno de los mismos temas.
+        if not shared_hobbies:
+            continue
         score = len(shared_hobbies) * 3 + affinity(user, candidate_user)
         key = (score, -candidate.created_at.timestamp())
         if best_key is None or key > best_key:

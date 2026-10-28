@@ -33,7 +33,7 @@ export default function DecisionCard({ match, onDecided }: Props) {
 
   return (
     <Card tone="green" className="gap-3">
-      <Text variant="subtitle2" className="text-secondary-darker">
+      <Text variant="subtitle2" className="text-secondary-dark-hover">
         {`¿Te gustaría seguir en contacto con ${match.partner.username}?`}
       </Text>
       <Text variant="caption1" className="text-secondary-dark-active">

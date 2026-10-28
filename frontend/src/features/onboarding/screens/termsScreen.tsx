@@ -30,7 +30,7 @@ export default function TermsScreen({
         />
         <Text
           variant="h3"
-          className="mt-2 text-center text-primary-dark-active"
+          className="mt-2 text-center"
         >
           Un lugar seguro
         </Text>

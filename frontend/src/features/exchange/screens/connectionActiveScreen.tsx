@@ -26,7 +26,7 @@ export default function ConnectionActiveScreen({ match, onContinue }: Props) {
   return (
     <Scenery>
       <SafeAreaView className="flex-1" edges={["top"]}>
-        <AppHeader showSettings={false} onScenery />
+        <AppHeader showSettings={false} />
         <View className="w-full max-w-[560px] flex-1 justify-center self-center px-7">
           <View className="items-center rounded-card bg-white/90 p-6">
             <View className="flex-row items-end">

@@ -1,6 +1,7 @@
 import pytest
 
 from src.core.moderation import classify
+from src.modules.matches.constants import MESSAGES_PER_DAY
 from tests.test_matches_chat import paired
 
 
@@ -50,7 +51,7 @@ async def test_severe_message_is_blocked_and_not_counted(client, make_user):
     seen = await client.get(f"/matches/{match['id']}/messages", headers=luis["headers"])
     assert seen.json() == []
     current = await client.get(f"/matches/{match['id']}", headers=ana["headers"])
-    assert current.json()["messagesLeft"] == 5
+    assert current.json()["messagesLeft"] == MESSAGES_PER_DAY
 
 
 async def test_mild_message_asks_to_reconsider_then_allows(client, make_user):

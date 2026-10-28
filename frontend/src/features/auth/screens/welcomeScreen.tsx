@@ -1,4 +1,5 @@
 import { Redirect, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import WelcomeSeed from "../../../components/illustrations/welcomeSeed";
@@ -6,11 +7,25 @@ import Container from "../../../components/layout/container";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
 import Wordmark from "../../../components/ui/wordmark";
+import { moodService } from "../../../services/moodService";
+import { moodCheckIn } from "../../../store/moodCheckIn";
 import { sessionStore } from "../../../store/session";
+import { isToday } from "../../../utils/greeting";
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const { user } = sessionStore.use();
+  const [next, setNext] = useState<"/(tabs)/home" | "/checkIn">("/(tabs)/home");
+
+  // La primera vez del día, antes de entrar se pregunta cómo se siente.
+  useEffect(() => {
+    if (!user) return;
+    Promise.all([moodService.history(1), moodCheckIn.skippedToday()])
+      .then(([history, skipped]) => {
+        if (!skipped && !history.some((m) => isToday(m.createdAt))) setNext("/checkIn");
+      })
+      .catch(() => undefined);
+  }, [user]);
 
   if (!user) return <Redirect href="/login" />;
 
@@ -19,7 +34,7 @@ export default function WelcomeScreen() {
       center
       footer={
         <Animated.View entering={FadeIn.delay(1600).duration(400)}>
-          <Button onPress={() => router.replace("/(tabs)/home")}>
+          <Button onPress={() => router.replace(next)}>
             Continuar
           </Button>
         </Animated.View>
