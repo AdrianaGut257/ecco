@@ -7,7 +7,8 @@ export interface OutfitLayer {
   fill?: "main" | "shade" | string;
   stroke?: string;
   // Borde del mismo color para tapar el filo de la prenda de abajo (cuello de la camisa).
-  cover?: boolean;
+  // Borde del mismo color que tapa la orilla de la capa de abajo (true = 1 unidad de grosor).
+  cover?: boolean | number;
 }
 
 export const BACK_HAIR: Record<HairStyle, string> = {
@@ -92,11 +93,12 @@ export const OUTFIT_LAYERS: Record<Outfit, OutfitLayer[]> = {
   ],
   // Raglán: el borde de afuera de cada manga sigue exactamente la curva de la base blanca (es el mismo
   // tramo de curva), así no asoma blanco en las esquinas cuando las manos suben. En el dibujo de la autora
-  // esas esquinas las tapaba la línea del piso.
+  // esas esquinas las tapaba la línea del piso. `cover` hace que la manga sobresalga un poco y tape la
+  // orilla suavizada de la base: si dos capas comparten el borde, se ve una línea clara.
   raglan: [
     { d: "M87.5 131C87.5 131 75 94 69.5 94C64 94 65.75 101 57 101C48.25 101 50.5 94 44.5 94C38.5 94 26.5 131 26.5 131H87.5Z", fill: "#F2F2F2" },
-    { d: "M73.6 131H87.5C87.5 131 79.6 107.62 73.6 98.03Z", fill: "main" },
-    { d: "M40.2 131H26.5C26.5 131 34.08 107.64 40.2 98.04Z", fill: "main" },
+    { d: "M73.6 131H87.5C87.5 131 79.6 107.62 73.6 98.03Z", fill: "main", cover: 1.6 },
+    { d: "M40.2 131H26.5C26.5 131 34.08 107.64 40.2 98.04Z", fill: "main", cover: 1.6 },
   ],
   jersey: [
     { d: "M57 100.91C48.25 100.91 47.5 95 47.5 95C47.5 95 43.5 98 43 99C42.5 100 43.72 110.21 43 116C41.32 124.37 38.5 130.5 38.5 130.5H57H75.5C75.5 130.5 71.92 124.37 71 116C70.36 110.21 71.5 100 71 99C70.5 98 66.5 95 66.5 95C66.5 95 65.75 100.91 57 100.91Z", fill: "#FFFFFF" },

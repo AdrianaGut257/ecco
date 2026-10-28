@@ -74,18 +74,21 @@ function Outfit({ outfit, color }: { outfit: AvatarConfig["outfit"]; color: stri
   const layers = OUTFIT_LAYERS[outfit] ?? OUTFIT_LAYERS.tee;
   return (
     <G>
-      {layers.map((layer, i) =>
-        layer.stroke ? (
-          <Path key={i} d={layer.d} stroke={layer.stroke} strokeWidth={1} fill="none" />
-        ) : (
+      {layers.map((layer, i) => {
+        if (layer.stroke) {
+          return <Path key={i} d={layer.d} stroke={layer.stroke} strokeWidth={1} fill="none" />;
+        }
+        const fill = layer.fill === "main" ? color : layer.fill === "shade" ? shade(color) : layer.fill;
+        const cover = layer.cover === true ? 1 : layer.cover || 0;
+        return (
           <Path
             key={i}
             d={layer.d}
-            fill={layer.fill === "main" ? color : layer.fill === "shade" ? shade(color) : layer.fill}
-            {...(layer.cover ? { stroke: layer.fill, strokeWidth: 1, strokeLinejoin: "round" as const } : {})}
+            fill={fill}
+            {...(cover ? { stroke: fill, strokeWidth: cover, strokeLinejoin: "round" as const } : {})}
           />
-        ),
-      )}
+        );
+      })}
     </G>
   );
 }
