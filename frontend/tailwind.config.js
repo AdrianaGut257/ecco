@@ -10,6 +10,8 @@ module.exports = {
     "./src/hooks/**/*.{js,jsx,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
+  // La app no tiene modo oscuro. Con "media", NativeWind en web lanza "Cannot manually set color scheme" si los estilos cargan después del código.
+  darkMode: "class",
   theme: {
     extend: {
       colors: palette,
