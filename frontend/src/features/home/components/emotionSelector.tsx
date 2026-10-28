@@ -13,6 +13,7 @@ import Animated, {
 } from "react-native-reanimated";
 import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import Text from "../../../components/ui/text";
+import { colors } from "../../../constants/colors";
 import { MOODS, MoodId } from "../../../constants/emotions";
 import { MOOD_SOUND, playSound } from "../../../lib/sound";
 
@@ -136,19 +137,16 @@ function MoodOption({
       accessibilityState={{ selected: active, disabled }}
       className="min-w-[52px] items-center"
     >
+      {/* La cara elegida queda sobre un círculo de su propio color, como en "Tu día". */}
       <Animated.View
-        style={style}
-        className={`rounded-full p-0.5 ${
-          active
-            ? "border-2 border-primary-dark-hover"
-            : "border-2 border-transparent"
-        }`}
+        style={[style, { backgroundColor: active ? `${colors.mood[id]}66` : "transparent" }]}
+        className="rounded-full p-1"
       >
         <LivingMoodFace mood={id} size={46} delay={index * 350} />
       </Animated.View>
       <Text
         variant="caption2"
-        className={`mt-1 ${active ? "text-primary-dark-active" : "text-primary-dark-hover"}`}
+        className={`mt-1 ${active ? "text-primary-darker" : "text-primary-dark-hover"}`}
       >
         {label}
       </Text>

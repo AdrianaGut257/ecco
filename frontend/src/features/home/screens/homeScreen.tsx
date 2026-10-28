@@ -23,6 +23,7 @@ import { sessionStore } from "../../../store/session";
 import type { Match, MoodEntry } from "../../../types";
 import { greeting, isToday } from "../../../utils/greeting";
 import EmotionSelector from "../components/emotionSelector";
+import MoodConfirmSheet from "../components/moodConfirmSheet";
 import TodayMoods from "../components/todayMoods";
 
 interface ActionProps {
@@ -72,6 +73,7 @@ export default function HomeScreen() {
   const [justFound, setJustFound] = useState(false);
   const focused = useIsFocused();
   const [mood, setMood] = useState<MoodId | null>(null);
+  const [pending, setPending] = useState<MoodId | null>(null);
   const [todayMoods, setTodayMoods] = useState<MoodEntry[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -261,7 +263,7 @@ export default function HomeScreen() {
             <Text variant="subtitle2" className="text-center">
               ¿Cómo te sientes hoy?
             </Text>
-            <EmotionSelector value={mood} onSelect={selectMood} disabled={saving} />
+            <EmotionSelector value={pending ?? mood} onSelect={setPending} disabled={saving} />
             <Text
               variant="caption1"
               className="text-center text-primary-dark-hover"
@@ -327,6 +329,14 @@ export default function HomeScreen() {
           </Animated.View>
         </ScrollView>
       </SafeAreaView>
+      <MoodConfirmSheet
+        mood={pending}
+        onCancel={() => setPending(null)}
+        onConfirm={(id) => {
+          setPending(null);
+          selectMood(id);
+        }}
+      />
     </Scenery>
   );
 }

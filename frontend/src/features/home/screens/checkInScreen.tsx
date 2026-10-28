@@ -14,6 +14,7 @@ import { moodCheckIn } from "../../../store/moodCheckIn";
 import { sessionStore } from "../../../store/session";
 import { greeting } from "../../../utils/greeting";
 import EmotionSelector from "../components/emotionSelector";
+import MoodConfirmSheet from "../components/moodConfirmSheet";
 
 const BREATHE_DELAY_MS = 1100;
 
@@ -22,6 +23,7 @@ export default function CheckInScreen() {
   const router = useRouter();
   const { user } = sessionStore.use();
   const [mood, setMood] = useState<MoodId | null>(null);
+  const [pending, setPending] = useState<MoodId | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { width } = useWindowDimensions();
@@ -87,7 +89,7 @@ export default function CheckInScreen() {
               </Text>
             </View>
 
-            <EmotionSelector value={mood} onSelect={choose} disabled={saving} />
+            <EmotionSelector value={pending ?? mood} onSelect={setPending} disabled={saving || !!mood} />
 
             <Text
               variant="caption1"
@@ -131,6 +133,14 @@ export default function CheckInScreen() {
           </Animated.View>
         </ScrollView>
       </SafeAreaView>
+      <MoodConfirmSheet
+        mood={pending}
+        onCancel={() => setPending(null)}
+        onConfirm={(id) => {
+          setPending(null);
+          choose(id);
+        }}
+      />
     </View>
   );
 }

@@ -25,7 +25,7 @@ La aplicación no tiene likes, seguidores, contadores públicos ni rankings. Cad
    3. Elección de intereses (mínimo 3, de un catálogo de 77 en 11 categorías).
    4. "Cuéntanos más": subtemas y ejemplos concretos de cada interés (opcional).
    5. Tres diapositivas que explican cómo funciona la app.
-3. **Ánimo al entrar e Inicio:** la primera vez del día, antes de entrar, una pantalla sobre el paisaje con sol pregunta "¿Cómo te sientes hoy?" (se puede saltar con "Ahora no"). En Inicio, el ánimo se puede actualizar durante el día y la tarjeta "Tu día" muestra el historial de hoy: una cinta con el color de cada registro y una línea de tiempo con la cara, el nombre y la hora (se ven 5 y el resto se desliza). También da acceso a la conversación y al jardín.
+3. **Ánimo al entrar e Inicio:** la primera vez del día, antes de entrar, una pantalla sobre el paisaje con sol pregunta "¿Cómo te sientes hoy?" (se puede saltar con "Ahora no"). Al tocar una cara se pide confirmar ("¿Así te sientes?" · "Sí, guardar" / "Elegir otra"), porque los registros no se pueden borrar (prevención de errores, Nielsen). En Inicio, el ánimo se puede actualizar durante el día y la tarjeta "Tu día" muestra el historial de hoy: una cinta con el color de cada registro y una línea de tiempo con la cara, el nombre y la hora (se ven 5 y el resto se desliza). También da acceso a la conversación y al jardín.
 4. **Buscar a alguien:** se eligen hasta 3 temas de la semana entre los propios intereses, y el sistema busca a la persona más afín.
 5. **Presentación:** "Esta semana conversarás con…" muestra el avatar de la otra persona y lo que tienen en común.
 6. **Conversación de 7 días** con ideas para romper el hielo, el contador de mensajes y la planta.

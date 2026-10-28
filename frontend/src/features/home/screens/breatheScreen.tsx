@@ -21,9 +21,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import MoodFace from "../../../components/avatar/moodFace";
 import Text from "../../../components/ui/text";
+import { colors } from "../../../constants/colors";
 import { MOODS, MoodId } from "../../../constants/emotions";
 import { MOOD_SOUND, playSound } from "../../../lib/sound";
 import { moodService } from "../../../services/moodService";
+import MoodConfirmSheet from "../components/moodConfirmSheet";
 
 type LowMood = "fatal" | "mal";
 type Stage = "intro" | "breathing" | "done";
@@ -110,6 +112,7 @@ export default function BreatheScreen() {
   const [phase, setPhase] = useState<"in" | "out">("in");
   const [cycle, setCycle] = useState(0);
   const [after, setAfter] = useState<MoodId | null>(null);
+  const [pending, setPending] = useState<MoodId | null>(null);
   const open = useSharedValue(0);
   const blow = useSharedValue(0);
   const wave = useSharedValue(0);
@@ -325,7 +328,7 @@ export default function BreatheScreen() {
                 {MOODS.map((m) => (
                   <Pressable
                     key={m.id}
-                    onPress={() => chooseAfter(m.id)}
+                    onPress={() => setPending(m.id)}
                     disabled={after !== null}
                     accessibilityRole="radio"
                     accessibilityLabel={`Ahora me siento ${m.label.toLowerCase()}`}
@@ -333,11 +336,11 @@ export default function BreatheScreen() {
                     className="min-w-[52px] items-center"
                   >
                     <View
-                      className={`rounded-full p-0.5 ${
-                        after === m.id
-                          ? "border-2 border-white"
-                          : "border-2 border-transparent"
-                      }`}
+                      className="rounded-full p-1"
+                      style={{
+                        backgroundColor:
+                          after === m.id || pending === m.id ? `${colors.mood[m.id]}80` : "transparent",
+                      }}
                     >
                       <MoodFace mood={m.id} size={40} />
                     </View>
@@ -372,6 +375,14 @@ export default function BreatheScreen() {
           )}
         </View>
       </SafeAreaView>
+      <MoodConfirmSheet
+        mood={pending}
+        onCancel={() => setPending(null)}
+        onConfirm={(id) => {
+          setPending(null);
+          chooseAfter(id);
+        }}
+      />
     </LinearGradient>
   );
 }
