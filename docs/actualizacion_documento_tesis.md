@@ -86,7 +86,7 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 | ídem | ¿Cómo podríamos medir el éxito en bienestar y no en uso? | Registro diario del ánimo y vista privada "Tu semana". Sin rachas ni notificaciones de enganche. | Feng et al. (2026); Gross (1998); insumo para la prueba piloto. |
 | Mensajes positivos sin métricas | ¿Cómo podríamos sugerir mensajes positivos cuando no se sabe qué decir? | Frases de validación mezcladas en las ideas ("Gracias por quedarte en la conversación"). | Pedido explícito del Usuario 1; Clark, Algoe y Green (2018). |
 | ídem | ¿Cómo podríamos evitar métricas de comparación? | Ningún contador público: el jardín muestra plantas, no números. | Factor 4 del Capítulo 3; límites del alcance. |
-| ídem | ¿Cómo podríamos hacer que la app acompañe en un mal día? | Respuestas empáticas al ánimo y, si es bajo, una **pantalla de respiración guiada** (3 respiraciones lentas, unos 30 s, en el color de la emoción) que se abre antes de seguir y se puede saltar. | Baudon y Jachens (2021): regulación emocional instantánea. |
+| ídem | ¿Cómo podríamos hacer que la app acompañe en un mal día? | Respuestas empáticas al ánimo y, si es bajo, una **pantalla de respiración guiada** (3 respiraciones lentas, unos 30 s, en el color de la emoción) que se abre antes de seguir y se puede saltar. | Eisenstadt et al. (2021): regulación emocional instantánea. |
 
 ### 3.3. Ideas descartadas o pospuestas
 
@@ -314,6 +314,6 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 - Google. (s. f.). *Knowledge Graph Search API*. Google for Developers. https://developers.google.com/knowledge-graph
 - Katsaros, M., Yang, K., & Fratamico, L. (2022). Reconsidering tweets: Intervening during tweet creation decreases offensive content. *Proceedings of the International AAAI Conference on Web and Social Media, 16*, 477–487. https://ojs.aaai.org/index.php/ICWSM/article/view/19308 *[verificar páginas]*
 - W3C. (2023). *Web Content Accessibility Guidelines (WCAG) 2.2*. https://www.w3.org/TR/WCAG22/
-- Baudon, P., & Jachens, L. (2021). Mobile apps promoting emotion regulation, positive mental health, and well-being in the general population: Systematic review and meta-analysis. *JMIR Mental Health, 8*(11), e31170. https://mental.jmir.org/2021/11/e31170 *[verificar DOI]*
+- Eisenstadt, M., Liverpool, S., Infanti, E., Ciuvat, R. M., & Carlsson, C. (2021). Mobile apps that promote emotion regulation, positive mental health, and well-being in the general population: Systematic review and meta-analysis. *JMIR Mental Health, 8*(11), e31170. https://doi.org/10.2196/31170 (ya está en el documento; antes se atribuía por error a "Baudon y Jachens").
 - *Social connection as a key target for youth mental health* (2025). ScienceDirect. https://www.sciencedirect.com/science/article/pii/S2212657025000054 *[completar autores y revista]*
 - Si se usa en la prueba piloto: Brooke, J. (1996). SUS: A "quick and dirty" usability scale. En P. W. Jordan, B. Thomas, B. A. Weerdmeester y I. L. McClelland (Eds.), *Usability evaluation in industry* (pp. 189–194). Taylor & Francis. *[verificar]*
