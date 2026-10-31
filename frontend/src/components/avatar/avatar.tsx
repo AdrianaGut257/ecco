@@ -25,18 +25,19 @@ const EYE = "#2F3432";
 const HEADBAND_COLOR = "#1E9C9A";
 const DEEP_EYE = "#140B07";
 
+// Cabeza, cuello y cuerpo de base/skinTones.svg (primer tono), en el marco del avatar.
 const HEAD =
-  "M91.5 41.5C91.5 64.42 76.05 83 57 83C37.95 83 22.5 64.42 22.5 41.5C22.5 18.58 37.95 0 57 0C76.05 0 91.5 18.58 91.5 41.5Z";
-const TORSO = "M86.5 131H27.5C27.5 131 37.5 92 57 92C76.5 92 86.5 131 86.5 131Z";
+  "M91 41.5C91 64.42 75.78 83 57 83C38.22 83 23 64.42 23 41.5C23 18.58 38.22 0 57 0C75.78 0 91 18.58 91 41.5Z";
+const TORSO = "M88 132H26C26 132 37.17 92 57 92C76.83 92 88 132 88 132Z";
 
 export type EyeShape = "open" | "happy" | "closed";
 
 const FACES: Record<MoodId, { eyes: EyeShape; mouth: string; filled?: boolean }> = {
-  fatal: { eyes: "closed", mouth: "M50.5 58.5C50.5 58.5 52.9 53.5 57 53.5C61.1 53.5 63.5 58.5 63.5 58.5" },
-  mal: { eyes: "open", mouth: "M51 57C51 57 53.5 54.5 57 54.5C60.5 54.5 63 57 63 57" },
-  normal: { eyes: "open", mouth: "M51.5 55.5H62.5" },
-  bien: { eyes: "open", mouth: "M50.5 53C50.5 53 52.89 58 57 58C61.11 58 63.5 53 63.5 53" },
-  feliz: { eyes: "happy", mouth: "M50 52.5C50 52.5 51.5 61 57 61C62.5 61 64 52.5 64 52.5Z", filled: true },
+  fatal: { eyes: "closed", mouth: "M50 58.5C50 58.5 52.6 53.5 57 53.5C61.4 53.5 64 58.5 64 58.5" },
+  mal: { eyes: "open", mouth: "M50.5 57C50.5 57 53.3 54.5 57 54.5C60.7 54.5 63.5 57 63.5 57" },
+  normal: { eyes: "open", mouth: "M51 55.5H63" },
+  bien: { eyes: "open", mouth: "M50 53C50 53 52.58 58 57 58C61.42 58 64 53 64 53" },
+  feliz: { eyes: "happy", mouth: "M49.5 52.5C49.5 52.5 51 61 57 61C63 61 64.5 52.5 64.5 52.5Z", filled: true },
 };
 
 const FRECKLES = [
@@ -52,21 +53,31 @@ function Eyes({ shape, ink }: { shape: EyeShape; ink: string }) {
   if (shape === "open") {
     return (
       <G fill={ink}>
-        <Ellipse cx={46.5} cy={38.5} rx={2} ry={4.5} />
-        <Ellipse cx={67.5} cy={38.5} rx={2} ry={4.5} />
+        <Ellipse cx={46} cy={38.5} rx={2} ry={4.5} />
+        <Ellipse cx={68} cy={38.5} rx={2} ry={4.5} />
       </G>
     );
   }
   const d =
     shape === "happy"
-      ? "M44 40Q46.5 34.5 49 40M65 40Q67.5 34.5 70 40"
-      : "M44 38.5Q46.5 42 49 38.5M65 38.5Q67.5 42 70 38.5";
+      ? "M43.5 40Q46 34.5 48.5 40M65.5 40Q68 34.5 70.5 40"
+      : "M43.5 38.5Q46 42 48.5 38.5M65.5 38.5Q68 42 70.5 38.5";
   return <Path d={d} stroke={ink} strokeWidth={2.2} strokeLinecap="round" fill="none" />;
 }
 
 function shade(hex: string, amount = 0.18) {
   const n = parseInt(hex.slice(1), 16);
   const channel = (shift: number) => Math.round(((n >> shift) & 255) * (1 - amount));
+  return `rgb(${channel(16)}, ${channel(8)}, ${channel(0)})`;
+}
+
+// Capucha de chico: en el dibujo es más clara que las mangas.
+function lighten(hex: string, amount = 0.22) {
+  const n = parseInt(hex.slice(1), 16);
+  const channel = (shift: number) => {
+    const c = (n >> shift) & 255;
+    return Math.round(c + (255 - c) * amount);
+  };
   return `rgb(${channel(16)}, ${channel(8)}, ${channel(0)})`;
 }
 
@@ -78,7 +89,14 @@ function Outfit({ outfit, color }: { outfit: AvatarConfig["outfit"]; color: stri
         if (layer.stroke) {
           return <Path key={i} d={layer.d} stroke={layer.stroke} strokeWidth={1} fill="none" />;
         }
-        const fill = layer.fill === "main" ? color : layer.fill === "shade" ? shade(color) : layer.fill;
+        const fill =
+          layer.fill === "main"
+            ? color
+            : layer.fill === "shade"
+              ? shade(color)
+              : layer.fill === "light"
+                ? lighten(color)
+                : layer.fill;
         const cover = layer.cover === true ? 1 : layer.cover || 0;
         return (
           <Path
@@ -97,7 +115,7 @@ function Earrings({ style }: { style: AvatarConfig["earrings"] }) {
   if (style === "none") return null;
   const [left, right] = EARRING_PATHS[style];
   if (style === "studs") {
-    const stud = { stroke: "#AA7137", strokeWidth: 2, strokeLinecap: "square", fill: "none" } as const;
+    const stud = { stroke: "#6D4116", strokeWidth: 2, strokeLinecap: "square", fill: "none" } as const;
     return (
       <G>
         <Path d={left} {...stud} />
@@ -105,7 +123,7 @@ function Earrings({ style }: { style: AvatarConfig["earrings"] }) {
       </G>
     );
   }
-  const fill = style === "hoops" ? "#FECD9C" : "#D5A26E";
+  const fill = style === "hoops" ? "#FECD9C" : "#A67D54";
   return (
     <G fill={fill}>
       <Path d={left} />
@@ -143,7 +161,7 @@ export function UnderArt({ a, id }: { a: AvatarLook; id: string }) {
     <>
       <Defs>
         <ClipPath id={`hair${id}`}>
-          <Rect x={-24} y={-24} width={162} height={155} />
+          <Rect x={-24} y={-24} width={162} height={156} />
         </ClipPath>
       </Defs>
       {a.back ? (
@@ -151,13 +169,13 @@ export function UnderArt({ a, id }: { a: AvatarLook; id: string }) {
           <Path d={a.back} fill={a.hair} />
         </G>
       ) : null}
-      <Rect x={47.5} y={80} width={19} height={23} fill={a.tone.base} />
+      <Rect x={47} y={80} width={20} height={23} fill={a.tone.base} />
       <Path d={EARS.right} fill={a.tone.base} />
       <Path d={EARS.rightInner} fill={a.tone.blush} />
       <Path d={EARS.left} fill={a.tone.base} />
       <Path d={EARS.leftInner} fill={a.tone.blush} />
       <Path d={HEAD} fill={a.tone.base} />
-      <Ellipse cx={57} cy={41.5} rx={34} ry={41} stroke={a.tone.line} strokeWidth={1} fill="none" />
+      <Ellipse cx={57} cy={41.5} rx={33.5} ry={41} stroke={a.tone.line} strokeWidth={1} fill="none" />
       {a.look.freckles && (
         <G fill={a.tone.mouth} opacity={0.45}>
           {FRECKLES.map(([cx, cy]) => (
@@ -165,8 +183,8 @@ export function UnderArt({ a, id }: { a: AvatarLook; id: string }) {
           ))}
         </G>
       )}
-      <Ellipse cx={42.64} cy={46.25} rx={4.5} ry={2.23} transform="rotate(11.92 42.64 46.25)" fill={a.tone.blush} />
-      <Ellipse cx={71.36} cy={46.25} rx={4.5} ry={2.23} transform="rotate(-11.92 71.36 46.25)" fill={a.tone.blush} />
+      <Ellipse cx={43.4} cy={46} rx={4.08} ry={2.14} transform="rotate(12.7 43.4 46)" fill={a.tone.blush} />
+      <Ellipse cx={70.6} cy={46} rx={4.08} ry={2.14} transform="rotate(-12.7 70.6 46)" fill={a.tone.blush} />
     </>
   );
 }
@@ -207,7 +225,7 @@ export function OverArt({ a, mouth }: { a: AvatarLook; mouth?: { mouth: string; 
 // Las manos son las bolitas redondas de abajo: no hay brazos.
 export function HandArt({ a, side }: { a: AvatarLook; side: "left" | "right" }) {
   const { x, y } = HANDS[side];
-  return <Ellipse cx={x} cy={y} rx={9.5} ry={10} fill={a.tone.base} />;
+  return <Circle cx={x} cy={y} r={10} fill={a.tone.base} />;
 }
 
 export const SMILE = FACES.feliz;

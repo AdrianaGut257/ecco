@@ -205,6 +205,7 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - La planta (ilustración propia en 7 etapas) crece desde la tierra con un pequeño rebote cada vez que sube de etapa, con el aviso "¡Su planta creció!". Al abrir el jardín o la conversación, recorre sus etapas desde la semilla como un time-lapse.
 - Animación de búsqueda con mensajes que cambian.
 - El avatar "salta" al personalizarlo.
+- **Avatares redibujados:** la ropa llega hasta la línea del piso y cubre todo el ancho del cuerpo, y las manos son círculos. Así, cuando el avatar vivo sube las manos para saludar o celebrar, no asoman esquinas de piel ni de la prenda de abajo (principio de "dibujo sólido", Thomas y Johnston, 1981).
 - **Avatar vivo:** respira, parpadea y se mece según su ánimo. Saluda inclinando un poco el cuerpo y moviendo la bolita de la mano a la altura del hombro (no tiene brazos), celebra con las dos manos a la altura de los hombros y un rebote, y asiente. En Inicio saluda al entrar y al tocarlo, reacciona al ánimo que guardas (celebra, saluda o asiente) y cada tanto mira a los lados o se estira; con ánimo bajo respira más lento y no sonríe a la fuerza. La otra persona te saluda al encontrarse y celebra cuando florecen (efecto de persona, Lester et al., 1997).
 - La cara elegida se agranda al registrar el ánimo.
 - Respiración guiada a pantalla completa cuando el ánimo es "Mal" o "Fatal": un círculo crece al inhalar (4 s) y se encoge al exhalar (6 s), con un halo translúcido detrás que se expande todavía más. En el centro, la cara de la emoción respira con la persona: cierra los ojos, se estira al inhalar y sopla con la boca en "o" al exhalar mientras ondas suaves se alejan del círculo y se desvanecen, durante 3 respiraciones, con fondo en el color de la emoción. Busca que la persona no entre a la conversación desde el malestar (regulación previa; Gross, 1998). Al final pregunta, opcionalmente, cómo se siente ahora: sirve como medición antes/después.
@@ -303,6 +304,7 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 - Norman, D. A. (2004). *Emotional design: Why we love (or hate) everyday things*. Basic Books.
 - Gaver, W. W. (1986). Auditory icons: Using sound in computer interfaces. *Human–Computer Interaction, 2*(2), 167–177. https://doi.org/10.1207/s15327051hci0202_3
 - Blattner, M. M., Sumikawa, D. A., & Greenberg, R. M. (1989). Earcons and icons: Their structure and common design principles. *Human–Computer Interaction, 4*(1), 11–44. https://doi.org/10.1207/s15327051hci0401_1
+- Thomas, F., & Johnston, O. (1981). *Disney animation: The illusion of life*. Abbeville Press.
 - Weiser, M., & Brown, J. S. (1996). Designing calm technology. *PowerGrid Journal, 1*(1).
 - Derks, D., Fischer, A. H., & Bos, A. E. R. (2008). The role of emotion in computer-mediated communication: A review. *Computers in Human Behavior, 24*(3), 766–785. https://doi.org/10.1016/j.chb.2007.04.004
 - Gross, J. J. (1998). The emerging field of emotion regulation: An integrative review. *Review of General Psychology, 2*(3), 271–299. https://doi.org/10.1037/1089-2680.2.3.271
