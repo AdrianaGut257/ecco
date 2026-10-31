@@ -105,6 +105,7 @@ def figures(name):
 
 girl1 = figures("girl/stylesGirl1.svg")
 girl2 = figures("girl/stylesGirls2.svg")
+girl3 = figures("girl/stylesGirls3.svg")
 boy1 = figures("boy/stylesBoy1.svg")
 boy2 = figures("boy/stylesBoy2.svg")
 boy3 = figures("boy/stylesBoy3.svg")
@@ -119,21 +120,10 @@ def hair(fig, i):
     return by_fill(fig, HAIR)[i]
 
 
-# La hoja 3 de chicas (estilos con capas, flequillo recto, diadema y capucha) solo está en PNG:
-# esas piezas se conservan de la versión anterior de parts.ts.
-previous = OUT.read_text(encoding="utf-8")
-
-
-def kept(record, key):
-    block = re.search(r"export const " + record + r"[^{]*\{(.*?)\n\};", previous, re.S).group(1)
-    return re.search(r"^\s+" + key + r': "([^"]*)",', block, re.M).group(1)
-
-
 back = {
     "flip": hair(girl1[0], 0), "bob": hair(girl1[1], 0), "long": hair(girl1[2], 0), "wavy": hair(girl1[3], 0),
     "halfBun": hair(girl2[0], 0), "bun": hair(girl2[1], 0), "pixie": hair(girl2[2], 0), "curly": hair(girl2[3], 0),
-    "layered": kept("BACK_HAIR", "layered"), "blunt": kept("BACK_HAIR", "blunt"),
-    "straight": kept("BACK_HAIR", "straight"), "volume": kept("BACK_HAIR", "volume"),
+    "layered": hair(girl3[0], 0), "blunt": hair(girl3[1], 0), "straight": hair(girl3[2], 0), "volume": hair(girl3[3], 0),
     "classic": hair(boy1[0], 0), "sidePart": hair(boy1[1], 0), "fringe": hair(boy1[2], 0), "shortWaves": hair(boy1[3], 0),
     "spiky": hair(boy2[1], 0), "shaggy": hair(boy2[2], 0), "curtains": hair(boy2[3], 0),
     "quiff": hair(boy3[2], 0), "afro": hair(boy3[3], 0), "bald": "",
@@ -141,7 +131,7 @@ back = {
 front = {
     "lock": hair(girl1[0], 1), "swept": hair(girl1[1], 1), "wispy": hair(girl1[2], 1), "middle": hair(girl1[3], 1),
     "full": hair(girl2[0], 1), "short": hair(girl2[2], 1),
-    "straightCut": kept("FRONT_HAIR", "straightCut"), "choppy": kept("FRONT_HAIR", "choppy"), "sweep": kept("FRONT_HAIR", "sweep"),
+    "straightCut": hair(girl3[1], 1), "choppy": hair(girl3[2], 1), "sweep": hair(girl3[3], 1),
     "tuft": hair(boy1[0], 1), "parted": hair(boy1[1], 1), "messyFringe": hair(boy1[2], 1), "waves": hair(boy1[3], 1),
     "spiky": hair(boy2[1], 1), "shaggy": hair(boy2[2], 1), "curtains": hair(boy2[3], 1),
     "sideFringe": hair(boy3[1], 1), "quiff": hair(boy3[2], 1), "curls": hair(boy3[3], 1),
@@ -152,9 +142,11 @@ beard = {
 }
 
 # Color de la prenda: "main" toma el color elegido, "shade" uno más oscuro y "light" uno más claro.
-MAIN = {"#214185", "#19224F", "#027E7E", "#FD4D6B", "#438EAF", "#2A2686", "#A5A4FF"}
-SKIP = {HAIR, BEARD, GLASSES}
+MAIN = {"#214185", "#19224F", "#027E7E", "#FD4D6B", "#438EAF", "#2A2686", "#A5A4FF", "#9B3D35"}
+SHADE = "#80332D"
 HOOD_LIGHT = "#4C4AB0"
+HEADBAND = "#1E9C9A"
+SKIP = {HAIR, BEARD, GLASSES, HEADBAND}
 
 
 def clothes(fig):
@@ -169,7 +161,7 @@ def clothes(fig):
             layers.append({"d": e["d"], "stroke": "#FFFFFF" if e["stroke"] == "white" else e["stroke"]})
             continue
         fill = e["fill"]
-        layer = {"d": e["d"], "fill": "main" if fill in MAIN else "light" if fill == HOOD_LIGHT else "#FFFFFF" if fill == "white" else fill}
+        layer = {"d": e["d"], "fill": "main" if fill in MAIN else "shade" if fill == SHADE else "light" if fill == HOOD_LIGHT else "#FFFFFF" if fill == "white" else fill}
         if fill == "#CBE1E5":
             layer["cover"] = True
         layers.append(layer)
@@ -183,13 +175,8 @@ outfits = {
 }
 for sleeve in outfits["raglan"][1:]:
     sleeve["cover"] = 1.6
-# Capucha de chica (girl/stylesGirls3, figura 4): la misma capucha sobre una polera blanca con escote en V,
-# con la capucha más oscura que las mangas, como en su dibujo.
-hood = [dict(l) for l in outfits["hoodie"][1:]]
-for l in hood:
-    if l.get("fill") == "light":
-        l["fill"] = "shade"
-outfits["hoodieLight"] = [{"d": outfits["vneck"][0]["d"], "fill": "#FFFFFF"}] + hood
+# Capucha de chica: polera blanca debajo y la capucha más oscura que las mangas.
+outfits["hoodieLight"] = clothes(girl3[3])
 
 def strokes(fig):
     return [e["d"] for e in fig["els"] if e.get("stroke") == GLASSES]
@@ -250,7 +237,7 @@ for k, ls in outfits.items():
     out += f"  {k}: [\n" + "".join(f"    {layer_ts(l)},\n" for l in ls) + "  ],\n"
 out += "};\n\n"
 out += record("GLASSES_PATHS", 'Exclude<Glasses, "none">', glasses)
-headband = re.search(r'export const HEADBAND = "([^"]*)"', previous).group(1)
+headband = by_fill(girl3[2], HEADBAND)[0]
 out += f'export const HEADBAND = "{headband}";\n\n'
 out += "export const EARS = {\n" + "".join(f'  {k}: "{v}",\n' for k, v in ears.items()) + "};\n\n"
 out += 'export const EARRING_PATHS: Record<Exclude<Earrings, "none">, [string, string]> = {\n'
