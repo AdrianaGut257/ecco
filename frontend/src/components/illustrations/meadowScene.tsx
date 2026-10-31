@@ -134,7 +134,7 @@ export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow"
   return (
     <View
       pointerEvents="none"
-      style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
+      style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, overflow: "hidden" }}
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
     >
       <LinearGradient

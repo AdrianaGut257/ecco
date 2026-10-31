@@ -175,7 +175,7 @@ Cuando alguien busca, el sistema compara a esa persona con quienes están buscan
   - El detector reconoce disfraces comunes: letras separadas ("p u t a"), números por letras ("h1j0"), signos entre letras, tildes y letras alargadas ("tooonto"). Además evita falsos positivos con palabras inocentes, como "zorra" o "perra" referidas a animales.
   - También se rechazan nombres de usuario ofensivos.
   - **Limitación:** es una lista de expresiones, no un modelo que entienda el contexto. Puede no detectar ofensas nuevas o muy sutiles; un clasificador automático queda como trabajo futuro.
-- Los acuerdos aclaran que **ECHOOM no reemplaza la ayuda profesional**.
+- **Acuerdos de convivencia** (pantalla "Un lugar seguro" y Ajustes), en cinco apartados: cómo funciona (hasta 3 temas, 7 días, 10 mensajes diarios, reacciones que no cuentan, la planta, 3 días para decidir y nunca se repite una pareja); tu cuenta (16 años o más, correo confirmado con código, contraseña cifrada); cuidado mutuo (moderación antes de enviar, sin nombres ofensivos, salir o reportar sin que la otra persona vea el motivo); privacidad (sin fotos; historial de ánimo privado salvo las últimas 24 h en el avatar; qué datos se guardan y que no se usan para publicidad; lo que se escribe en los gustos se consulta a Google sin nombre ni correo; no compartir datos personales) y un espacio que acompaña (**ECHOOM no reemplaza la ayuda profesional**). La casilla dice "Leí y acepto estos acuerdos, incluido el uso de mis datos".
 
 ### 4.6. Sistema de diseño (IHC Afectiva y UX/UI emocional)
 

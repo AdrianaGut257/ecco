@@ -98,7 +98,7 @@ export default function Scenery({ children }: Props) {
   return (
     <View className="flex-1 bg-white" onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       {width > 0 && (
-        <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, width, height }}>
+        <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, width, height, overflow: "hidden" }}>
           <View style={{ position: "absolute", top: 0, left: 0, width, height: HOME_SKY.h * u, backgroundColor: HOME_SKY.color }} />
           <Layer
             xml={XML.cloudLeft}

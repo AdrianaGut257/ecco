@@ -64,7 +64,7 @@ export default function TermsScreen({
           )}
         </View>
         <Text variant="caption1" className="flex-1 text-primary-dark-active">
-          Acepto estos acuerdos, los Términos y la Política de Privacidad.
+          Leí y acepto estos acuerdos, incluido el uso de mis datos.
         </Text>
       </Pressable>
     </Container>
