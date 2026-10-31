@@ -28,8 +28,9 @@ mountain = pick(lambda e: 'fill="#B2D37A"' in e)[0]
 tree = pick(lambda e: "<ellipse" in e or 'fill="black"' in e)
 grass = sorted(pick(lambda e: 'fill="#80B24A"' in e), key=first_x)
 clouds = sorted(pick(lambda e: 'fill="white"' in e), key=first_x)
-strip = pick(lambda e: 'fill="#B1CB56"' in e)[0]
+strip = "".join(e for e in elements if 'fill="#B1CB56"' in e)
 ground = pick(lambda e: "url(#paint0" in e)[0]
+top = min(float(re.search(r'd="M[-\d.]+ ([\d.]+)', e).group(1)) for e in [ground] + ([strip] if strip else []))
 
 # La montaña se extiende 45 unidades más allá de cada borde: al moverse de lado no deja huecos.
 edge = "0 102.317V244H495V132.856"
@@ -55,7 +56,7 @@ out = [
     "// Cielo: rectángulo del dibujo (los primeros 245 de alto).",
     'export const HOME_SKY = { color: "#FFFCCE", h: 245 };',
     "// Donde empieza el suelo: tapa la base de la montaña y de la hierba.",
-    "export const HOME_GROUND = 215;",
+    f"export const HOME_GROUND = {top:g};",
     "// Base de cada mata de hierba (desde ahí se mece).",
     "export const HOME_GRASS_ROOTS = { left: { x: 64, y: 221 }, right: { x: 430, y: 224 } };",
     "",
