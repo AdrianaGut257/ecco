@@ -5,7 +5,7 @@ import Animated, { FadeIn, FadeInDown, LinearTransition } from "react-native-rea
 import MoodFace from "../../../components/avatar/moodFace";
 import Card from "../../../components/ui/card";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors, withAlpha } from "../../../theme";
 import { MOODS } from "../../../constants/emotions";
 import type { MoodEntry } from "../../../types";
 
@@ -20,6 +20,7 @@ const labelOf = (entry: MoodEntry) => MOODS.find((m) => m.id === entry.mood)?.la
 // Historial privado del día: una cinta con los colores de cada registro y, debajo,
 // una línea de tiempo (el más reciente arriba). Muestra 5 y el resto se ve deslizando.
 export default function TodayMoods({ entries }: { entries: MoodEntry[] }) {
+  const c = useColors();
   const [atEnd, setAtEnd] = useState(false);
   const latestFirst = [...entries].reverse();
   const scrolls = entries.length > VISIBLE;
@@ -44,7 +45,7 @@ export default function TodayMoods({ entries }: { entries: MoodEntry[] }) {
             entering={FadeIn.duration(400)}
             layout={LinearTransition.duration(300)}
             className="h-2.5 flex-1 rounded-chip"
-            style={{ backgroundColor: colors.mood[entry.mood] }}
+            style={{ backgroundColor: c.mood[entry.mood] }}
           />
         ))}
       </View>
@@ -80,10 +81,10 @@ export default function TodayMoods({ entries }: { entries: MoodEntry[] }) {
                       style={{ top: ROW / 2, bottom: -ROW / 2 }}
                     />
                   )}
-                  <View className="h-10 w-10 overflow-hidden rounded-full bg-white">
+                  <View className="h-10 w-10 overflow-hidden rounded-full bg-surface">
                     <View
                       className="h-full w-full items-center justify-center"
-                      style={{ backgroundColor: `${colors.mood[entry.mood]}55` }}
+                      style={{ backgroundColor: `${c.mood[entry.mood]}55` }}
                     >
                       <MoodFace mood={entry.mood} size={28} />
                     </View>
@@ -108,7 +109,7 @@ export default function TodayMoods({ entries }: { entries: MoodEntry[] }) {
         {scrolls && !atEnd && (
           <LinearGradient
             pointerEvents="none"
-            colors={["rgba(255,255,255,0)", "#FFFFFF"]}
+            colors={[withAlpha(c.surface, 0), c.surface]}
             style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 36 }}
           />
         )}

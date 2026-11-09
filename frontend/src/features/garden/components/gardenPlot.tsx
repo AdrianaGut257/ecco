@@ -13,7 +13,7 @@ import Animated, {
 import Avatar from "../../../components/avatar/avatar";
 import Plant from "../../../components/garden/plant";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { STAGE_NAMES } from "../../../constants/plant";
 import type { GardenEntry, MatchStatus } from "../../../types";
 
@@ -47,6 +47,7 @@ export default function GardenPlot({
   size: number;
   onPress: () => void;
 }) {
+  const c = useColors();
   const reduced = useReducedMotion();
   const sway = useSharedValue(0);
   const bloomed = entry.status === "bloomed";
@@ -83,7 +84,7 @@ export default function GardenPlot({
       >
         <View style={{ height: LABEL_H }} className="items-center justify-end">
           <View
-            className="flex-row items-center gap-2 rounded-2xl bg-white px-2.5 py-1.5"
+            className="flex-row items-center gap-2 rounded-2xl bg-surface px-2.5 py-1.5"
             style={{
               shadowColor: "#4C5B2C",
               shadowOpacity: 0.16,
@@ -94,7 +95,7 @@ export default function GardenPlot({
           >
             <View
               className="overflow-hidden rounded-full border-2"
-              style={{ borderColor: bloomed ? colors.mood.bien : colors.secondary["light-active"] }}
+              style={{ borderColor: bloomed ? c.mood.bien : c.secondary["light-active"] }}
             >
               <Avatar config={entry.partnerAvatar} size={26} />
             </View>
@@ -107,7 +108,7 @@ export default function GardenPlot({
               </Text>
             </View>
           </View>
-          <View className="-mt-1.5 h-3 w-3 rotate-45 bg-white" />
+          <View className="-mt-1.5 h-3 w-3 rotate-45 bg-surface" />
         </View>
 
         <View style={{ width: size, height: size, marginTop: -size * (PLANT_TOP[entry.stage] ?? 0) + 2 }}>

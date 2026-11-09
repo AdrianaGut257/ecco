@@ -17,6 +17,8 @@ export interface Tone {
   bg: string;
   border: string;
   ink: string;
+  // Versión para el modo oscuro: fondo profundo, borde medio y tinta clara (también pasan WCAG AA).
+  dark: { bg: string; border: string; ink: string };
 }
 
 // Tintes claros con texto oscuro: todos pasan WCAG AA sobre su fondo.
@@ -29,6 +31,7 @@ export const TONES: Tone[] = [
     bg: "#FCEEEE",
     border: "#F7CBCC",
     ink: "#893437",
+    dark: { bg: "#3A2224", border: "#8E4A4F", ink: "#F6B8BB" },
   },
   {
     id: "joke",
@@ -38,6 +41,7 @@ export const TONES: Tone[] = [
     bg: "#FFF8DA",
     border: "#F7D86A",
     ink: "#6D4D34",
+    dark: { bg: "#352E19", border: "#857034", ink: "#F3DC8A" },
   },
   {
     id: "cheer",
@@ -47,6 +51,7 @@ export const TONES: Tone[] = [
     bg: "#F2F7E7",
     border: "#C9DE9E",
     ink: "#4C5B2C",
+    dark: { bg: "#26311C", border: "#5E7A36", ink: "#CFE3A3" },
   },
   {
     id: "curious",
@@ -56,6 +61,7 @@ export const TONES: Tone[] = [
     bg: "#F1F8FB",
     border: "#BFE2EF",
     ink: "#485F68",
+    dark: { bg: "#1D2D35", border: "#4C7486", ink: "#B9DDEB" },
   },
   {
     id: "thanks",
@@ -65,6 +71,7 @@ export const TONES: Tone[] = [
     bg: "#FDF2EA",
     border: "#F5C7A3",
     ink: "#6D4D34",
+    dark: { bg: "#382A20", border: "#8A5E3E", ink: "#F4C6A0" },
   },
   {
     id: "serious",
@@ -74,10 +81,14 @@ export const TONES: Tone[] = [
     bg: "#F1EEFB",
     border: "#D3CBF3",
     ink: "#4B3F8A",
+    dark: { bg: "#2A2540", border: "#6B5EA8", ink: "#CFC6F5" },
   },
 ];
 
 export const toneById = (id?: ToneId | null) => TONES.find((t) => t.id === id);
+
+// El tono con los colores del modo activo.
+export const themedTone = (tone: Tone, dark: boolean): Tone => (dark ? { ...tone, ...tone.dark } : tone);
 
 export const REACTIONS: { id: MoodId; label: string }[] = [
   { id: "feliz", label: "Me alegra" },

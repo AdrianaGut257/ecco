@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 import Button from "./button";
 import Text from "./text";
 
@@ -19,10 +19,11 @@ export default function EmptyState({
   actionLabel,
   onAction,
 }: Props) {
+  const c = useColors();
   return (
     <View className="items-center px-6 py-10">
       <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-primary-light-active">
-        <Ionicons name={icon} size={36} color={colors.primary["dark-hover"]} />
+        <Ionicons name={icon} size={36} color={c.primary["dark-hover"]} />
       </View>
       <Text variant="subtitle2" className="mb-1 text-center">
         {title}

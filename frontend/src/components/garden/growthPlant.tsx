@@ -8,7 +8,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 import { PLANT_STAGES, STAGE_NAMES } from "../../constants/plant";
 import { playSound } from "../../lib/sound";
 import Plant from "./plant";
@@ -20,6 +20,7 @@ interface Props {
 }
 
 export default function GrowthPlant({ stage, size = 170, onGrow }: Props) {
+  const c = useColors();
   const previous = useRef(stage);
   const sparkle = useSharedValue(0);
 
@@ -50,7 +51,7 @@ export default function GrowthPlant({ stage, size = 170, onGrow }: Props) {
     >
       <Plant stage={stage} size={size * 0.8} growIn />
       <Animated.View style={sparkleStyle} className="absolute right-1 top-1">
-        <Ionicons name="sparkles" size={size * 0.2} color={colors.mood.bien} />
+        <Ionicons name="sparkles" size={size * 0.2} color={c.mood.bien} />
       </Animated.View>
     </View>
   );

@@ -75,7 +75,7 @@ export default function OnboardingSlidesScreen({
                 size={18}
                 color={colors.error["dark-active"]}
               />
-              <Text variant="caption1" className="flex-1 text-error-dark-active">
+              <Text variant="caption1" className="flex-1" style={{ color: colors.error["dark-active"] }}>
                 {error}
               </Text>
             </View>

@@ -9,13 +9,14 @@ import Button from "../../../components/ui/button";
 import CodeInput from "../../../components/ui/codeInput";
 import Input from "../../../components/ui/input";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { friendlyError } from "../../../services/api";
 import { authService } from "../../../services/authService";
 import { PASSWORD_RULES, isStrongPassword } from "../../../utils/validation";
 import { RESEND_SECONDS, useCooldown } from "./verifyEmailScreen";
 
 export default function ResetPasswordScreen() {
+  const c = useColors();
   const router = useRouter();
   const { email = "" } = useLocalSearchParams<{ email?: string }>();
   const [code, setCode] = useState("");
@@ -70,7 +71,7 @@ export default function ResetPasswordScreen() {
           <Ionicons
             name="checkmark-circle"
             size={64}
-            color={colors.secondary["dark-hover"]}
+            color={c.secondary["dark-hover"]}
           />
           <Text variant="h3" className="mt-3 text-center">
             Listo, ya puedes entrar
@@ -147,7 +148,7 @@ export default function ResetPasswordScreen() {
                 name={passed ? "checkmark-circle" : "ellipse-outline"}
                 size={14}
                 color={
-                  passed ? colors.secondary["dark-hover"] : colors.primary["dark-hover"]
+                  passed ? c.secondary["dark-hover"] : c.primary["dark-hover"]
                 }
               />
               <Text

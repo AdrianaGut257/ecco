@@ -10,9 +10,9 @@ import Animated, {
 } from "react-native-reanimated";
 import MoodFace from "../../../components/avatar/moodFace";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors, useIsDark } from "../../../theme";
 import type { MoodId } from "../../../constants/emotions";
-import { reactionLabel, toneById, type ToneId } from "../../../constants/tones";
+import { reactionLabel, themedTone, toneById, type ToneId } from "../../../constants/tones";
 import type { ChatMessage } from "../../../types";
 import ReactionBar from "./reactionBar";
 import ToneTag from "./toneTag";
@@ -50,8 +50,11 @@ export default function MessageBubble({
   onReact,
   onRetry,
 }: Props) {
+  const c = useColors();
   const mine = message.fromMe;
-  const tone = toneById(message.tone);
+  const dark = useIsDark();
+  const rawTone = toneById(message.tone);
+  const tone = rawTone && themedTone(rawTone, dark);
   const reacting = canReact && !mine && message.status === "sent";
   const label = reactionLabel(message.reaction);
 
@@ -83,7 +86,7 @@ export default function MessageBubble({
               className={`px-4 py-3 ${
                 mine
                   ? "rounded-[20px] rounded-br-md bg-secondary-light-active"
-                  : "rounded-[20px] rounded-bl-md bg-white"
+                  : "rounded-[20px] rounded-bl-md bg-surface"
               } ${message.status === "sending" ? "opacity-60" : ""}`}
               style={
                 tone
@@ -113,12 +116,12 @@ export default function MessageBubble({
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel="Reaccionar al mensaje"
-              className="mb-1 h-8 w-8 items-center justify-center rounded-full bg-white/80 active:bg-primary-light-active"
+              className="mb-1 h-8 w-8 items-center justify-center rounded-full bg-surface/80 active:bg-primary-light-active"
             >
               <Ionicons
                 name={picking ? "close" : "happy-outline"}
                 size={18}
-                color={colors.primary["dark-hover"]}
+                color={c.primary["dark-hover"]}
               />
             </Pressable>
           )}
@@ -139,7 +142,7 @@ export default function MessageBubble({
           >
             <Animated.View
               entering={ZoomIn.springify().damping(10)}
-              className="flex-row items-center gap-1 rounded-full border border-primary-light-active bg-white py-0.5 pl-0.5 pr-2"
+              className="flex-row items-center gap-1 rounded-full border border-primary-light-active bg-surface py-0.5 pl-0.5 pr-2"
             >
               <MoodFace mood={message.reaction} size={22} />
               <Text variant="caption2" className="tracking-normal text-primary-dark-hover">
@@ -164,7 +167,7 @@ export default function MessageBubble({
           accessibilityRole="button"
           className="mt-1 self-end"
         >
-          <Text variant="caption2" className="text-error-normal-active">
+          <Text variant="caption2" className="text-error-text">
             No se envió. Toca para reintentar
           </Text>
         </Pressable>

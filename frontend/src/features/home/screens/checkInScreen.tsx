@@ -12,6 +12,7 @@ import { friendlyError } from "../../../services/api";
 import { moodService } from "../../../services/moodService";
 import { moodCheckIn } from "../../../store/moodCheckIn";
 import { sessionStore } from "../../../store/session";
+import { useColors, withAlpha } from "../../../theme";
 import { greeting } from "../../../utils/greeting";
 import EmotionSelector from "../components/emotionSelector";
 import MoodConfirmSheet from "../components/moodConfirmSheet";
@@ -20,6 +21,7 @@ const BREATHE_DELAY_MS = 1100;
 
 // Primera pantalla del día: antes de entrar, la persona cuenta cómo se siente sobre el paisaje con sol.
 export default function CheckInScreen() {
+  const c = useColors();
   const router = useRouter();
   const { user } = sessionStore.use();
   const [mood, setMood] = useState<MoodId | null>(null);
@@ -72,7 +74,7 @@ export default function CheckInScreen() {
             entering={FadeInDown.duration(500)}
             className="w-full max-w-[420px] gap-4 rounded-card px-5 pb-6 pt-7"
             style={{
-              backgroundColor: "rgba(255, 255, 255, 0.92)",
+              backgroundColor: withAlpha(c.surface, 0.92),
               shadowColor: "#4C5B2C",
               shadowOpacity: 0.12,
               shadowRadius: 16,

@@ -17,14 +17,14 @@ import Button from "../../../components/ui/button";
 import Sheet from "../../../components/ui/sheet";
 import PressableScale from "../../../components/ui/pressableScale";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors, useIsDark } from "../../../theme";
 import { MOODS } from "../../../constants/emotions";
 import {
   CHAT_DAYS,
   MESSAGES_PER_DAY,
   STAGE_NAMES,
 } from "../../../constants/plant";
-import { TONES, toneById, type ToneId } from "../../../constants/tones";
+import { TONES, themedTone, toneById, type ToneId } from "../../../constants/tones";
 import type { ChatMessage, Match } from "../../../types";
 import DecisionCard from "../components/decisionCard";
 import MessageBubble from "../components/messageBubble";
@@ -60,6 +60,8 @@ export default function ConversationScreen({
   onNewConnection,
   onGarden,
 }: Props) {
+  const c = useColors();
+  const dark = useIsDark();
   const {
     match,
     setMatch,
@@ -190,7 +192,7 @@ export default function ConversationScreen({
             </Button>
           </View>
         ) : (
-          <ActivityIndicator color={colors.primary["dark-hover"]} />
+          <ActivityIndicator color={c.primary["dark-hover"]} />
         )}
       </Container>
     );
@@ -203,7 +205,8 @@ export default function ConversationScreen({
     ((match.status === "active" || deciding) && match.day <= CHAT_DAYS);
   const canSend = match.canWrite && text.trim().length > 0;
   const canReact = !ended;
-  const chosenTone = toneById(tone);
+  const rawTone = toneById(tone);
+  const chosenTone = rawTone && themedTone(rawTone, dark);
 
   const submit = async (value = text, confirmed = false, withTone = tone) => {
     if (!match.canWrite || !value.trim()) return;
@@ -275,7 +278,7 @@ export default function ConversationScreen({
                       accessibilityRole="button"
                       accessibilityLabel="Cerrar los tonos"
                     >
-                      <Ionicons name="close" size={18} color={colors.primary["dark-hover"]} />
+                      <Ionicons name="close" size={18} color={c.primary["dark-hover"]} />
                     </Pressable>
                   </View>
                   <ScrollView
@@ -285,7 +288,8 @@ export default function ConversationScreen({
                     contentContainerClassName="gap-2"
                     accessibilityRole="radiogroup"
                   >
-                    {TONES.map((t) => {
+                    {TONES.map((raw) => {
+                      const t = themedTone(raw, dark);
                       const selected = tone === t.id;
                       return (
                         <PressableScale
@@ -333,7 +337,7 @@ export default function ConversationScreen({
                       <Ionicons
                         name="refresh"
                         size={14}
-                        color={colors.primary["dark-hover"]}
+                        color={c.primary["dark-hover"]}
                       />
                       <Text variant="caption1" className="text-primary-dark-hover">
                         Otras
@@ -394,7 +398,7 @@ export default function ConversationScreen({
               )}
 
               {match.canWrite ? (
-                <View className="flex-row items-end rounded-[24px] border border-primary-light-active bg-white px-1.5">
+                <View className="flex-row items-end rounded-[24px] border border-primary-light-active bg-surface px-1.5">
                   <PressableScale
                     scaleTo={0.88}
                     onPress={() => setToneOpen((open) => !open)}
@@ -403,13 +407,13 @@ export default function ConversationScreen({
                     accessibilityState={{ expanded: toneOpen }}
                     className="my-1.5 mr-1 h-10 w-10 items-center justify-center rounded-full"
                     style={{
-                      backgroundColor: chosenTone ? chosenTone.bg : colors.primary.light,
+                      backgroundColor: chosenTone ? chosenTone.bg : c.primary.light,
                     }}
                   >
                     <Ionicons
                       name={chosenTone ? chosenTone.icon : "color-palette-outline"}
                       size={20}
-                      color={chosenTone ? chosenTone.ink : colors.primary["dark-hover"]}
+                      color={chosenTone ? chosenTone.ink : c.primary["dark-hover"]}
                     />
                   </PressableScale>
                   <TextInput
@@ -423,7 +427,7 @@ export default function ConversationScreen({
                         ? `Escribe algo ${chosenTone.hint}…`
                         : "Escribe algo que cuente…"
                     }
-                    placeholderTextColor={colors.primary["dark-hover"]}
+                    placeholderTextColor={c.primary["dark-hover"]}
                     maxLength={MAX_MESSAGE_LENGTH}
                     multiline
                     accessibilityLabel="Escribe un mensaje"
@@ -446,7 +450,7 @@ export default function ConversationScreen({
                     <Ionicons
                       name="send"
                       size={17}
-                      color={canSend ? colors.primary.darker : colors.primary.normal}
+                      color={canSend ? c.primary.ink : c.primary.normal}
                     />
                   </PressableScale>
                 </View>
@@ -455,7 +459,7 @@ export default function ConversationScreen({
                   <Ionicons
                     name="moon-outline"
                     size={18}
-                    color={colors.secondary["dark-active"]}
+                    color={c.secondary["dark-active"]}
                   />
                   <Text variant="caption1" className="flex-1 text-secondary-dark-active">
                     Ya compartiste tus mensajes de hoy. Mañana podrás escribir
@@ -490,7 +494,7 @@ export default function ConversationScreen({
           accessibilityLabel="Volver"
           className="h-10 w-10 items-center justify-center"
         >
-          <Ionicons name="arrow-back" size={22} color={colors.primary["dark-hover"]} />
+          <Ionicons name="arrow-back" size={22} color={c.primary["dark-hover"]} />
         </Pressable>
         <Avatar
           config={match.partner.avatar}
@@ -517,7 +521,7 @@ export default function ConversationScreen({
             <Ionicons
               name="shield-checkmark-outline"
               size={22}
-              color={colors.primary["dark-hover"]}
+              color={c.primary["dark-hover"]}
             />
           </Pressable>
         )}
@@ -575,7 +579,7 @@ export default function ConversationScreen({
 
       {loading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={colors.primary["dark-hover"]} />
+          <ActivityIndicator color={c.primary["dark-hover"]} />
         </View>
       ) : (
         <FlatList
@@ -658,7 +662,7 @@ export default function ConversationScreen({
         message={review?.message}
         onClose={() => setReview(null)}
       >
-        <View className="mb-4 rounded-field bg-white px-4 py-3">
+        <View className="mb-4 rounded-field bg-surface px-4 py-3">
           <Text variant="body3" className="text-primary-dark-active">
             {review?.text}
           </Text>

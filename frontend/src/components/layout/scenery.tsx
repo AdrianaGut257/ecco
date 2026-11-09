@@ -12,7 +12,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
+import palette from "../../constants/palette";
 import { tabBarBackdrop } from "../../store/tabBarBackdrop";
+import { themeSettings } from "../../store/themeSettings";
+import { useIsDark } from "../../theme";
+import { NIGHT_HOME_SKY, Stars, toNight } from "../illustrations/night";
 import { HOME_GRASS_ROOTS, HOME_GROUND, HOME_PARTS, HOME_SKY, HOME_VIEW } from "./homeParts";
 
 interface Props {
@@ -37,6 +41,19 @@ const XML = {
   grassRight: layer(HOME_PARTS.grassRight),
   ground: layer(HOME_PARTS.ground),
 };
+
+// De noche, el suelo se funde con el fondo oscuro de la app en vez del blanco.
+const NIGHT_PAGE = palette.dark.primary.light;
+const XML_NIGHT: typeof XML = {
+  cloudLeft: layer(toNight(HOME_PARTS.cloudLeft)),
+  cloudRight: layer(toNight(HOME_PARTS.cloudRight)),
+  mountain: layer(toNight(HOME_PARTS.mountain)),
+  tree: layer(toNight(HOME_PARTS.tree)),
+  grassLeft: layer(toNight(HOME_PARTS.grassLeft)),
+  grassRight: layer(toNight(HOME_PARTS.grassRight)),
+  ground: layer(toNight(HOME_PARTS.ground, { white: NIGHT_PAGE })),
+};
+const pageColor = (dark: boolean) => (dark ? NIGHT_PAGE : "#FFFFFF");
 
 const pivot = (px: number, py: number, inner: object[]): object[] => {
   "worklet";
@@ -69,15 +86,18 @@ function Layer({ xml, width, height, t, motion = still }: {
 
 // Fondo de Inicio (assets/svg/background/background3.svg) animado: las nubes van y vienen,
 // la montaña de arriba se mueve despacio y la hierba se mece desde su base. El árbol y el suelo
-// quedan quietos. Respeta "reducir movimiento".
+// quedan quietos. En modo oscuro es de noche: cielo azul noche, colores nocturnos y algunas estrellas.
+// Respeta "reducir movimiento".
 export default function Scenery({ children }: Props) {
   const [width, setWidth] = useState(0);
+  const dark = useIsDark();
+  const xml = dark ? XML_NIGHT : XML;
   const reduced = useReducedMotion();
   const t = useSharedValue(0);
 
   useFocusEffect(
     useCallback(() => {
-      tabBarBackdrop.set("#FFFFFF");
+      tabBarBackdrop.set(pageColor(themeSettings.isDark()));
       return tabBarBackdrop.reset;
     }, []),
   );
@@ -96,12 +116,13 @@ export default function Scenery({ children }: Props) {
   const right = at(HOME_GRASS_ROOTS.right.x, HOME_GRASS_ROOTS.right.y);
 
   return (
-    <View className="flex-1 bg-white" onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+    <View className="flex-1" style={{ backgroundColor: pageColor(dark) }} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       {width > 0 && (
         <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, width, height, overflow: "hidden" }}>
-          <View style={{ position: "absolute", top: 0, left: 0, width, height: HOME_SKY.h * u, backgroundColor: HOME_SKY.color }} />
+          <View style={{ position: "absolute", top: 0, left: 0, width, height: HOME_SKY.h * u, backgroundColor: dark ? NIGHT_HOME_SKY : HOME_SKY.color }} />
+          {dark && <Stars top={90 * u} width={width} height={115 * u} count={10} />}
           <Layer
-            xml={XML.cloudLeft}
+            xml={xml.cloudLeft}
             width={width}
             height={height}
             t={t}
@@ -114,7 +135,7 @@ export default function Scenery({ children }: Props) {
             }}
           />
           <Layer
-            xml={XML.cloudRight}
+            xml={xml.cloudRight}
             width={width}
             height={height}
             t={t}
@@ -128,7 +149,7 @@ export default function Scenery({ children }: Props) {
           />
           {/* Montaña de arriba: se mueve poco; su base queda tapada por el suelo. */}
           <Layer
-            xml={XML.mountain}
+            xml={xml.mountain}
             width={width}
             height={height}
             t={t}
@@ -140,9 +161,9 @@ export default function Scenery({ children }: Props) {
               ]);
             }}
           />
-          <Layer xml={XML.tree} width={width} height={height} t={t} />
+          <Layer xml={xml.tree} width={width} height={height} t={t} />
           <Layer
-            xml={XML.grassLeft}
+            xml={xml.grassLeft}
             width={width}
             height={height}
             t={t}
@@ -155,7 +176,7 @@ export default function Scenery({ children }: Props) {
             }}
           />
           <Layer
-            xml={XML.grassRight}
+            xml={xml.grassRight}
             width={width}
             height={height}
             t={t}
@@ -167,7 +188,7 @@ export default function Scenery({ children }: Props) {
               ]);
             }}
           />
-          <Layer xml={XML.ground} width={width} height={height} t={t} />
+          <Layer xml={xml.ground} width={width} height={height} t={t} />
         </View>
       )}
       {children}

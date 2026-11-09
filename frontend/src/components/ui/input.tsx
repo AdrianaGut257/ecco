@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { forwardRef, useState } from "react";
 import { Pressable, TextInput, TextInputProps, View } from "react-native";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 import type { IconName } from "./button";
 import Text from "./text";
 
@@ -28,6 +28,7 @@ const Input = forwardRef<TextInput, Props>(function Input(
   },
   ref,
 ) {
+  const c = useColors();
   const [hidden, setHidden] = useState(true);
   const [focused, setFocused] = useState(false);
 
@@ -48,12 +49,12 @@ const Input = forwardRef<TextInput, Props>(function Input(
         </Text>
       )}
       <View
-        className={`flex-row items-center rounded-field border bg-white px-4 ${border}`}
+        className={`flex-row items-center rounded-field border bg-surface px-4 ${border}`}
       >
         <TextInput
           ref={ref}
           secureTextEntry={secure && hidden}
-          placeholderTextColor={colors.primary["dark-hover"]}
+          placeholderTextColor={c.primary["dark-hover"]}
           accessibilityLabel={label}
           onFocus={(e) => {
             setFocused(true);
@@ -79,7 +80,7 @@ const Input = forwardRef<TextInput, Props>(function Input(
             <Ionicons
               name={hidden ? "eye-off-outline" : "eye-outline"}
               size={20}
-              color={colors.primary["normal-hover"]}
+              color={c.primary["normal-hover"]}
             />
           </Pressable>
         ) : (
@@ -87,7 +88,7 @@ const Input = forwardRef<TextInput, Props>(function Input(
             <Ionicons
               name={rightIcon}
               size={20}
-              color={colors.primary["normal-hover"]}
+              color={c.primary["normal-hover"]}
             />
           )
         )}
@@ -95,7 +96,7 @@ const Input = forwardRef<TextInput, Props>(function Input(
       {error ? (
         <Text
           variant="caption1"
-          className="text-error-normal-active mt-1.5 ml-1"
+          className="text-error-text mt-1.5 ml-1"
         >
           {error}
         </Text>

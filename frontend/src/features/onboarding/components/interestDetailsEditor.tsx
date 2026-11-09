@@ -3,7 +3,7 @@ import { View } from "react-native";
 import Card from "../../../components/ui/card";
 import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { GENERAL, taxonomyFor } from "../../../constants/interestTaxonomy";
 import { INTEREST_CATEGORIES } from "../../../constants/interests";
 import type { InterestDetails } from "../../../types";
@@ -43,6 +43,7 @@ function Items({
 }
 
 export default function InterestDetailsEditor({ interests, value, onChange }: Props) {
+  const c = useColors();
   const update = (interest: string, buckets: Record<string, string[]>) => {
     const next = { ...value };
     if (Object.keys(buckets).length === 0) delete next[interest];
@@ -78,7 +79,7 @@ export default function InterestDetailsEditor({ interests, value, onChange }: Pr
               <Ionicons
                 name={iconFor(interest)}
                 size={22}
-                color={colors.primary["dark-hover"]}
+                color={c.primary["dark-hover"]}
               />
               <Text
                 variant="subtitle2"
@@ -107,7 +108,7 @@ export default function InterestDetailsEditor({ interests, value, onChange }: Pr
             )}
 
             {chosen.map((sub) => (
-              <View key={sub} className="rounded-field bg-white/70 p-3">
+              <View key={sub} className="rounded-field bg-surface/70 p-3">
                 <Text variant="body3" className="mb-2 text-primary-dark-active">
                   {sub}
                 </Text>

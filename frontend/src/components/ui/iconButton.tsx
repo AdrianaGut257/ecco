@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { PressableProps } from "react-native";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 import type { IconName } from "./button";
 import PressableScale from "./pressableScale";
 
@@ -39,6 +39,7 @@ export default function IconButton({
   className = "",
   ...rest
 }: Props) {
+  const c = useColors();
   const filled = variant === "filled";
   return (
     <PressableScale
@@ -56,7 +57,7 @@ export default function IconButton({
       <Ionicons
         name={icon}
         size={size * 0.5}
-        color={filled ? colors[tone].darker : colors[tone]["dark-hover"]}
+        color={filled ? c[tone].ink : c[tone]["dark-hover"]}
       />
     </PressableScale>
   );

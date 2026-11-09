@@ -8,9 +8,9 @@ import Plant from "../../../components/garden/plant";
 import Button from "../../../components/ui/button";
 import Sheet from "../../../components/ui/sheet";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors, useIsDark } from "../../../theme";
 import { CHAT_DAYS, STAGE_NAMES } from "../../../constants/plant";
-import { reactionLabel, toneById } from "../../../constants/tones";
+import { reactionLabel, themedTone, toneById } from "../../../constants/tones";
 import type { GardenEntry, GardenMemory } from "../../../types";
 import { allDiscoveries } from "../../exchange/discoveries";
 
@@ -35,10 +35,11 @@ function Section({ icon, title, children, delay }: {
   children: ReactNode;
   delay: number;
 }) {
+  const c = useColors();
   return (
     <Animated.View entering={FadeInDown.delay(delay).duration(400)} className="gap-2">
       <View className="flex-row items-center gap-1.5">
-        <Ionicons name={icon} size={16} color={colors.primary["dark-hover"]} />
+        <Ionicons name={icon} size={16} color={c.primary["dark-hover"]} />
         <Text variant="caption2" className="uppercase tracking-wider text-primary-dark-hover">
           {title}
         </Text>
@@ -50,8 +51,11 @@ function Section({ icon, title, children, delay }: {
 
 // Postal de una conversación: lo que descubrieron, lo que se regalaron y cómo empezó. Sin cantidades.
 export default function MemorySheet({ entry, memory, error, onClose, onOpenChat }: Props) {
+  const c = useColors();
   const discoveries = memory ? allDiscoveries(memory).slice(0, 3) : [];
-  const tone = toneById(memory?.tone);
+  const dark = useIsDark();
+  const rawTone = toneById(memory?.tone);
+  const tone = rawTone && themedTone(rawTone, dark);
   const bloomed = entry?.status === "bloomed";
   const active = entry?.status === "active" || entry?.status === "deciding";
 
@@ -66,7 +70,7 @@ export default function MemorySheet({ entry, memory, error, onClose, onOpenChat 
         <ScrollView style={{ maxHeight: 520 }} showsVerticalScrollIndicator={false}>
           <View
             className="mb-5 flex-row items-center gap-4 rounded-card border border-secondary-light-active p-4"
-            style={{ backgroundColor: bloomed ? colors.secondary["light-active"] : colors.white }}
+            style={{ backgroundColor: bloomed ? c.secondary["light-active"] : c.surface }}
           >
             <Plant stage={entry.stage} size={92} growIn />
             <View className="flex-1 gap-1.5">
@@ -85,7 +89,7 @@ export default function MemorySheet({ entry, memory, error, onClose, onOpenChat 
           </View>
 
           {!memory && !error && (
-            <ActivityIndicator className="my-6" color={colors.primary["dark-hover"]} />
+            <ActivityIndicator className="my-6" color={c.primary["dark-hover"]} />
           )}
           {error && (
             <Text variant="body3" className="my-4 text-center text-primary-dark-hover">
@@ -149,7 +153,7 @@ export default function MemorySheet({ entry, memory, error, onClose, onOpenChat 
 
               {memory.firstMessage && (
                 <Section icon="chatbubble-outline" title="Así empezó" delay={360}>
-                  <View className="rounded-card rounded-tl-md bg-white px-4 py-3">
+                  <View className="rounded-card rounded-tl-md bg-surface px-4 py-3">
                     <Text variant="body3" className="text-primary-dark-active">
                       {`“${memory.firstMessage.text}”`}
                     </Text>

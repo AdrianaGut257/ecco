@@ -4,7 +4,7 @@ import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import Button from "../../../components/ui/button";
 import Sheet from "../../../components/ui/sheet";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { MOODS, MoodId } from "../../../constants/emotions";
 
 interface Props {
@@ -17,6 +17,7 @@ interface Props {
 // Confirma el ánimo antes de guardarlo: los registros no se pueden borrar, así que un toque
 // por error no debería quedar en el historial.
 export default function MoodConfirmSheet({ mood, onConfirm, onCancel }: Props) {
+  const c = useColors();
   // Conserva el último ánimo mientras la hoja se cierra, para que no se vacíe durante la animación.
   const [shown, setShown] = useState<MoodId | null>(mood);
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function MoodConfirmSheet({ mood, onConfirm, onCancel }: Props) {
         <View className="gap-4">
           <View
             className="flex-row items-center gap-4 rounded-card p-4"
-            style={{ backgroundColor: `${colors.mood[shown]}33` }}
+            style={{ backgroundColor: `${c.mood[shown]}33` }}
           >
             <LivingMoodFace mood={shown} size={64} />
             <View className="flex-1">

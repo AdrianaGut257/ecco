@@ -21,7 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import MoodFace from "../../../components/avatar/moodFace";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { MOODS, MoodId } from "../../../constants/emotions";
 import { MOOD_SOUND, playSound } from "../../../lib/sound";
 import { moodService } from "../../../services/moodService";
@@ -103,6 +103,7 @@ const THEMES: Record<
 const ease = Easing.inOut(Easing.sin);
 
 export default function BreatheScreen() {
+  const c = useColors();
   const router = useRouter();
   const reduced = useReducedMotion();
   const params = useLocalSearchParams<{ mood?: string }>();
@@ -339,7 +340,7 @@ export default function BreatheScreen() {
                       className="rounded-full p-1"
                       style={{
                         backgroundColor:
-                          after === m.id || pending === m.id ? `${colors.mood[m.id]}80` : "transparent",
+                          after === m.id || pending === m.id ? `${c.mood[m.id]}80` : "transparent",
                       }}
                     >
                       <MoodFace mood={m.id} size={40} />

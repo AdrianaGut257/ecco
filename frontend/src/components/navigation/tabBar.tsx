@@ -11,8 +11,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
-import { colors } from "../../constants/colors";
 import { tabBarBackdrop } from "../../store/tabBarBackdrop";
+import { useColors } from "../../theme";
 import PressableScale from "../ui/pressableScale";
 import Text from "../ui/text";
 
@@ -41,8 +41,6 @@ const DIP = 10;
 const PROTRUDE = BUTTON / 2 - DIP;
 const NOTCH = BUTTON / 2 + 6;
 const SHOULDER = 12;
-const FILL = colors.primary.light;
-const EDGE = colors.primary["light-active"];
 
 // Borde superior de la barra, con la muesca en el centro donde se apoya el botón de Conversar.
 function topEdge(width: number) {
@@ -65,6 +63,7 @@ function topEdge(width: number) {
 // El ícono da un saltito al quedar activo.
 function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
   const reduced = useReducedMotion();
+  const c = useColors();
   const pop = useSharedValue(1);
   useEffect(() => {
     if (!focused || reduced) return;
@@ -80,7 +79,7 @@ function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
         name={name}
         size={22}
         color={
-          focused ? colors.primary["dark-active"] : colors.primary["dark-hover"]
+          focused ? c.primary["dark-active"] : c.primary["dark-hover"]
         }
       />
     </Animated.View>
@@ -89,7 +88,9 @@ function TabIcon({ name, focused }: { name: IconName; focused: boolean }) {
 
 export default function TabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const { color: backdrop } = tabBarBackdrop.use();
+  const c = useColors();
+  const { color } = tabBarBackdrop.use();
+  const backdrop = color ?? c.primary.light;
   const [width, setWidth] = useState(0);
   const currentName = state.routes[state.index]?.name;
   const bottom = Math.max(insets.bottom, 8);
@@ -151,11 +152,11 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         >
           <Path
             d={`${topEdge(width)} L${width} ${height} L0 ${height}Z`}
-            fill={FILL}
+            fill={c.primary.light}
           />
           <Path
             d={topEdge(width)}
-            stroke={EDGE}
+            stroke={c.primary["light-active"]}
             strokeWidth={1.5}
             fill="none"
           />
@@ -191,7 +192,7 @@ export default function TabBar({ state, navigation }: BottomTabBarProps) {
         <Ionicons
           name="chatbubble-ellipses"
           size={28}
-          color={colors.secondary.darker}
+          color={c.secondary.ink}
         />
       </PressableScale>
     </View>

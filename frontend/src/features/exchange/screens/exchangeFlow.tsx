@@ -5,7 +5,7 @@ import AppHeader from "../../../components/layout/appHeader";
 import Container from "../../../components/layout/container";
 import Banner from "../../../components/ui/banner";
 import Button from "../../../components/ui/button";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { friendlyError } from "../../../services/api";
 import { matchService } from "../../../services/matchService";
 import type { Match } from "../../../types";
@@ -25,6 +25,7 @@ type Step =
   | { name: "chat"; match: Match };
 
 export default function ExchangeFlow() {
+  const c = useColors();
   const router = useRouter();
   const [step, setStep] = useState<Step>({ name: "loading" });
 
@@ -63,7 +64,7 @@ export default function ExchangeFlow() {
     case "loading":
       return (
         <Container center>
-          <ActivityIndicator color={colors.primary["dark-hover"]} />
+          <ActivityIndicator color={c.primary["dark-hover"]} />
         </Container>
       );
     case "error":

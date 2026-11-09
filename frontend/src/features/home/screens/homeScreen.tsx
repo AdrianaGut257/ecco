@@ -14,7 +14,7 @@ import Banner from "../../../components/ui/banner";
 import Button from "../../../components/ui/button";
 import Card from "../../../components/ui/card";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { MOOD_REPLIES, MOODS, MoodId } from "../../../constants/emotions";
 import { friendlyError } from "../../../services/api";
 import { matchService } from "../../../services/matchService";
@@ -35,6 +35,7 @@ interface ActionProps {
 }
 
 function ActionCard({ title, caption, action, icon, onPress }: ActionProps) {
+  const c = useColors();
   return (
     <Card tone="green" className="flex-row items-center justify-between">
       <View className="flex-1 pr-3">
@@ -54,8 +55,8 @@ function ActionCard({ title, caption, action, icon, onPress }: ActionProps) {
           {action}
         </Button>
       </View>
-      <View className="h-14 w-14 items-center justify-center rounded-full bg-white/70">
-        <Ionicons name={icon} size={26} color={colors.secondary["dark-active"]} />
+      <View className="h-14 w-14 items-center justify-center rounded-full bg-surface/70">
+        <Ionicons name={icon} size={26} color={c.secondary["dark-active"]} />
       </View>
     </Card>
   );
@@ -232,7 +233,7 @@ export default function HomeScreen() {
       key="summary"
       entering={FadeIn.duration(350)}
       exiting={FadeOut.duration(150)}
-      className="gap-2 rounded-card bg-white/90 p-4"
+      className="gap-2 rounded-card bg-surface/90 p-4"
     >
       <View className="flex-row items-center gap-3">
         <LivingMoodFace mood={mood} size={44} />
@@ -277,7 +278,7 @@ export default function HomeScreen() {
             key="selector"
             entering={FadeIn.duration(350)}
             exiting={FadeOut.duration(150)}
-            className="gap-3 rounded-card bg-white/90 p-4"
+            className="gap-3 rounded-card bg-surface/90 p-4"
           >
             <Text variant="subtitle2" className="text-center">
               ¿Cómo te sientes hoy?

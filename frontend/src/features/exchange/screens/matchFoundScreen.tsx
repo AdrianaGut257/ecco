@@ -9,7 +9,7 @@ import Button from "../../../components/ui/button";
 import Card from "../../../components/ui/card";
 import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { CHAT_DAYS, MESSAGES_PER_DAY } from "../../../constants/plant";
 import { playSound } from "../../../lib/sound";
 import type { Match } from "../../../types";
@@ -20,6 +20,7 @@ interface Props {
 }
 
 export default function MatchFoundScreen({ match, onContinue }: Props) {
+  const c = useColors();
   useEffect(() => {
     playSound("match");
   }, []);
@@ -78,7 +79,7 @@ export default function MatchFoundScreen({ match, onContinue }: Props) {
                       <Ionicons
                         name="sparkles"
                         size={16}
-                        color={colors.secondary["dark-active"]}
+                        color={c.secondary["dark-active"]}
                       />
                       <Text variant="body3" className="text-secondary-darker">
                         ¡Coinciden en algo muy suyo!
@@ -128,7 +129,7 @@ export default function MatchFoundScreen({ match, onContinue }: Props) {
             <Ionicons
               name="leaf-outline"
               size={20}
-              color={colors.tertiary["dark-active"]}
+              color={c.tertiary["dark-active"]}
             />
             <Text variant="caption1" className="flex-1 text-tertiary-dark-active">
               {`Tienen ${CHAT_DAYS} días y ${MESSAGES_PER_DAY} mensajes al día cada uno. Sin prisa: lo importante es que cada mensaje cuente. Si algo no se siente bien, puedes salir o reportar desde el menú de la conversación.`}

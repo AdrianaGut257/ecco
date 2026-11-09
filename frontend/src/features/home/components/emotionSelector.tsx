@@ -13,7 +13,7 @@ import Animated, {
 } from "react-native-reanimated";
 import LivingMoodFace from "../../../components/avatar/livingMoodFace";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { MOODS, MoodId } from "../../../constants/emotions";
 import { MOOD_SOUND, playSound } from "../../../lib/sound";
 
@@ -40,6 +40,7 @@ function MoodOption({
   disabled?: boolean;
   onSelect: (id: MoodId) => void;
 }) {
+  const c = useColors();
   const reduced = useReducedMotion();
   const enter = useSharedValue(reduced ? 1 : 0);
   const lift = useSharedValue(0);
@@ -139,7 +140,7 @@ function MoodOption({
     >
       {/* La cara elegida queda sobre un círculo de su propio color, como en "Tu día". */}
       <Animated.View
-        style={[style, { backgroundColor: active ? `${colors.mood[id]}66` : "transparent" }]}
+        style={[style, { backgroundColor: active ? `${c.mood[id]}66` : "transparent" }]}
         className="rounded-full p-1"
       >
         <LivingMoodFace mood={id} size={46} delay={index * 350} />

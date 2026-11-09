@@ -30,7 +30,7 @@ export default function Sheet({
     >
       <View className="flex-1 justify-end">
         <Pressable
-          className="absolute inset-0 bg-primary-darker/40"
+          className="absolute inset-0 bg-scrim/40"
           onPress={onClose}
           accessibilityLabel="Cerrar"
           accessibilityRole="button"

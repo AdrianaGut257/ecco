@@ -15,9 +15,10 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { colors } from "../constants/colors";
 import { authService } from "../services/authService";
 import { sessionStore } from "../store/session";
+import { themeSettings } from "../store/themeSettings";
+import { ThemeRoot, useColors } from "../theme";
 import "../global.css";
 import "../lib/nativewindInterop";
 
@@ -25,6 +26,8 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const { ready } = sessionStore.use();
+  const { loaded: themeLoaded } = themeSettings.use();
+  const c = useColors();
   const [fontsLoaded, fontError] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
@@ -40,7 +43,7 @@ export default function RootLayout() {
     authService.restoreSession();
   }, []);
 
-  const loaded = (fontsLoaded || !!fontError) && ready;
+  const loaded = (fontsLoaded || !!fontError) && ready && themeLoaded;
 
   useEffect(() => {
     if (loaded) SplashScreen.hideAsync();
@@ -49,12 +52,14 @@ export default function RootLayout() {
   if (!loaded) return null;
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        animation: "fade",
-        contentStyle: { backgroundColor: colors.primary.light },
-      }}
-    />
+    <ThemeRoot>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: "fade",
+          contentStyle: { backgroundColor: c.primary.light },
+        }}
+      />
+    </ThemeRoot>
   );
 }

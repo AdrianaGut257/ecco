@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { CHAT_DAYS } from "../../../constants/plant";
 import type { Discovery } from "../discoveries";
 
@@ -14,6 +14,7 @@ interface Props {
 
 // Separador de cada día del chat; si hay una coincidencia para ese día, se revela debajo.
 export default function DaySeparator({ day, discovery, today = false }: Props) {
+  const c = useColors();
   const lead = today ? "Hoy descubrieron" : "Descubrieron";
   return (
     <View className="my-2 items-center gap-2">
@@ -31,7 +32,7 @@ export default function DaySeparator({ day, discovery, today = false }: Props) {
           className="max-w-[300px] flex-row items-center gap-3 rounded-card border border-secondary-light-active bg-secondary-light px-4 py-3"
         >
           <View className="h-9 w-9 items-center justify-center rounded-full bg-secondary-light-active">
-            <Ionicons name="sparkles" size={18} color={colors.secondary["dark-active"]} />
+            <Ionicons name="sparkles" size={18} color={c.secondary["dark-active"]} />
           </View>
           <View className="flex-1">
             <Text variant="caption2" className="text-secondary-dark-active">

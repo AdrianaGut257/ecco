@@ -31,6 +31,7 @@ import {
   TOP_BY_KIND,
 } from "../../../constants/avatar";
 import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import type { AvatarConfig, Swatch } from "../../../types";
 
 type Tab = "face" | "hair" | "style";
@@ -129,7 +130,7 @@ function Swatches<K extends string>({
                   <Ionicons
                     name="checkmark"
                     size={20}
-                    color={colors.primary.darker}
+                    color={colors.primary.ink}
                   />
                 )}
               </View>
@@ -203,7 +204,7 @@ function Looks<T extends string>({
               accessibilityLabel={o.label}
               className={`items-center rounded-card px-0.5 py-1.5 ${
                 active
-                  ? "border-[3px] border-primary-dark-hover bg-white"
+                  ? "border-[3px] border-primary-dark-hover bg-surface"
                   : "border border-primary-light-active"
               }`}
             >
@@ -224,6 +225,7 @@ function Looks<T extends string>({
 }
 
 export default function AvatarCustomizer({ value, onChange }: Props) {
+  const c = useColors();
   const [tab, setTab] = useState<Tab>("face");
   const [gesture, setGesture] = useState<{ type: AvatarGesture; key: number } | null>(null);
   const pop = useSharedValue(1);
@@ -288,7 +290,7 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
           hitSlop={8}
           className="mt-3 min-h-[40px] flex-row items-center gap-1.5 rounded-chip bg-tertiary-light-active px-4 py-2"
         >
-          <Ionicons name="shuffle" size={16} color={colors.tertiary.darker} />
+          <Ionicons name="shuffle" size={16} color={c.tertiary.darker} />
           <Text variant="button2" className="text-tertiary-darker">
             Sorpréndeme
           </Text>
@@ -322,7 +324,7 @@ export default function AvatarCustomizer({ value, onChange }: Props) {
               accessibilityRole="tab"
               accessibilityState={{ selected: active }}
               className={`min-h-[40px] flex-1 items-center justify-center rounded-chip ${
-                active ? "bg-white" : ""
+                active ? "bg-surface" : ""
               }`}
             >
               <Text

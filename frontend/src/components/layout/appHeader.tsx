@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 import Wordmark from "../ui/wordmark";
 
 interface Props {
@@ -16,7 +16,7 @@ export default function AppHeader({
   showSettings = true,
 }: Props) {
   const router = useRouter();
-  const tint = colors.primary["dark-hover"];
+  const tint = useColors().primary["dark-hover"];
 
   const goBack = () => {
     if (onBack) return onBack();

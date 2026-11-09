@@ -5,7 +5,7 @@ import Button from "../../../components/ui/button";
 import Chip from "../../../components/ui/chip";
 import Sheet from "../../../components/ui/sheet";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { friendlyError } from "../../../services/api";
 import { matchService } from "../../../services/matchService";
 import type { ReportReason } from "../../../types";
@@ -33,6 +33,7 @@ export default function SafetySheet({
   onClose,
   onEnded,
 }: Props) {
+  const c = useColors();
   const [mode, setMode] = useState<"menu" | "report" | "leave">("menu");
   const [reason, setReason] = useState<ReportReason | null>(null);
   const [note, setNote] = useState("");
@@ -83,11 +84,11 @@ export default function SafetySheet({
           value={note}
           onChangeText={setNote}
           placeholder="Si quieres, cuéntanos qué pasó (opcional)"
-          placeholderTextColor={colors.primary["dark-hover"]}
+          placeholderTextColor={c.primary["dark-hover"]}
           maxLength={500}
           multiline
           accessibilityLabel="Comentario opcional"
-          className="mb-4 min-h-[72px] rounded-field border border-primary-light-active bg-white px-4 py-3 font-body text-body3 text-primary-dark-active"
+          className="mb-4 min-h-[72px] rounded-field border border-primary-light-active bg-surface px-4 py-3 font-body text-body3 text-primary-dark-active"
           style={{ outlineStyle: "none", textAlignVertical: "top" } as object}
         />
         {error && <Banner tone="error" message={error} className="mb-3" />}

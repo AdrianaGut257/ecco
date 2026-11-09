@@ -8,7 +8,7 @@ import Banner from "../../../components/ui/banner";
 import Button from "../../../components/ui/button";
 import CodeInput from "../../../components/ui/codeInput";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { friendlyError } from "../../../services/api";
 import { authService } from "../../../services/authService";
 import { sessionStore } from "../../../store/session";
@@ -28,6 +28,7 @@ export function useCooldown(seconds: number) {
 }
 
 export default function VerifyEmailScreen() {
+  const c = useColors();
   const router = useRouter();
   const { user } = sessionStore.use();
   const [code, setCode] = useState("");
@@ -77,7 +78,7 @@ export default function VerifyEmailScreen() {
             <Ionicons
               name="checkmark-circle"
               size={72}
-              color={colors.secondary["dark-hover"]}
+              color={c.secondary["dark-hover"]}
             />
           </Animated.View>
           <Text variant="h3" className="mt-3 text-center">
@@ -98,7 +99,7 @@ export default function VerifyEmailScreen() {
       }
     >
       <View className="mb-6 mt-4 h-16 w-16 items-center justify-center rounded-full bg-secondary-light-active">
-        <Ionicons name="mail-open-outline" size={30} color={colors.secondary.darker} />
+        <Ionicons name="mail-open-outline" size={30} color={c.secondary.darker} />
       </View>
       <Text variant="h2" className="mb-1">
         Confirma tu correo

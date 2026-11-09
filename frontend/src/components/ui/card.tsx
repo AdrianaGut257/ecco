@@ -11,7 +11,7 @@ interface Props extends ViewProps {
 
 const TONES: Record<Tone, string> = {
   soft: "bg-primary-light-active",
-  white: "bg-white border border-primary-light-active",
+  white: "bg-surface border border-primary-light-active",
   green: "bg-secondary-light-active",
   blue: "bg-tertiary-light-active",
 };

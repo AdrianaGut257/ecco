@@ -3,7 +3,7 @@ import { View } from "react-native";
 import Card from "../../../components/ui/card";
 import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { INTEREST_CATEGORIES } from "../../../constants/interests";
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 }
 
 export default function InterestPicker({ selected, onToggle }: Props) {
+  const c = useColors();
   return (
     <View className="gap-5">
       {INTEREST_CATEGORIES.map((category) => (
@@ -20,7 +21,7 @@ export default function InterestPicker({ selected, onToggle }: Props) {
             <Ionicons
               name={category.icon}
               size={18}
-              color={colors.primary["dark-hover"]}
+              color={c.primary["dark-hover"]}
             />
             <Text variant="caption1" className="text-primary-dark-hover">
               {category.title}

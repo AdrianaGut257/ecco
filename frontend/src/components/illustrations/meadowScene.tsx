@@ -22,9 +22,14 @@ import {
   MEADOW_TOP,
   MEADOW_WIDTH,
 } from "./meadowParts";
+import { useIsDark } from "../../theme";
+import { MOON_CRATERS, NIGHT_GLOW, NIGHT_SKY, Stars, nightColor, toNight } from "./night";
 
 const LOOP_MS = 12000;
 const FRONT_HILL = "#73A15C";
+
+// Verde de la colina de adelante, para lo que queda detrás de la barra de pestañas.
+export const meadowGround = (dark: boolean) => (dark ? nightColor(FRONT_HILL) : FRONT_HILL);
 const TAU = Math.PI * 2;
 
 // Cada capa se dibuja con margen a los lados: al moverse no deja ver su borde.
@@ -46,6 +51,20 @@ const XML = {
   hillFront: bottom(MEADOW_PARTS.hillFront),
   gardenMid: bottom(GARDEN_HILLS.hillMid),
   gardenFront: bottom(GARDEN_HILLS.hillFront),
+};
+
+// De noche: el sol es una luna con cráteres suaves y un halo más tenue.
+const XML_NIGHT: typeof XML = {
+  glow: top(`<circle cx="${SX}" cy="${SY}" r="${SR + 14}" fill="${NIGHT_GLOW}"/>`),
+  sun: top(toNight(MEADOW_PARTS.sun) + MOON_CRATERS),
+  clouds: top(toNight(MEADOW_PARTS.clouds)),
+  bushLeft: bottom(toNight(MEADOW_PARTS.bushLeft)),
+  bushRight: bottom(toNight(MEADOW_PARTS.bushRight)),
+  hillBack: bottom(toNight(MEADOW_PARTS.hillBack)),
+  hillMid: bottom(toNight(MEADOW_PARTS.hillMid)),
+  hillFront: bottom(toNight(MEADOW_PARTS.hillFront)),
+  gardenMid: bottom(toNight(GARDEN_HILLS.hillMid)),
+  gardenFront: bottom(toNight(GARDEN_HILLS.hillFront)),
 };
 
 type Motion = (t: number, unit: number) => object[];
@@ -95,12 +114,17 @@ const pivot = (px: number, py: number, inner: object[]): object[] => {
 };
 
 // Paisaje de fondo: las nubes van y vienen, el sol brilla y las colinas y arbustos se mecen con la brisa.
+// En modo oscuro es de noche: la luna reemplaza al sol y titilan algunas estrellas.
 // Los arbustos se inclinan desde la base (skew): la raíz queda fija y no se abren huecos.
 // `variant="garden"` usa background2.svg: sin arbustos y con las colinas de adelante más planas.
 export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow" | "garden" }) {
   const garden = variant === "garden";
+  const dark = useIsDark();
+  const xml = dark ? XML_NIGHT : XML;
+  const glowBase = dark ? 0.22 : 0.35;
+  const glowSwing = dark ? 0.12 : 0.25;
   const reduced = useReducedMotion();
-  const [width, setWidth] = useState(0);
+  const [{ width, height }, setSize] = useState({ width: 0, height: 0 });
   const t = useSharedValue(0);
 
   useEffect(() => {
@@ -135,34 +159,35 @@ export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow"
     <View
       pointerEvents="none"
       style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, overflow: "hidden" }}
-      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      onLayout={(e) => setSize({ width: e.nativeEvent.layout.width, height: e.nativeEvent.layout.height })}
     >
       <LinearGradient
-        colors={[...MEADOW_SKY]}
+        colors={[...(dark ? NIGHT_SKY : MEADOW_SKY)]}
         locations={[0, 0.42, 0.95]}
         style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0 }}
       />
       {width > 0 && (
         <>
+          {dark && <Stars top={topH * 0.55} width={width} height={Math.max(0, height - bottomH - topH * 0.55)} />}
           <View style={{ position: "absolute", top: 0, left: 0, width, height: topH }}>
             <Layer
-              xml={XML.glow}
+              xml={xml.glow}
               width={width}
               height={topH}
               t={t}
               unit={unit}
               style={(p) => {
                 "worklet";
-                return { opacity: 0.35 + 0.25 * Math.sin(TAU * 3 * p) };
+                return { opacity: glowBase + glowSwing * Math.sin(TAU * 3 * p) };
               }}
               motion={(p) => {
                 "worklet";
                 return pivot(sunPivot.x, sunPivot.y, [{ scale: 1.04 + 0.08 * Math.sin(TAU * 3 * p) }]);
               }}
             />
-            <Layer xml={XML.sun} width={width} height={topH} t={t} unit={unit} />
+            <Layer xml={xml.sun} width={width} height={topH} t={t} unit={unit} />
             <Layer
-              xml={XML.clouds}
+              xml={xml.clouds}
               width={width}
               height={topH}
               t={t}
@@ -180,7 +205,7 @@ export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow"
           <View style={{ position: "absolute", bottom: 0, left: 0, width, height: bottomH }}>
             {!garden && (
             <Layer
-              xml={XML.bushLeft}
+              xml={xml.bushLeft}
               width={width}
               height={bottomH}
               t={t}
@@ -196,7 +221,7 @@ export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow"
             )}
             {!garden && (
             <Layer
-              xml={XML.bushRight}
+              xml={xml.bushRight}
               width={width}
               height={bottomH}
               t={t}
@@ -211,7 +236,7 @@ export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow"
             />
             )}
             <Layer
-              xml={XML.hillBack}
+              xml={xml.hillBack}
               width={width}
               height={bottomH}
               t={t}
@@ -219,7 +244,7 @@ export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow"
               motion={backHill}
             />
             <Layer
-              xml={garden ? XML.gardenMid : XML.hillMid}
+              xml={garden ? xml.gardenMid : xml.hillMid}
               width={width}
               height={bottomH}
               t={t}
@@ -233,7 +258,7 @@ export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow"
               }}
             />
             <Layer
-              xml={garden ? XML.gardenFront : XML.hillFront}
+              xml={garden ? xml.gardenFront : xml.hillFront}
               width={width}
               height={bottomH}
               t={t}
@@ -246,7 +271,7 @@ export default function MeadowScene({ variant = "meadow" }: { variant?: "meadow"
             {/* Al escalar, el borde de abajo de la colina queda a medio píxel y deja ver el cielo:
                 esta franja lo cubre para que no aparezca una línea clara sobre la barra de pestañas. */}
             <View
-              style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 3, backgroundColor: FRONT_HILL }}
+              style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 3, backgroundColor: meadowGround(dark) }}
             />
           </View>
         </>

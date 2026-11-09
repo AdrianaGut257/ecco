@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 import Text from "./text";
 
 type Tone = "error" | "info" | "success";
@@ -31,10 +31,10 @@ const ICON: Record<Tone, keyof typeof Ionicons.glyphMap> = {
   success: "checkmark-circle-outline",
 };
 
-const ICON_COLOR: Record<Tone, string> = {
-  error: colors.error["dark-active"],
-  info: colors.tertiary["dark-active"],
-  success: colors.secondary["dark-active"],
+const ICON_FAMILY: Record<Tone, "error" | "tertiary" | "secondary"> = {
+  error: "error",
+  info: "tertiary",
+  success: "secondary",
 };
 
 export default function Banner({
@@ -44,12 +44,13 @@ export default function Banner({
   onAction,
   className = "",
 }: Props) {
+  const c = useColors();
   return (
     <View
       accessibilityRole="alert"
       className={`flex-row items-center gap-2.5 rounded-field border px-3.5 py-3 ${SURFACE[tone]} ${className}`}
     >
-      <Ionicons name={ICON[tone]} size={20} color={ICON_COLOR[tone]} />
+      <Ionicons name={ICON[tone]} size={20} color={c[ICON_FAMILY[tone]]["dark-active"]} />
       <Text variant="body3" className={`flex-1 ${TEXT[tone]}`}>
         {message}
       </Text>

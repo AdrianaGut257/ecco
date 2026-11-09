@@ -9,7 +9,7 @@ import Button from "../../../components/ui/button";
 import Input from "../../../components/ui/input";
 import Text from "../../../components/ui/text";
 import Wordmark from "../../../components/ui/wordmark";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { friendlyError } from "../../../services/api";
 import { authService } from "../../../services/authService";
 import { sessionStore } from "../../../store/session";
@@ -20,6 +20,7 @@ import {
 } from "../../../utils/validation";
 
 export default function RegisterScreen() {
+  const c = useColors();
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -122,8 +123,8 @@ export default function RegisterScreen() {
                   size={14}
                   color={
                     passed
-                      ? colors.secondary.dark
-                      : colors.primary["normal-hover"]
+                      ? c.secondary.dark
+                      : c.primary["normal-hover"]
                   }
                 />
                 <Text

@@ -10,11 +10,12 @@ module.exports = {
     "./src/hooks/**/*.{js,jsx,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
-  // La app no tiene modo oscuro. Con "media", NativeWind en web lanza "Cannot manually set color scheme" si los estilos cargan después del código.
+  // El modo oscuro no usa variantes `dark:`: los colores son variables CSS que cambian en la raíz (src/theme).
+  // Con "media", NativeWind en web lanza "Cannot manually set color scheme" si los estilos cargan después del código.
   darkMode: "class",
   theme: {
     extend: {
-      colors: palette,
+      colors: palette.tailwindColors(),
       fontFamily: {
         heading: ["Poppins_400Regular"],
         "heading-medium": ["Poppins_500Medium"],

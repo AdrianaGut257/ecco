@@ -13,7 +13,7 @@ import Animated, {
 } from "react-native-reanimated";
 import LivingAvatar from "../../../components/avatar/livingAvatar";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import type { AvatarConfig, Partner } from "../../../types";
 
 interface Props {
@@ -51,6 +51,7 @@ function TravelingDot({ delay }: { delay: number }) {
 }
 
 export default function SearchingAnimation({ me, partner }: Props) {
+  const c = useColors();
   const bob = useSharedValue(0);
   const pulse = useSharedValue(0);
   const reveal = useSharedValue(0);
@@ -106,7 +107,7 @@ export default function SearchingAnimation({ me, partner }: Props) {
 
         <View className="w-12 flex-row items-center justify-center gap-1">
           {partner ? (
-            <Ionicons name="heart" size={26} color={colors.error.normal} />
+            <Ionicons name="heart" size={26} color={c.error.normal} />
           ) : (
             [0, 250, 500].map((delay) => (
               <TravelingDot key={delay} delay={delay} />
@@ -123,7 +124,7 @@ export default function SearchingAnimation({ me, partner }: Props) {
               style={[blobStyle, { width: SIZE * 0.9, height: SIZE * 0.9 }]}
               className="absolute items-center justify-center rounded-full bg-primary-normal"
             >
-              <Text variant="h2">
+              <Text variant="h2" className="text-primary-ink">
                 ?
               </Text>
             </Animated.View>

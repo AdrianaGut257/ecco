@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable } from "react-native";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 import Text from "./text";
 
 interface Props {
@@ -20,6 +20,7 @@ export default function BackButton({
   fallbackRoute = "/(tabs)/home",
 }: Props) {
   const router = useRouter();
+  const c = useColors();
 
   const handlePress = () => {
     if (onPress) return onPress();
@@ -27,7 +28,7 @@ export default function BackButton({
     router.replace(fallbackRoute as never);
   };
 
-  const tint = light ? colors.white : colors.primary["dark-hover"];
+  const tint = light ? c.white : c.primary["dark-hover"];
 
   return (
     <Pressable

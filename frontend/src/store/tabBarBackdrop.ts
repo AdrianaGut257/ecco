@@ -1,12 +1,11 @@
-import { colors } from "../constants/colors";
 import { createStore } from "./createStore";
 
 // Color de fondo que queda detrás de la muesca y las esquinas de la barra de pestañas.
-// Las pantallas con fondo blanco (Scenery) lo cambian mientras están enfocadas.
-const store = createStore<{ color: string }>({ color: colors.primary.light });
+// Sin color propio (null) se usa el fondo de la app; las pantallas con paisaje lo cambian mientras están enfocadas.
+const store = createStore<{ color: string | null }>({ color: null });
 
 export const tabBarBackdrop = {
   use: store.use,
   set: (color: string) => store.set({ color }),
-  reset: () => store.set({ color: colors.primary.light }),
+  reset: () => store.set({ color: null }),
 };

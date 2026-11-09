@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, TextInput, View } from "react-native";
 import IconButton from "../../../components/ui/iconButton";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { suggestionService } from "../../../services/suggestionService";
 import type { Suggestion } from "../../../types";
 
@@ -45,6 +45,7 @@ export default function ItemInput({
   existing,
   onAdd,
 }: Props) {
+  const c = useColors();
   const [text, setText] = useState("");
   const [focused, setFocused] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -104,7 +105,7 @@ export default function ItemInput({
     <View>
       <View className="flex-row items-center gap-2">
         <View
-          className={`min-h-[44px] flex-1 flex-row items-center rounded-field border bg-white px-3 ${
+          className={`min-h-[44px] flex-1 flex-row items-center rounded-field border bg-surface px-3 ${
             focused ? "border-primary-dark-hover" : "border-primary-normal"
           }`}
         >
@@ -115,7 +116,7 @@ export default function ItemInput({
             onBlur={() => setTimeout(() => setFocused(false), 150)}
             onSubmitEditing={() => add(text)}
             placeholder={placeholder}
-            placeholderTextColor={colors.primary["dark-hover"]}
+            placeholderTextColor={c.primary["dark-hover"]}
             maxLength={MAX_LENGTH}
             returnKeyType="done"
             accessibilityLabel={label}
@@ -123,7 +124,7 @@ export default function ItemInput({
             style={{ outlineStyle: "none" } as object}
           />
           {loading && (
-            <ActivityIndicator size="small" color={colors.primary["dark-hover"]} />
+            <ActivityIndicator size="small" color={c.primary["dark-hover"]} />
           )}
         </View>
         <IconButton
@@ -149,7 +150,7 @@ export default function ItemInput({
       {showList && (
         <View
           accessibilityRole="list"
-          className="mt-1.5 overflow-hidden rounded-field border border-primary-light-active bg-white"
+          className="mt-1.5 overflow-hidden rounded-field border border-primary-light-active bg-surface"
         >
           {visible.map((s, i) => (
             <Pressable
@@ -161,7 +162,7 @@ export default function ItemInput({
                 i > 0 ? "border-t border-primary-light-active" : ""
               }`}
             >
-              <Ionicons name="add-circle-outline" size={18} color={colors.secondary["dark-hover"]} />
+              <Ionicons name="add-circle-outline" size={18} color={c.secondary["dark-hover"]} />
               <View className="flex-1">
                 <Text variant="body3" className="text-primary-dark-active">
                   {s.name}

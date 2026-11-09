@@ -6,22 +6,22 @@ import Animated, { FadeIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FlyingButterfly } from "../../../components/garden/butterfly";
 import { MEADOW_WIDTH } from "../../../components/illustrations/meadowParts";
-import MeadowScene from "../../../components/illustrations/meadowScene";
+import MeadowScene, { meadowGround } from "../../../components/illustrations/meadowScene";
 import { playSound, preloadSounds } from "../../../lib/sound";
 import AppHeader from "../../../components/layout/appHeader";
 import Banner from "../../../components/ui/banner";
 import EmptyState from "../../../components/ui/emptyState";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { friendlyError } from "../../../services/api";
 import { gardenService } from "../../../services/gardenService";
 import { tabBarBackdrop } from "../../../store/tabBarBackdrop";
+import { themeSettings } from "../../../store/themeSettings";
 import type { GardenEntry, GardenMemory, MatchStatus } from "../../../types";
 import GardenPlot, { LABEL_H } from "../components/gardenPlot";
 import MemorySheet from "../components/memorySheet";
 
 // Verde de la colina de adelante: la muesca de la barra continúa el paisaje.
-const GROUND = "#73A15C";
 const SLOT = 138;
 const EDGE = 20;
 // Cada planta va un poco más arriba que la anterior, como subiendo la colina, y luego vuelve a bajar.
@@ -53,6 +53,7 @@ const sorted = (entries: GardenEntry[]) =>
 // El jardín como un lugar: las plantas quedan plantadas en las colinas del paisaje, de izquierda a
 // derecha y subiendo un poco; si no caben, se desliza hacia la derecha. Tocar una abre su recuerdo.
 export default function GardenScreen() {
+  const c = useColors();
   const router = useRouter();
   const [entries, setEntries] = useState<GardenEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +76,7 @@ export default function GardenScreen() {
     useCallback(() => {
       load();
       preloadSounds(["memory"]);
-      tabBarBackdrop.set(GROUND);
+      tabBarBackdrop.set(meadowGround(themeSettings.isDark()));
       return tabBarBackdrop.reset;
     }, [load]),
   );
@@ -125,11 +126,11 @@ export default function GardenScreen() {
             Cada conversación deja una planta. Tócala para recordar esa semana.
           </Text>
           {scrolls && (
-            <Animated.View entering={FadeIn.delay(900)} className="mt-3 flex-row items-center gap-1 self-start rounded-chip bg-white/80 px-3 py-1">
+            <Animated.View entering={FadeIn.delay(900)} className="mt-3 flex-row items-center gap-1 self-start rounded-chip bg-surface/80 px-3 py-1">
               <Text variant="caption2" className="text-primary-dark-active">
                 Desliza para ver todo tu jardín
               </Text>
-              <Ionicons name="arrow-forward" size={14} color={colors.primary["dark-active"]} />
+              <Ionicons name="arrow-forward" size={14} color={c.primary["dark-active"]} />
             </Animated.View>
           )}
           {error && (
@@ -138,7 +139,7 @@ export default function GardenScreen() {
             </View>
           )}
           {!entries && !error && (
-            <ActivityIndicator className="mt-6" color={colors.primary["dark-hover"]} />
+            <ActivityIndicator className="mt-6" color={c.primary["dark-hover"]} />
           )}
           {entries && entries.length === 0 && (
             <View className="mt-6">

@@ -7,7 +7,7 @@ import Container from "../../../components/layout/container";
 import Card from "../../../components/ui/card";
 import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { useAuth } from "../../auth/hooks/useAuth";
 import MoodWeek from "../components/moodWeek";
 
@@ -21,6 +21,7 @@ const OPTIONS: {
 ];
 
 export default function ProfileScreen() {
+  const c = useColors();
   const router = useRouter();
   const { user } = useAuth();
 
@@ -58,11 +59,11 @@ export default function ProfileScreen() {
                 i !== OPTIONS.length - 1 ? "border-b border-primary-light-active" : ""
               }`}
             >
-              <Ionicons name={option.icon} size={20} color={colors.primary["dark-hover"]} />
+              <Ionicons name={option.icon} size={20} color={c.primary["dark-hover"]} />
               <Text variant="body3" className="ml-3 flex-1">
                 {option.label}
               </Text>
-              <Ionicons name="chevron-forward" size={18} color={colors.primary["dark-hover"]} />
+              <Ionicons name="chevron-forward" size={18} color={c.primary["dark-hover"]} />
             </Pressable>
           ))}
         </Card>

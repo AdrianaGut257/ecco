@@ -5,7 +5,7 @@ import {
   PressableProps,
   View,
 } from "react-native";
-import { colors } from "../../constants/colors";
+import { Palette, useColors } from "../../theme";
 import PressableScale from "./pressableScale";
 import Text from "./text";
 
@@ -39,8 +39,9 @@ const FILLED: Record<ButtonColor, string> = {
   tertiary:
     "bg-tertiary-normal hover:bg-tertiary-normal-hover active:bg-tertiary-normal-active",
   error:
-    "bg-error-normal-active hover:bg-error-dark active:bg-error-dark-hover",
-  white: "bg-white hover:bg-primary-light-hover active:bg-primary-light-active",
+    "bg-error-normal-active hover:bg-error-normal-hover active:bg-error-normal-hover",
+  // "white" va sobre fondos de color fijos (las diapositivas), igual en ambos modos.
+  white: "bg-white active:bg-white/80",
 };
 
 const FILLED_DISABLED: Record<ButtonColor, string> = {
@@ -72,35 +73,19 @@ const OUTLINED_DISABLED: Record<ButtonColor, string> = {
 };
 
 const LABEL_FILLED: Record<ButtonColor, string> = {
-  primary: "text-primary-darker",
-  secondary: "text-secondary-darker",
-  tertiary: "text-tertiary-darker",
+  primary: "text-primary-ink",
+  secondary: "text-secondary-ink",
+  tertiary: "text-tertiary-ink",
   error: "text-white",
-  white: "text-primary-dark-active",
+  white: "text-primary-ink",
 };
 
 const LABEL_OUTLINED: Record<ButtonColor, string> = {
   primary: "text-primary-dark-hover",
   secondary: "text-secondary-dark-hover",
   tertiary: "text-tertiary-dark-hover",
-  error: "text-error-normal-active",
+  error: "text-error-text",
   white: "text-white",
-};
-
-const ICON_FILLED: Record<ButtonColor, string> = {
-  primary: colors.primary.darker,
-  secondary: colors.secondary.darker,
-  tertiary: colors.tertiary.darker,
-  error: colors.white,
-  white: colors.primary["dark-active"],
-};
-
-const ICON_OUTLINED: Record<ButtonColor, string> = {
-  primary: colors.primary["dark-hover"],
-  secondary: colors.secondary["dark-hover"],
-  tertiary: colors.tertiary["dark-hover"],
-  error: colors.error["normal-active"],
-  white: colors.white,
 };
 
 const LABEL_DISABLED: Record<ButtonColor, string> = {
@@ -111,11 +96,14 @@ const LABEL_DISABLED: Record<ButtonColor, string> = {
   white: "text-primary-normal",
 };
 
-const iconColor = (color: ButtonColor, variant: Variant, disabled: boolean) => {
-  if (disabled) {
-    return color === "white" ? colors.primary.normal : colors[color].normal;
+const iconColor = (c: Palette, color: ButtonColor, variant: Variant, disabled: boolean) => {
+  if (disabled) return color === "white" ? c.primary.normal : c[color].normal;
+  if (variant === "filled") {
+    if (color === "error") return c.white;
+    return color === "white" ? c.primary.ink : c[color].ink;
   }
-  return variant === "filled" ? ICON_FILLED[color] : ICON_OUTLINED[color];
+  if (color === "white") return c.white;
+  return color === "error" ? c.error.text : c[color]["dark-hover"];
 };
 
 export default function Button({
@@ -131,6 +119,7 @@ export default function Button({
   className = "",
   ...rest
 }: ButtonProps) {
+  const c = useColors();
   const inactive = disabled || loading;
   const filled = variant === "filled";
 
@@ -155,7 +144,7 @@ export default function Button({
     <Ionicons
       name={icon}
       size={iconSize}
-      color={iconColor(color, variant, inactive)}
+      color={iconColor(c, color, variant, inactive)}
     />
   ) : null;
 
@@ -170,7 +159,7 @@ export default function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={iconColor(color, variant, false)}
+          color={iconColor(c, color, variant, false)}
         />
       ) : (
         <View className="flex-row items-center gap-2">

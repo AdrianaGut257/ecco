@@ -225,6 +225,8 @@ Los objetivos táctiles miden al menos 40–48 px (Ley de Fitts).
 - Al enviar, al recibir un mensaje con la conversación abierta y al reaccionar.
 - No suenan los botones ni las pestañas. Se apagan en Ajustes → Sonido, respetan el modo silencio del teléfono y no pausan la música de la persona. El sonido nunca es el único aviso: todo se ve también en pantalla.
 
+**Modo oscuro:** se activa con un interruptor en Ajustes → Apariencia (la app empieza en claro). Usa fondos café muy oscuros y cálidos en lugar de negro, los mismos acentos (durazno, verde y celeste) y textos en tonos claros de cada familia; los tonos de los mensajes tienen su versión oscura. Los paisajes se vuelven de noche: los mismos dibujos de la autora con colores nocturnos, la luna en lugar del sol y algunas estrellas que titilan despacio. Todas las combinaciones de texto cumplen WCAG 2.2 (4,5:1, o 3:1 en texto grande). Sustento: comodidad con poca luz y control del usuario (Nielsen, heurística 3), calidez del diseño (Norman, 2004) y tecnología calmada (Weiser y Brown, 1996).
+
 **Lenguaje:** mensajes en segunda persona, cálidos y sin culpa ("Ya compartiste tus mensajes de hoy. Mañana podrás escribir de nuevo"; "Cerrar aquí" en vez de "Mejor no").
 
 **Diseño adaptable:** la interfaz se adapta a teléfonos pequeños, grandes y tablets. En Inicio, el contenido ocupa todo el ancho y conserva el orden del teléfono.

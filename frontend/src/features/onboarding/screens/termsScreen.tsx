@@ -4,7 +4,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import Container from "../../../components/layout/container";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import TermsList from "../components/termsList";
 
 export default function TermsScreen({
@@ -12,6 +12,7 @@ export default function TermsScreen({
 }: {
   onComplete: () => void;
 }) {
+  const c = useColors();
   const [accepted, setAccepted] = useState(false);
 
   return (
@@ -26,7 +27,7 @@ export default function TermsScreen({
         <Ionicons
           name="shield-checkmark"
           size={56}
-          color={colors.secondary["dark-hover"]}
+          color={c.secondary["dark-hover"]}
         />
         <Text
           variant="h3"
@@ -42,7 +43,7 @@ export default function TermsScreen({
         </Text>
       </View>
 
-      <ScrollView className="mb-4 flex-1 rounded-card border border-primary-light-active bg-white p-4">
+      <ScrollView className="mb-4 flex-1 rounded-card border border-primary-light-active bg-surface p-4">
         <TermsList />
       </ScrollView>
 
@@ -56,11 +57,11 @@ export default function TermsScreen({
           className={`mr-3 h-6 w-6 items-center justify-center rounded-md border-2 ${
             accepted
               ? "border-primary-dark-hover bg-primary-dark-hover"
-              : "border-primary-dark-hover bg-white"
+              : "border-primary-dark-hover bg-surface"
           }`}
         >
           {accepted && (
-            <Ionicons name="checkmark" size={16} color={colors.white} />
+            <Ionicons name="checkmark" size={16} color={c.primary.light} />
           )}
         </View>
         <Text variant="caption1" className="flex-1 text-primary-dark-active">

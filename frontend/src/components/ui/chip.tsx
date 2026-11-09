@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
 import Animated, { ZoomIn } from "react-native-reanimated";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 import PressableScale from "./pressableScale";
 import Text from "./text";
 
@@ -32,13 +32,8 @@ const IDLE_LABEL: Record<Tone, string> = {
 };
 
 const ACTIVE_LABEL: Record<Tone, string> = {
-  primary: "text-primary-darker",
-  secondary: "text-secondary-darker",
-};
-
-const ACTIVE_ICON: Record<Tone, string> = {
-  primary: colors.primary.darker,
-  secondary: colors.secondary.darker,
+  primary: "text-primary-ink",
+  secondary: "text-secondary-ink",
 };
 
 export default function Chip({
@@ -49,6 +44,8 @@ export default function Chip({
   onRemove,
   disabled,
 }: Props) {
+  const c = useColors();
+  const activeIcon = c[tone].ink;
   const className = `min-h-[36px] flex-row items-center gap-1.5 rounded-chip border px-3.5 py-2 ${
     selected ? ACTIVE[tone] : IDLE[tone]
   } ${disabled ? "opacity-50" : ""}`;
@@ -69,7 +66,7 @@ export default function Chip({
             accessibilityRole="button"
             accessibilityLabel={`Quitar ${label}`}
           >
-            <Ionicons name="close" size={14} color={ACTIVE_ICON[tone]} />
+            <Ionicons name="close" size={14} color={activeIcon} />
           </Pressable>
         )}
       </View>
@@ -87,7 +84,7 @@ export default function Chip({
     >
       {selected && (
         <Animated.View entering={ZoomIn.springify().damping(11)}>
-          <Ionicons name="checkmark" size={13} color={ACTIVE_ICON[tone]} />
+          <Ionicons name="checkmark" size={13} color={activeIcon} />
         </Animated.View>
       )}
       <Text

@@ -8,7 +8,7 @@ import Button from "../../../components/ui/button";
 import Card from "../../../components/ui/card";
 import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
-import { colors } from "../../../constants/colors";
+import { useColors } from "../../../theme";
 import { INTEREST_CATEGORIES } from "../../../constants/interests";
 import { sessionStore } from "../../../store/session";
 
@@ -20,6 +20,7 @@ interface Props {
 }
 
 export default function ThemeSelectionScreen({ onBack, onSelect }: Props) {
+  const c = useColors();
   const router = useRouter();
   const { user } = sessionStore.use();
   const [selected, setSelected] = useState<string[]>([]);
@@ -80,7 +81,7 @@ export default function ThemeSelectionScreen({ onBack, onSelect }: Props) {
                   <Ionicons
                     name={group.icon}
                     size={16}
-                    color={colors.primary["dark-hover"]}
+                    color={c.primary["dark-hover"]}
                   />
                   <Text variant="caption1" className="text-primary-dark-hover">
                     {group.title}
@@ -115,7 +116,7 @@ export default function ThemeSelectionScreen({ onBack, onSelect }: Props) {
           <Ionicons
             name="create-outline"
             size={16}
-            color={colors.primary["dark-hover"]}
+            color={c.primary["dark-hover"]}
           />
           <Text variant="caption1" className="text-primary-dark-hover underline">
             ¿Quieres otros temas? Edita tus intereses

@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Svg, { ClipPath, Defs, Ellipse, G, Path } from "react-native-svg";
-import { colors } from "../../constants/colors";
+import { useColors } from "../../theme";
 
 // Dibujo de assets/svg/semilla.svg separado en capas para animarlas por separado.
 const W = 157;
@@ -38,6 +38,7 @@ function Layer({ children }: { children: ReactNode }) {
 }
 
 export default function WelcomeSeed({ height = 220 }: Props) {
+  const c = useColors();
   const width = (height * W) / H;
   const id = useId().replace(/[^a-zA-Z0-9]/g, "");
   const reduced = useReducedMotion();
@@ -191,10 +192,10 @@ export default function WelcomeSeed({ height = 220 }: Props) {
       {SHOW_SPARKLES && (
         <>
           <Animated.View style={[styles.spark, { left: 4, top: height * 0.12 }, sparkLeft]} pointerEvents="none">
-            <Ionicons name="sparkles" size={22} color={colors.primary.normal} />
+            <Ionicons name="sparkles" size={22} color={c.primary.normal} />
           </Animated.View>
           <Animated.View style={[styles.spark, { right: 0, top: height * 0.3 }, sparkRight]} pointerEvents="none">
-            <Ionicons name="sparkles" size={18} color={colors.secondary["dark-hover"]} />
+            <Ionicons name="sparkles" size={18} color={c.secondary["dark-hover"]} />
           </Animated.View>
         </>
       )}

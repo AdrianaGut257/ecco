@@ -9,13 +9,14 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Plant, { STEP_MS } from "../../../components/garden/plant";
-import MeadowScene from "../../../components/illustrations/meadowScene";
+import MeadowScene, { meadowGround } from "../../../components/illustrations/meadowScene";
 import Button from "../../../components/ui/button";
 import Text from "../../../components/ui/text";
 import { playSound } from "../../../lib/sound";
-import { colors } from "../../../constants/colors";
+import { useColors, withAlpha } from "../../../theme";
 import { CHAT_DAYS, STAGE_NAMES } from "../../../constants/plant";
 import { tabBarBackdrop } from "../../../store/tabBarBackdrop";
+import { themeSettings } from "../../../store/themeSettings";
 import type { Match } from "../../../types";
 
 interface Props {
@@ -28,7 +29,6 @@ interface Props {
 
 const PLANT = 168;
 // Verde de la colina de adelante: así la muesca de la barra continúa el paisaje.
-const GROUND = "#73A15C";
 
 function copyFor(match: Match, grew: boolean, firstTime: boolean) {
   const name = match.partner.username;
@@ -69,6 +69,7 @@ export default function DailyGrowthScreen({
   firstTime,
   onContinue,
 }: Props) {
+  const c = useColors();
   const reduced = useReducedMotion();
   const grew = !firstTime && match.stage > from;
   const start = grew ? from : 0;
@@ -88,7 +89,7 @@ export default function DailyGrowthScreen({
   const hills = Math.min(width, 520) * 0.24;
 
   useEffect(() => {
-    tabBarBackdrop.set(GROUND);
+    tabBarBackdrop.set(meadowGround(themeSettings.isDark()));
     return tabBarBackdrop.reset;
   }, []);
 
@@ -112,7 +113,7 @@ export default function DailyGrowthScreen({
             entering={FadeInDown.duration(500)}
             className="w-full max-w-[420px] items-center rounded-card px-6 pb-6 pt-7"
             style={{
-              backgroundColor: "rgba(228, 239, 206, 0.94)",
+              backgroundColor: withAlpha(c.secondary["light-active"], 0.94),
               shadowColor: "#4C5B2C",
               shadowOpacity: 0.12,
               shadowRadius: 16,
@@ -138,7 +139,7 @@ export default function DailyGrowthScreen({
                   entering={ZoomIn.delay(growMs).springify().damping(8)}
                   className="absolute right-6 top-4"
                 >
-                  <Ionicons name="sparkles" size={30} color={colors.mood.bien} />
+                  <Ionicons name="sparkles" size={30} color={c.mood.bien} />
                 </Animated.View>
               )}
             </View>

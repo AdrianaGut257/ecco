@@ -16,7 +16,7 @@ export default function ReactionBar({ current, onPick }: Props) {
     <Animated.View
       entering={ZoomIn.springify().damping(16)}
       accessibilityRole="menu"
-      className="mt-1.5 flex-row rounded-[24px] border border-primary-light-active bg-white p-1"
+      className="mt-1.5 flex-row rounded-[24px] border border-primary-light-active bg-surface p-1"
       style={{
         shadowColor: "#553B29",
         shadowOpacity: 0.12,

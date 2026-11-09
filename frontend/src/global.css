@@ -1,3 +1,55 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Generado con scripts/generateThemeCss.js desde src/constants/palette.js: modo claro por defecto.
+   El modo oscuro cambia estas variables desde src/theme. */
+:root {
+  --primary-light: 254 247 241;
+  --primary-light-hover: 253 242 234;
+  --primary-light-active: 251 229 212;
+  --primary-normal: 242 170 116;
+  --primary-normal-hover: 218 153 104;
+  --primary-normal-active: 194 136 93;
+  --primary-dark: 182 128 87;
+  --primary-dark-hover: 145 102 70;
+  --primary-dark-active: 109 77 52;
+  --primary-darker: 85 59 41;
+  --primary-ink: 85 59 41;
+  --secondary-light: 246 250 239;
+  --secondary-light-hover: 242 247 231;
+  --secondary-light-active: 228 239 206;
+  --secondary-normal: 169 202 98;
+  --secondary-normal-hover: 152 182 88;
+  --secondary-normal-active: 135 162 78;
+  --secondary-dark: 127 152 74;
+  --secondary-dark-hover: 101 121 59;
+  --secondary-dark-active: 76 91 44;
+  --secondary-darker: 59 72 34;
+  --secondary-ink: 59 72 34;
+  --tertiary-light: 245 251 253;
+  --tertiary-light-hover: 241 248 251;
+  --tertiary-light-active: 225 241 247;
+  --tertiary-normal: 159 211 230;
+  --tertiary-normal-hover: 143 190 207;
+  --tertiary-normal-active: 127 169 184;
+  --tertiary-dark: 119 158 173;
+  --tertiary-dark-hover: 95 126 138;
+  --tertiary-dark-active: 72 95 104;
+  --tertiary-darker: 56 74 81;
+  --tertiary-ink: 56 74 81;
+  --error-light: 252 238 238;
+  --error-light-hover: 251 230 230;
+  --error-light-active: 247 203 204;
+  --error-normal: 229 86 91;
+  --error-normal-hover: 206 77 82;
+  --error-normal-active: 183 69 73;
+  --error-dark: 172 65 68;
+  --error-dark-hover: 137 52 55;
+  --error-dark-active: 103 39 41;
+  --error-darker: 80 30 32;
+  --error-ink: 255 255 255;
+  --error-text: 183 69 73;
+  --surface: 255 255 255;
+  --scrim: 85 59 41;
+}

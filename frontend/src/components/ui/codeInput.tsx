@@ -34,7 +34,7 @@ export default function CodeInput({
           return (
             <View
               key={i}
-              className={`h-14 flex-1 items-center justify-center rounded-field border-2 bg-white ${
+              className={`h-14 flex-1 items-center justify-center rounded-field border-2 bg-surface ${
                 error
                   ? "border-error-normal"
                   : active

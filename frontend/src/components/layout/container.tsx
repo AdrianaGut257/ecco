@@ -15,11 +15,12 @@ interface Props {
   className?: string;
 }
 
+// Los fondos de color (diapositivas, con texto blanco) son fijos: no cambian con el modo oscuro.
 const BACKGROUNDS: Record<Background, string> = {
   light: "bg-primary-light",
-  primary: "bg-primary-dark-hover",
-  secondary: "bg-secondary-dark-hover",
-  tertiary: "bg-tertiary-dark-active",
+  primary: "bg-[#916646]",
+  secondary: "bg-[#65793B]",
+  tertiary: "bg-[#485F68]",
 };
 
 export default function Container({
