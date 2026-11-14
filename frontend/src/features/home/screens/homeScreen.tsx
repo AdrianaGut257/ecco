@@ -24,6 +24,7 @@ import type { Match, MoodEntry } from "../../../types";
 import { greeting, isToday } from "../../../utils/greeting";
 import EmotionSelector from "../components/emotionSelector";
 import MoodConfirmSheet from "../components/moodConfirmSheet";
+import GoodThing from "../components/goodThing";
 import TodayMoods from "../components/todayMoods";
 
 interface ActionProps {
@@ -326,6 +327,7 @@ export default function HomeScreen() {
               onPress={() => router.navigate("/(tabs)/garden")}
             />
             {todayMoods.length > 0 && <TodayMoods entries={todayMoods} />}
+            <GoodThing />
           </View>
   );
 

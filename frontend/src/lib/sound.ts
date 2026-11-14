@@ -2,6 +2,7 @@ import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from "expo-aud
 import { Platform } from "react-native";
 import type { MoodId } from "../constants/emotions";
 import { soundSettings } from "../store/soundSettings";
+import { haptics } from "./haptics";
 
 // Sonidos sintetizados con scripts/generateSounds.py.
 const SOURCES = {
@@ -52,7 +53,12 @@ const blockedOnWeb = () =>
   typeof navigator !== "undefined" &&
   (navigator as { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive === false;
 
+// Los momentos con sonido también vibran un poco (aunque el sonido esté apagado): éxito al crecer,
+// florecer o encontrar a alguien; un toque leve en lo demás. Abrir un recuerdo no vibra.
+const SUCCESS = new Set<string>(["grow", "bloom", "match", "breathe-done"]);
+
 export function playSound(name: SoundName) {
+  if (name !== "memory") (SUCCESS.has(name) ? haptics.success : haptics.tap)();
   if (!soundSettings.enabled() || blockedOnWeb()) return;
   try {
     if (!configured) {

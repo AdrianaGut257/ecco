@@ -87,6 +87,12 @@ A partir de las preguntas **"¿Cómo podríamos...?"** (Figura 5.6) se generaron
 | Mensajes positivos sin métricas | ¿Cómo podríamos sugerir mensajes positivos cuando no se sabe qué decir? | Frases de validación mezcladas en las ideas ("Gracias por quedarte en la conversación"). | Pedido explícito del Usuario 1; Clark, Algoe y Green (2018). |
 | ídem | ¿Cómo podríamos evitar métricas de comparación? | Ningún contador público: el jardín muestra plantas, no números. | Factor 4 del Capítulo 3; límites del alcance. |
 | ídem | ¿Cómo podríamos hacer que la app acompañe en un mal día? | Respuestas empáticas al ánimo y, si es bajo, una **pantalla de respiración guiada** (3 respiraciones lentas, unos 30 s, en el color de la emoción) que se abre antes de seguir y se puede saltar. | Eisenstadt et al. (2021): regulación emocional instantánea. |
+| ídem (Compartir gustos) | ¿Cómo podríamos pasar de lo superficial a lo personal sin forzarlo? | **Pregunta del día:** una por cada día de la semana, de lo más liviano a lo más personal. Al tocarla se escribe en el campo para editarla. | Aron et al. (1997); Usuario 1 ("no sé de qué hablar"). |
+| Avatar en vez de foto (comunicación "plana") | ¿Cómo podríamos notar cuando la otra persona tiene un mal día? | **Aviso con cariño:** si la otra persona compartió que se siente "Mal" o "Fatal", un aviso sugiere escribirle con el tono *con cariño*. | Usuario 1; Derks et al. (2008). |
+| Mensajes positivos sin métricas | ¿Cómo podríamos cuidar el bienestar fuera de las conversaciones? | **"Algo bueno de hoy":** una línea privada y opcional, guardada solo en el teléfono. | Emmons y McCullough (2003); Peters et al. (2018). |
+| ídem | ¿Cómo podríamos ver la propia evolución sin números? | **"Tu mes":** 28 días coloreados por el ánimo y las cosas buenas de los últimos días, sin promedios ni rachas. | Shiffman et al. (2008); Factor 4 del Capítulo 3. |
+| Temor a la hostilidad (confianza) | ¿Cómo podríamos hacer el registro menos incierto? | **Barra de progreso** de 4 pasos en el registro. | Nielsen (1994), visibilidad del estado del sistema. |
+| Mensajes que se sientan significativos | ¿Cómo podríamos reforzar los momentos importantes? | **Vibración suave** al reaccionar, enviar, crecer la planta, florecer o encontrar pareja. | Hoggan et al. (2008); Norman (2004). |
 
 ### 3.3. Ideas descartadas o pospuestas
 
@@ -318,4 +324,7 @@ Al revisar el prototipo, la autora detectó problemas que llevaron a cambios. Es
 - W3C. (2023). *Web Content Accessibility Guidelines (WCAG) 2.2*. https://www.w3.org/TR/WCAG22/
 - Eisenstadt, M., Liverpool, S., Infanti, E., Ciuvat, R. M., & Carlsson, C. (2021). Mobile apps that promote emotion regulation, positive mental health, and well-being in the general population: Systematic review and meta-analysis. *JMIR Mental Health, 8*(11), e31170. https://doi.org/10.2196/31170 (ya está en el documento; antes se atribuía por error a "Baudon y Jachens").
 - *Social connection as a key target for youth mental health* (2025). ScienceDirect. https://www.sciencedirect.com/science/article/pii/S2212657025000054 *[completar autores y revista]*
+- Emmons, R. A., & McCullough, M. E. (2003). Counting blessings versus burdens: An experimental investigation of gratitude and subjective well-being in daily life. *Journal of Personality and Social Psychology, 84*(2), 377–389. https://doi.org/10.1037/0022-3514.84.2.377
+- Hoggan, E., Brewster, S. A., & Johnston, J. (2008). Investigating the effectiveness of tactile feedback for mobile touchscreens. En *Proceedings of the SIGCHI Conference on Human Factors in Computing Systems* (pp. 1573–1582). ACM. https://doi.org/10.1145/1357054.1357300
+- Nielsen, J. (1994). Enhancing the explanatory power of usability heuristics. En *Proceedings of the SIGCHI Conference on Human Factors in Computing Systems* (pp. 152–158). ACM. https://doi.org/10.1145/191666.191729
 - Si se usa en la prueba piloto: Brooke, J. (1996). SUS: A "quick and dirty" usability scale. En P. W. Jordan, B. Thomas, B. A. Weerdmeester y I. L. McClelland (Eds.), *Usability evaluation in industry* (pp. 189–194). Taylor & Francis. *[verificar]*

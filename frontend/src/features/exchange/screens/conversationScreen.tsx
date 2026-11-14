@@ -32,6 +32,7 @@ import SafetySheet from "../components/safetySheet";
 import { MAX_MESSAGE_LENGTH, useConversation } from "../hooks/useConversation";
 import { dailyGrowth, today } from "../../../store/dailyGrowth";
 import DaySeparator from "../components/daySeparator";
+import { questionFor } from "../dailyQuestions";
 import { discoveryFor } from "../discoveries";
 import { sparksFor } from "../sparks";
 import DailyGrowthScreen from "./dailyGrowthScreen";
@@ -75,6 +76,7 @@ export default function ConversationScreen({
     react,
   } = useConversation(matchId, initial);
   const [text, setText] = useState("");
+  const [careDismissed, setCareDismissed] = useState(false);
   const [tone, setTone] = useState<ToneId | null>(null);
   const [toneOpen, setToneOpen] = useState(false);
   const [reactingId, setReactingId] = useState<string | null>(null);
@@ -207,6 +209,9 @@ export default function ConversationScreen({
   const canReact = !ended;
   const rawTone = toneById(tone);
   const chosenTone = rawTone && themedTone(rawTone, dark);
+  // La pregunta del día se ofrece solo en la semana de conversación y mientras se puede escribir.
+  const todayQuestion =
+    match.canWrite && match.status !== "bloomed" ? questionFor(match.day) : null;
 
   const submit = async (value = text, confirmed = false, withTone = tone) => {
     if (!match.canWrite || !value.trim()) return;
@@ -266,6 +271,43 @@ export default function ConversationScreen({
 
           {writableToday && (
             <>
+              {match.canWrite &&
+                !careDismissed &&
+                text.length === 0 &&
+                (match.partner.mood === "mal" || match.partner.mood === "fatal") && (
+                  <Animated.View
+                    entering={FadeIn.duration(300)}
+                    className="flex-row items-center gap-3 rounded-card border border-error-light-active bg-error-light px-4 py-3"
+                  >
+                    <Ionicons name="heart" size={20} color={c.error.text} />
+                    <View className="flex-1">
+                      <Text variant="caption1" className="text-error-dark-active">
+                        {`${match.partner.username} hoy no se siente muy bien. Un mensaje con cariño puede acompañar.`}
+                      </Text>
+                      <Pressable
+                        onPress={() => {
+                          setTone("warm");
+                          setCareDismissed(true);
+                        }}
+                        accessibilityRole="button"
+                        hitSlop={8}
+                        className="mt-1 self-start"
+                      >
+                        <Text variant="button2" className="text-error-text underline">
+                          Escribir con cariño
+                        </Text>
+                      </Pressable>
+                    </View>
+                    <Pressable
+                      onPress={() => setCareDismissed(true)}
+                      hitSlop={10}
+                      accessibilityRole="button"
+                      accessibilityLabel="Cerrar el aviso"
+                    >
+                      <Ionicons name="close" size={18} color={c.error["dark-active"]} />
+                    </Pressable>
+                  </Animated.View>
+                )}
               {match.canWrite && toneOpen && (
                 <Animated.View entering={FadeIn.duration(200)} className="w-full">
                   <View className="mb-1.5 flex-row items-center justify-between">
@@ -611,7 +653,13 @@ export default function ConversationScreen({
           }}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center px-6 py-6">
-              <DaySeparator day={match.day} discovery={discoveryFor(match, match.day)} today />
+              <DaySeparator
+                day={match.day}
+                discovery={discoveryFor(match, match.day)}
+                today
+                question={todayQuestion}
+                onUseQuestion={setText}
+              />
               <Text variant="body3" className="mt-2 text-center text-primary-dark-hover">
                 {`Saluda a ${match.partner.username}. Una pregunta abierta sobre algo que compartan es un buen comienzo.`}
               </Text>
@@ -619,7 +667,13 @@ export default function ConversationScreen({
           }
           ListFooterComponent={
             todayStarts ? (
-              <DaySeparator day={match.day} discovery={discoveryFor(match, match.day)} today />
+              <DaySeparator
+                day={match.day}
+                discovery={discoveryFor(match, match.day)}
+                today
+                question={todayQuestion}
+                onUseQuestion={setText}
+              />
             ) : null
           }
           renderItem={({ item, index }) => {
@@ -632,6 +686,8 @@ export default function ConversationScreen({
                     day={item.day}
                     discovery={discoveryFor(match, item.day)}
                     today={item.day === match.day}
+                    question={item.day === match.day ? todayQuestion : null}
+                    onUseQuestion={setText}
                   />
                 )}
                 <MessageBubble

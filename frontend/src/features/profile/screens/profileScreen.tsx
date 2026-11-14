@@ -9,6 +9,7 @@ import Chip from "../../../components/ui/chip";
 import Text from "../../../components/ui/text";
 import { useColors } from "../../../theme";
 import { useAuth } from "../../auth/hooks/useAuth";
+import MoodMonth from "../components/moodMonth";
 import MoodWeek from "../components/moodWeek";
 
 const OPTIONS: {
@@ -48,6 +49,7 @@ export default function ProfileScreen() {
         )}
 
         <MoodWeek />
+        <MoodMonth />
 
         <Card tone="white" className="p-0">
           {OPTIONS.map((option, i) => (
